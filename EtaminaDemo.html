@@ -71,6 +71,17 @@ Etamina Demo Page
             vertical-align: top;
         }
 
+        .animateTest {
+            text-align: center;
+            background: #123;
+            padding: 15px 15px;
+            
+            color: #fff;
+            margin: 0 auto;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
     </style>
 
     </head>
@@ -251,6 +262,9 @@ Etamina Demo Page
                         <h3>Attention seekers</h3>
                         <a class="butt butt-small" data-test="flash">flash</a>
                         <a class="butt butt-small" data-test="pageFlipLeft">pageFlipLeft</a>
+                        <a class="butt butt-small" data-test="pageFlipRight">pageFlipRight</a>
+                        <a class="butt butt-small" data-test="raceFlag">raceFlag</a>
+                        <a class="butt butt-small" data-test="raceFlag1">raceFlag1</a>
                     </div>
                 </div>
             </div>
@@ -367,7 +381,7 @@ Etamina Demo Page
                     tmp='';           
                     //tmp= '<li id="elem%id%">'.replace('%id%',i+1);
 
-                    tmp+='<div id="elem%id%" ><img src="http://imgcache.qq.com/ptlogin/head/1_100.gif" width="100" height="100"></div>'.replace('%id%',i+1);
+                    tmp+='<div id="elem%id%" class="animateTest"  ><img src="http://imgcache.qq.com/ptlogin/head/1_100.gif" width="100" height="100"></div>'.replace('%id%',i+1);
 
                     html+=tmp;
 

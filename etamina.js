@@ -368,10 +368,6 @@ var etamina = (function () {
                     val = params.scale;
                     transform +='scale(' + val + ')' + ' ';
                 }
-                if('rotate' in params){
-                    val = etamina.format.toDegree(params.rotate);
-                    transform +='rotate(' + val + ')' + ' ';
-                }
                 if('skewX' in params){
                     val = etamina.format.toDegree(params.skewX);
                     transform +='skewX(' + val + ')' + ' ';
@@ -380,6 +376,12 @@ var etamina = (function () {
                     val = etamina.format.toDegree(params.skewY);
                     transform +='skewY(' + val + ')' + ' ';
                 }
+
+                if('rotate' in params){
+                    val = etamina.format.toDegree(params.rotate);
+                    transform +='rotate(' + val + ')' + ' ';
+                }
+
                 if('rotateX' in params){
                     val = etamina.format.toDegree(params.rotateX);
                     transform +='rotateX(' + val + ')' + ' ';
@@ -388,8 +390,6 @@ var etamina = (function () {
                     val = etamina.format.toDegree(params.rotateY);
                     transform +='rotateY(' + val + ')' + ' ';
                 }
-
-
                 if(transform.length>0){
                     return transform;
                 }
