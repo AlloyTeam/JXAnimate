@@ -343,52 +343,54 @@ var etamina = (function () {
                 }
                 var transform = '',val;
 
-                //perspective 要在其他transform的前面才能生效。
-                if('perspective' in params){
-                    val = etamina.format.toPixel(params.perspective);
-                    transform +='perspective(' + val + ')' + ' ';
-                }
-                if('translateX' in params){
-                    val = etamina.format.toPixel(params.translateX);
-                    transform +='translateX(' + val + ')' + ' ';
-                }
-                if('translateY' in params){
-                    val = etamina.format.toPixel(params.translateY);
-                    transform +='translateY(' + val + ')' + ' ';
-                }
-                if('scaleX' in params){
-                    val = params.scaleX;
-                    transform +='scaleX(' + val + ')' + ' ';
-                }
-                if('scaleY' in params){
-                    val = params.scaleY;
-                    transform +='scaleY(' + val + ')' + ' ';
-                }
-                if('scale' in params){
-                    val = params.scale;
-                    transform +='scale(' + val + ')' + ' ';
-                }
-                if('skewX' in params){
-                    val = etamina.format.toDegree(params.skewX);
-                    transform +='skewX(' + val + ')' + ' ';
-                }
-                if('skewY' in params){
-                    val = etamina.format.toDegree(params.skewY);
-                    transform +='skewY(' + val + ')' + ' ';
-                }
+                for(p in params){
+                    switch(p){
+                        case 'perspective':
+                            val = etamina.format.toPixel(params.perspective);
+                            transform +='perspective(' + val + ')' + ' ';
+                            break;
+                        case 'translateX':
+                            val = etamina.format.toPixel(params.translateX);
+                            transform +='translateX(' + val + ')' + ' ';    
+                            break;
+                        case 'translateY':
+                            val = etamina.format.toPixel(params.translateY);
+                            transform +='translateY(' + val + ')' + ' ';
+                            break;
+                        case 'scaleX':
+                            val = params.scaleX;
+                            transform +='scaleX(' + val + ')' + ' ';
+                            break;
+                        case 'scaleY':
+                            val = params.scaleY;
+                            transform +='scaleY(' + val + ')' + ' ';
+                            break;
+                        case 'scale':
+                            val = params.scale;
+                            transform +='scale(' + val + ')' + ' ';
+                            break;
+                        case 'skewX':
+                            val = etamina.format.toDegree(params.skewX);
+                            transform +='skewX(' + val + ')' + ' ';
+                            break;
+                        case 'skewY':
+                            val = etamina.format.toDegree(params.skewY);
+                            transform +='skewY(' + val + ')' + ' ';
+                            break;
+                        case 'rotate':
+                            val = etamina.format.toDegree(params.rotate);
+                            transform +='rotate(' + val + ')' + ' ';
+                            break;
+                        case 'rotateX':
+                            val = etamina.format.toDegree(params.rotateX);
+                            transform +='rotateX(' + val + ')' + ' ';
+                            break;
+                        case 'rotateY':
+                            val = etamina.format.toDegree(params.rotateY);
+                            transform +='rotateY(' + val + ')' + ' ';
+                            break;
+                   }
 
-                if('rotate' in params){
-                    val = etamina.format.toDegree(params.rotate);
-                    transform +='rotate(' + val + ')' + ' ';
-                }
-
-                if('rotateX' in params){
-                    val = etamina.format.toDegree(params.rotateX);
-                    transform +='rotateX(' + val + ')' + ' ';
-                }
-                if('rotateY' in params){
-                    val = etamina.format.toDegree(params.rotateY);
-                    transform +='rotateY(' + val + ')' + ' ';
                 }
                 if(transform.length>0){
                     return transform;

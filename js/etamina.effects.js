@@ -75,7 +75,7 @@ etamina.effects.raceFlag1 = function(elems,playParam,animSetting){
         var keyframeName = etamina.effects.buildUniqueKeyframeName(animSetting.animType);
    
             keyframeCss = '@'+etamina.prefix+'keyframes '+  keyframeName +'{\n'+
-            	'0% {-webkit-transform: rotateX(0deg) rotate(-720deg) scale(1);-webkit-transform-origin:100% 0%;}100% {-webkit-transform: rotateX(-360deg) rotate(0deg) scale(1);-webkit-transform-origin:100% 0%;}\n'+
+            	'0% {-webkit-transform: rotateX(0deg) rotate(-720deg);-webkit-transform-origin:100% 0%;}100% {-webkit-transform: rotateX(-360deg) rotate(0deg) ;-webkit-transform-origin:100% 0%;}\n'+
         '}';
 
         return {
