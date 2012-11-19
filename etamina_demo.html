@@ -10,6 +10,13 @@ Etamina Demo Page
         <link href="./style/css/sliderControl.css" rel="stylesheet" type="text/css">
         <link href="./style/css/hands-on.css" rel="stylesheet" type="text/css" >
         <link href="./style/css/animate.css" rel="stylesheet" type="text/css">
+<!--
+        <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css">
+    -->
+        <link rel="stylesheet" href="./style/css/jquery-ui.css">
+
+        <script src="./js/jquery-1.8.2.js"></script>
+        <script src="./js/jquery-ui.js"></script>
 
     <style type="text/css">
         body {
@@ -178,11 +185,13 @@ Etamina Demo Page
                     </table>
 
                 </div>
-                <div>
-                    <a class="butt butt-small" data-test="applyCSSAnimations">CSS Animation</a>
-                    <a class="butt butt-small" data-test="buildInAnimations">Built-in Animation</a>
-                </div>
+
                 <div id="Effects">
+                    <ul>
+                        <li><a href="#applyCSSAnimations"><span>CSS Files</span></a></li>
+                        <li><a href="#buildInAnimations"><span>Build-in</span></a></li>
+                        <li><a href="#animationWithSound"><span>With Sound</span></a></li>
+                    </ul>                    
                     <div id="applyCSSAnimations">
                         <h3>Attention seekers</h3>
                         <a class="butt butt-small" data-test="flash">flash</a>
@@ -268,6 +277,14 @@ Etamina Demo Page
                         <a class="butt butt-small" data-test="raceFlag">raceFlag</a>
                         <a class="butt butt-small" data-test="raceFlag1">raceFlag1</a>
                     </div>
+                    <div id="animationWithSound">
+                        <h3>Attention seekers</h3>
+                        <a class="butt butt-small" data-test="flash" sound="notify">flash</a>
+                        <a class="butt butt-small" data-test="tada" sound="chimes">tada</a>
+                        <a class="butt butt-small" data-test="raceFlag"  sound="Whistling">raceFlag</a>
+                        <a class="butt butt-small" data-test="pageFlipLeft" sound="WHOOSH">pageFlipLeft</a>
+                        <a class="butt butt-small" data-test="swing" sound="logoff">swing</a>
+                    </div>
                 </div>
             </div>
           </div>
@@ -277,23 +294,33 @@ Etamina Demo Page
 
         <div id="footer"></div>
 
-        <script src="./js/jquery.min.js"></script>
         <script src="./js/etamina.js"></script>
+        <script src="./js/etamina.audio.js"></script>
         <script src="./js/etamina.effects.js"></script>
         <script src="./js/PointerDraw.js" type="text/javascript"></script>
         <script src="./js/sliderControl.js" type="text/javascript"></script>
         <script type="text/javascript">
 
             var playParam = {},myAnim,
-                animSettings = {};
+                animSettings = {},
+                myAudio = etamina.audio,
+                audio = ['song1','explode1','chimes','notify','tada','logoff','Whistling','WHOOSH'];
+
+
             var elems = ["elem1", "elem2", "elem3", "elem4", "elem5", "elem6", "elem7", "elem8", "elem9", "elem10", "elem11", "elem12", "elem13", "elem14", "elem15", "elem16", "elem17", "elem18", "elem19", "elem20"];
 
             function Init() {
                 _Slider.init();
+                $( "#tabs" ).tabs();
+
+
+                $('#Effects').tabs();
 
                 initExamples();
 
                  myAnim = etamina.init();
+                 myAudio.init({path:'./sounds/'});
+                 myAudio.preload(audio);
 
                 //elems = ["elem1"];
                 //应用CSS的动画
@@ -317,6 +344,7 @@ Etamina Demo Page
                         if(elem.hasAttribute('data-test')){
                             effectName = elem.getAttribute('data-test');
 
+
                             if(effectName in myAnim){
                                 animSettings.name = '';
                                 myAnim[effectName].call(myAnim,elems,playParam,animSettings);
@@ -325,6 +353,36 @@ Etamina Demo Page
                          
 
                     });
+
+                //应用effects动画库中的效果
+                animationWithSound.addEventListener("click",
+                    function(e) { 
+                        var elem = e.target, effectName;
+                        if(elem.hasAttribute('data-test')){
+                            effectName = elem.getAttribute('data-test');
+                            var animSettings = {};
+
+                            if(elem.hasAttribute('sound')){
+                                animSettings.sound = elem.getAttribute('sound')
+                            }
+                            if(elem.hasAttribute('volume')){
+                                animSettings.volume = elem.getAttribute('volume')
+                            }
+                            if(effectName in myAnim){
+                                animSettings.name = '';
+                                myAnim[effectName].call(myAnim,elems,playParam,animSettings);
+                            }
+                            else{
+                                animSettings.name = effectName;
+                                myAnim.applyCss(elems,playParam,animSettings);
+                            }
+                        }
+                         
+
+                    });
+
+                
+
                 SetDelay(document.getElementById("delay").getAttribute("value"));
                 SetDuration(document.getElementById("duration").getAttribute("value"));    
                 SetExampleCount(document.getElementById("expamleCount").getAttribute("value"))            

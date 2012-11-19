@@ -648,8 +648,26 @@ etamina.effects.go = function(elems,playParam,animSetting,getKeyframe){
             //保存elem原有的class，用于在动画后恢复。
             etamina.saveCssClass(elem);
             etamina.pushAnimateClassName(elem.id,elemClass.name)
+
+
+
             //apply css animation
             elem.className += ' ' + elemClass.name;
+
+            if(animSetting.sound && etamina.audio){
+
+                var delayTime = etamina.format.fromTime(playParam.delay);
+
+                if(delayTime>0){
+                    setTimeout(function(){
+                        etamina.audio.playSound(animSetting.sound,animSetting.volume);
+                    },delayTime);
+                }
+                else{
+                    etamina.audio.playSound(animSetting.sound,animSetting.volume);
+                }
+            }
+
             console.log(elem.className);
         }       
     }
