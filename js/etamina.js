@@ -587,13 +587,18 @@ etamina.effects.go = function(elems,playParam,animSetting,getKeyframe){
 
 //优化点、针对多个元素应用动画时keyframe的css可能相同。
 
+    playParam = etamina.initPlayParam(playParam,animSetting.animType);
+    if(playParam.iteration<1){
+        return;
+    }
+    
     var animSetting = animSetting||{};
 
     var //循环变量
         elem,elemClass,keyframe,        
         elements = etamina.getHTMLelements(elems);
 
-    playParam = etamina.initPlayParam(playParam,animSetting.animType);
+
 
     // Loop through elements
     if (elements && elements.length > 0) {
