@@ -27,6 +27,13 @@ Jx().$package("JXAnimate.Audio", function(J){
 		itemsToLoad = new Array(),
 		soundPool = new Array();
 
+	var onLoadProgressUpdated;
+
+	//添加一个事件，当声音加载进度更新时触发。
+	this.addListenerForLoadProgressUpdated = function(func){
+		onLoadProgressUpdated = func;
+	};
+
 	this.getAudioType = function(audio){
 		if(!audioType){
 			if(audio==null){
@@ -95,10 +102,18 @@ Jx().$package("JXAnimate.Audio", function(J){
 			return;
 		}
 	};
+	var onItemLoaded = function(event){
+		if(J.isFunction(onLoadProgressUpdated)){
+			onLoadProgressUpdated(event);
+		}
+	};
 	var itemLoaded =  function (event) {
 		//TODO：还要考虑加载失败的情况。
 		//var _audio = etamina.audio;
 		loadCount++;
+		//raise 
+		onItemLoaded(J.extend(event,{loadCount,itemsToLoadCount}));
+
 		if (loadCount >= itemsToLoadCount) {
 			console.log('itemLoaded: total item is '+loadCount);
 			for (var i = itemsToLoadCount - 1; i >= 0; i--) {

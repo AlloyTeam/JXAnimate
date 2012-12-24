@@ -1,0 +1,66 @@
+﻿body
+{
+	font-family: 'Segoe UI' , sans-serif;
+	color: black;
+	font-size: 16px;
+	height: 100%;
+	background: black;
+}
+div
+{
+	-webkit-backface-visibility: visible;
+	-webkit-transform-origin: 50% 50%;
+	-webkit-transform: 
+		rotateX(0deg) rotateY(0deg) rotateZ(0deg)
+		translate3d(0px, 0px, 0px) 
+		;	
+}
+
+.page
+{
+	-webkit-backface-visibility: hidden;
+	position: absolute;
+	top: 100px;
+	left:490px;
+	width:400px;
+	height: 300px;
+}
+
+.pageleft
+{
+	background: yellow;
+}
+.pageright
+{
+	background: green;
+	
+}
+#page1{
+	z-index: 30;
+	-webkit-transform-origin: 0% 50%;
+	-webkit-transform: 
+		rotateX(0deg) rotateY(-45deg) rotateZ(0deg)
+		translate3d(0px, 0px, 0px) 
+		;
+}
+#stage
+{
+	position: absolute;
+	top: 50px;
+	left: 600px;
+	width: 960px;
+	height: 600px;
+	background: white;
+	-webkit-transform-style: preserve-3d;
+	-webkit-backface-visibility: visible;
+	-webkit-transform-origin: 50% 50%;
+	-webkit-transform: perspective(1200px) 
+		rotateX(90deg) rotateY(0deg) rotateZ(0deg)
+		translate3d(0px, 0px, -400px) 
+		;
+}
+#wrapper
+{
+	background: black;
+	width: 100%;
+}

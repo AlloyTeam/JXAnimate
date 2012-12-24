@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JXAnimate Show </title>
+    <link rel="stylesheet" type="text/css" href="./style/css/card1.css">
+    <script src="modernizr-1.6.min.js"></script>
+        <script src="./js/jx/jx.core.js"></script>
+        <script src="./js/jx/jx.base.js"></script>
+        <script src="./js/jxanimate.js"></script>
+        <script src="./js/jxanimate.effects.js"></script>
+        <script src="./js/jxanimate.audio.js"></script>
+<script type="text/javascript">
+window.addEventListener('load', eventWindowLoaded, false);  
+function eventWindowLoaded() {
+    canvasApp();
+}
+
+
+function canvasApp() {
+ //application scope defination
+ var loadCount,
+    itemsToLoad,
+    $processText,
+    JXAudio = JXAnimate.Audio,
+    sounds,
+    var_end;
+
+ //Waiting all the asset loaded and update the load screen
+function itemLoaded(event) {
+    
+    loadCount++;
+
+    updateProcess(loadCount,itemsToLoad);
+}
+
+    function initApp() {
+        $processText = document.getElementById("processText")
+
+        JXAudio.init('sounds');
+        JXAudio.addListenerForLoadProgressUpdated(itemLoaded);
+        JXAudio.preload(sounds);
+
+    }
+
+    initApp();
+
+    function updateProcess(cur,total){
+        $processText.innerHTML = cur+'/'+total;
+    }
+
+
+  }
+
+
+
+
+</script>
+
+</head>
+<body>
+<div id="wrapper">
+    <div id="stage">
+
+            <div id="page1"  class="page pageleft">
+                Merry Chrismax
+            </div>
+            <div id="page2" class="page pageleft">
+                Page2
+            </div>
+            <div id="page3" class="page pageright">
+                Best Wishes<br>
+                Page 3
+
+            </div>
+            <div id="page4" class="page pageright">
+            </div>
+
+    </div>
+    <div id="loadScreen">
+        <label id="processText"></label>
+    </div>
+</div>
+
+
+</body>
+</html>
+
+
+
+
