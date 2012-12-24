@@ -18,7 +18,7 @@ div
 
 .page
 {
-	-webkit-backface-visibility: hidden;
+	-webkit-backface-visibility: visible;
 	position: absolute;
 	top: 100px;
 	left:490px;
@@ -29,18 +29,34 @@ div
 .pageleft
 {
 	background: yellow;
+	left:90px;
+	-webkit-transform-origin: 100% 50%;
 }
 .pageright
 {
 	background: green;
+	-webkit-transform-origin: 0% 50%;
 	
 }
 #page1{
 	z-index: 30;
-	-webkit-transform-origin: 0% 50%;
 	-webkit-transform: 
 		rotateX(0deg) rotateY(-45deg) rotateZ(0deg)
-		translate3d(0px, 0px, 0px) 
+		translate3d(0px, 3px, 0px) 
+		;
+}
+#page2{
+	z-index: 29;
+	-webkit-transform: 
+		rotateX(0deg) rotateY(135deg) rotateZ(0deg)
+		translate3d(0px, 2px, 0px) 
+		;
+}
+#page3{
+	z-index: 28;
+		-webkit-transform: 
+		rotateX(0deg) rotateY(0deg) rotateZ(0deg)
+		translate3d(0px, 1px, 0px) 
 		;
 }
 #stage
