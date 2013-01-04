@@ -70,13 +70,42 @@ div
 	-webkit-transform-style: preserve-3d;
 	-webkit-backface-visibility: visible;
 	-webkit-transform-origin: 50% 50%;
-	-webkit-transform: perspective(1200px) 
-		rotateX(90deg) rotateY(0deg) rotateZ(0deg)
-		translate3d(0px, 0px, -400px) 
-		;
+
 }
 #wrapper
 {
 	background: black;
-	width: 100%;
+	width: 960px;
+	height: 800px;
+
 }
+
+.stageAnim1
+{
+
+}
+
+/*buttons */
+.butt {
+	color: #fff;
+	background: #a3abae;
+	background-image: -webkit-linear-gradient(rgba(255,255,255,.4), rgba(255,255,255,0));
+	background-image: -moz-linear-gradient(rgba(255,255,255,.4), rgba(255,255,255,0));
+	background-image: -ms-linear-gradient(rgba(255,255,255,.4), rgba(255,255,255,0));
+	background-image: linear-gradient(rgba(255,255,255,.4), rgba(255,255,255,0));
+	text-shadow: 0 1px 1px rgba(0,0,0,.1);
+	padding: .4em .75em .5em;
+	font-weight: bold;
+	text-decoration: none;
+	border-radius: 5px;
+	margin: .5em .25em;
+	line-height: 1.5em;
+	display: inline-block;
+	cursor: pointer;
+}
+
+.butt:hover {
+	color: #fff;
+}
+
+

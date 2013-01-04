@@ -3,13 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>JXAnimate Show </title>
+    <link href="./style/css/animate.css" rel="stylesheet" type="text/css">
+    
     <link rel="stylesheet" type="text/css" href="./style/css/card1.css">
+
+    <style type="text/css">
+    </style>
     <script src="modernizr-1.6.min.js"></script>
         <script src="./js/jx/jx.core.js"></script>
         <script src="./js/jx/jx.base.js"></script>
         <script src="./js/jxanimate.js"></script>
         <script src="./js/jxanimate.effects.js"></script>
         <script src="./js/jxanimate.audio.js"></script>
+        <script src="./js/card.effects.js"></script>
 <script type="text/javascript">
 window.addEventListener('load', eventWindowLoaded, false);  
 function eventWindowLoaded() {
@@ -18,21 +24,23 @@ function eventWindowLoaded() {
 
 
 function canvasApp() {
- //application scope defination
- var loadCount,
-    itemsToLoad,
-    $processText,
-    JXAudio = JXAnimate.Audio,
-    sounds,
-    var_end;
+     //application scope defination
+     var loadCount,
+        itemsToLoad,
+        $processText,
+        JXAudio = JXAnimate.Audio,
+        sounds,
+        var_end,
+        playParam={duration:'2s'},
+        animSettings={};
 
- //Waiting all the asset loaded and update the load screen
-function itemLoaded(event) {
-    
-    loadCount++;
+     //Waiting all the asset loaded and update the load screen
+    function itemLoaded(event) {
+        
+        loadCount++;
 
-    updateProcess(loadCount,itemsToLoad);
-}
+        updateProcess(loadCount,itemsToLoad);
+    }
 
     function initApp() {
         $processText = document.getElementById("processText")
@@ -40,6 +48,24 @@ function itemLoaded(event) {
         JXAudio.init('sounds');
         JXAudio.addListenerForLoadProgressUpdated(itemLoaded);
         JXAudio.preload(sounds);
+
+
+        //监听工具条
+        animToolbar.addEventListener("click",
+            function(e) { 
+                var elem = e.target, effectName,targetElem;
+                if(elem.hasAttribute('data-test') && elem.hasAttribute('data-id')){
+                    effectName = elem.getAttribute('data-test');
+                    targetElem = elem.getAttribute('data-id');
+
+
+                    if(effectName in JXAnimate){
+                        animSettings.name = '';
+                        JXAnimate[effectName].call(JXAnimate,targetElem,playParam,animSettings);
+                    }
+                }
+
+            });
 
     }
 
@@ -59,6 +85,9 @@ function itemLoaded(event) {
 
 </head>
 <body>
+    <div id='animToolbar'>
+        <a class="butt butt-small" data-id='stage' data-test="stageAnim1">stageAnim1</a>
+    </div>
 <div id="wrapper">
     <div id="stage">
 

@@ -167,6 +167,7 @@ Jx().$package("JXAnimate", function(J){
                  * Delete CSS keyframe rule
                  */
                 deleteCSS: function (ruleName) {
+                    //TODO:当HTML中没有Style节点时，会出现Bug。
                     var cssrules = (document.all) ? "rules" : "cssRules",
                         i,sheets = document.styleSheets;
                     if (sheets && sheets.length) {
@@ -350,6 +351,9 @@ Jx().$package("JXAnimate", function(J){
 
                     for(p in params){
                         switch(p){
+                            case 'transform':
+                                transform += params.transform;
+                                break;
                             case 'perspective':
                                 val = etamina.format.toPixel(params.perspective);
                                 transform +='perspective(' + val + ')' + ' ';
@@ -547,13 +551,19 @@ Jx().$package("JXAnimate", function(J){
         }
     };
 
+    /**
+     * 生成关键帧动画的CSS样式字符串。
+     * @param  {[type]} name   [关键帧动画的名称]
+     * @param  {[type]} frames [关键帧数组]
+     * @return {[type]}
+     */
     etamina.effects.buildframes = function(name,frames)
     {
         if(!frames || frames.length<2){
             return;
         }
         var 
-            transform,transformOrigin,fade,shadow,
+            transform,transformOrigin,fade,shadow,styleText,
             css;
 
         css = '@'+etamina.prefix+'keyframes '+  name +'{\n';
@@ -565,8 +575,10 @@ Jx().$package("JXAnimate", function(J){
             transformOrigin = (f.transformOrigin) ? f.transformOrigin:false;
             opacity = f.opacity;
             shadow = f.shadow;
+            styleText=f.styleText;
 
-            css +=                      '\t' + f.p +'{\n';        
+            css +=                      '\t' + f.p +'{\n';    
+            css += (styleText)?         '\t\t' + f.styleText+';\n':'';
             css += (transform)?         '\t\t' + etamina.prefix + 'transform:' + transform + ';' + '\n' : '';
             css += (transformOrigin) ?  '\t\t' + etamina.prefix + 'transform-origin:' + transformOrigin + ';' + '\n' : '';
             css += (opacity) ?          '\t\t' + 'opacity: ' + opacity + ';' + '\n' : '';

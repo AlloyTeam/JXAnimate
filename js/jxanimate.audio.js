@@ -29,6 +29,31 @@ Jx().$package("JXAnimate.Audio", function(J){
 
 	var onLoadProgressUpdated;
 
+	var onItemLoaded = function(event){
+		if(J.isFunction(onLoadProgressUpdated)){
+			onLoadProgressUpdated(event);
+		}
+	}
+	var itemLoaded =  function (event) {
+		//TODO：还要考虑加载失败的情况。
+		//var _audio = etamina.audio;
+		loadCount++;
+		//raise 
+		onItemLoaded(J.extend(event,{'loadCount':loadCount,'itemsToLoadCount':itemsToLoadCount}));
+
+		if (loadCount >= itemsToLoadCount) {
+			console.log('itemLoaded: total item is '+loadCount);
+			for (var i = itemsToLoadCount - 1; i >= 0; i--) {
+				item = itemsToLoad[i];
+				item.element.removeEventListener("canplaythrough",itemLoaded,false);
+				soundPool.push(item);
+				itemsToLoad.splice(i,1);
+			};
+			itemsToLoadCount=0;
+			loadCount = 0;
+		}
+	}
+
 	//添加一个事件，当声音加载进度更新时触发。
 	this.addListenerForLoadProgressUpdated = function(func){
 		onLoadProgressUpdated = func;
@@ -61,10 +86,17 @@ Jx().$package("JXAnimate.Audio", function(J){
 
 	this.init=function(params){
 		params = params||{};
-		if('path' in params){
+		if(J.isObject(params) && 'path' in params){
 			this.path = params.path;
 		}
 	};
+	/**
+	 * 预加载一个或多个声音
+	 * @param  {[type]} sounds     [声音URL的字符串或字符串数组]
+	 * @param  {[type]} redundancy [每个声音的冗余数]
+	 * @param  {[type]} path       [默认路径]
+	 * @return {[type]}
+	 */
 	this.preload=function(sounds,redundancy,path){
 		if(itemsToLoadCount>0){
 			return;
@@ -74,7 +106,7 @@ Jx().$package("JXAnimate.Audio", function(J){
 			this.preloadSound(sounds,redundancy,path);
 			return;
 		}
-		else if(sounds.length>0){
+		else if(J.isArray(sounds) && sounds.length>0){
 			var fullname;
 			for (var i = sounds.length - 1; i >= 0; i--) {
 
@@ -102,30 +134,7 @@ Jx().$package("JXAnimate.Audio", function(J){
 			return;
 		}
 	};
-	var onItemLoaded = function(event){
-		if(J.isFunction(onLoadProgressUpdated)){
-			onLoadProgressUpdated(event);
-		}
-	};
-	var itemLoaded =  function (event) {
-		//TODO：还要考虑加载失败的情况。
-		//var _audio = etamina.audio;
-		loadCount++;
-		//raise 
-		onItemLoaded(J.extend(event,{loadCount,itemsToLoadCount}));
 
-		if (loadCount >= itemsToLoadCount) {
-			console.log('itemLoaded: total item is '+loadCount);
-			for (var i = itemsToLoadCount - 1; i >= 0; i--) {
-				item = itemsToLoad[i];
-				item.element.removeEventListener("canplaythrough",itemLoaded,false);
-				soundPool.push(item);
-				itemsToLoad.splice(i,1);
-			};
-			itemsToLoadCount=0;
-			loadCount = 0;
-		}
-	};
 	this.playSound= function(sound,volume){
 		volume = volume||1;
 
