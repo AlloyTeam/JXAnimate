@@ -1,0 +1,57 @@
+﻿body
+{
+	font-family: 'Segoe UI' , sans-serif;
+	color: black;
+	font-size: 16px;
+
+	background: black;
+}
+
+#slide_contrainer{
+	height: 0px;
+}
+
+.card_piece{
+	position: absolute;
+}
+
+.slide_Img{
+	visibility: hidden;
+}
+
+#stage
+{
+	position: absolute;
+	top: 50px;
+	left: 50px;
+	width: 960px;
+	height: 600px;
+	background: white;
+
+}
+
+
+/*buttons */
+.butt {
+	color: #fff;
+	background: #a3abae;
+	background-image: -webkit-linear-gradient(rgba(255,255,255,.4), rgba(255,255,255,0));
+	background-image: -moz-linear-gradient(rgba(255,255,255,.4), rgba(255,255,255,0));
+	background-image: -ms-linear-gradient(rgba(255,255,255,.4), rgba(255,255,255,0));
+	background-image: linear-gradient(rgba(255,255,255,.4), rgba(255,255,255,0));
+	text-shadow: 0 1px 1px rgba(0,0,0,.1);
+	padding: .4em .75em .5em;
+	font-weight: bold;
+	text-decoration: none;
+	border-radius: 5px;
+	margin: .5em .25em;
+	line-height: 1.5em;
+	display: inline-block;
+	cursor: pointer;
+}
+
+.butt:hover {
+	color: #fff;
+}
+
+

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JXAnimate Show </title>
+    <link href="./style/css/animate.css" rel="stylesheet" type="text/css">
+    
+    <link rel="stylesheet" type="text/css" href="./style/css/slideshow.css">
+
+    <style type="text/css">
+    </style>
+    <script src="modernizr-1.6.min.js"></script>
+        <script src="./js/jx/jx.core.js"></script>
+        <script src="./js/jx/jx.base.js"></script>
+        <script src="./js/jx/jx.dom.js"></script>
+        <script src="./js/jx/jx.browser.js"></script>
+
+        <script src="./js/jxanimate.js"></script>
+        <script src="./js/jxanimate.effects.js"></script>
+        <script src="./js/jxanimate.audio.js"></script>
+
+        <script src="./js/slideshow.js"></script>
+        <script src="./js/slideshow.effects.js"></script>
+
+    <script type="text/javascript">
+        window.addEventListener('load', eventWindowLoaded, false);  
+        function eventWindowLoaded() {
+            SlideShow.init('slide_contrainer',{imgW:960,imgH:600,cardW:48,cardH:30});
+
+            nav_bar.addEventListener("click",
+                function(e) { 
+                    var elem = e.target, cssName;
+                    if(elem.id=='next'){
+                        SlideShow.next();
+                    }
+                }
+            );
+        }
+
+
+
+
+    </script>
+
+</head>
+<body>
+    <div id="wrapper">
+        <div id="slide_contrainer">
+            <img src="style/images/ww1.jpg">
+            <img src="style/images/ww2.jpg">
+            <img src="style/images/ww3.jpg">
+            <img src="style/images/ww4.jpg">
+        </div>
+        <div id="nav_bar">
+            <a id="prev" href="#">Prev</a><a id="next" href="#">Next</a>
+        </div>
+
+    </div>
+
+
+</body>
+</html>
+
+
+
+
