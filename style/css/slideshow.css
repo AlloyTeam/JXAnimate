@@ -13,8 +13,14 @@
 
 .card_piece{
 	position: absolute;
+	visibility: hidden;
 }
-
+.hidden{
+	visibility: hidden;
+}
+.visible{
+	visibility: visible;
+}
 .slide_Img{
 	visibility: hidden;
 }

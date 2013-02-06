@@ -36,13 +36,17 @@ Jx().$package("JXAnimate", function(J){
                 helper: {},
                 effects: {},
 
-                debug: true,
+                debug: false,
 
                 originalCssClasses: {},
+                //保存在element上应用的动画class名称，用于在动画后删除相关的css
                 AnimatingClasses: {},
                 keyframeRules:{},
                 doNotDeleteKeyframes:{}, //不需要删除的动画名称，一般是静态CSS文件中的动画。
+                //存放bool值，表示元素是否正在播放动画。
                 animElementList: [],
+                //保存每个元素在动画播放完毕之后的回调函数,以元素id为索引
+                animCallbackList:[],
 
                 /**
                  * Returns array of HTML elements by string, HTML elements or string array.
@@ -192,11 +196,13 @@ Jx().$package("JXAnimate", function(J){
                 },
 
                 /**
+                 * 动画结束时的统一回调参数。
                  * Clear animation settings
                  */
                 clearAnimation: function (evt) {
-                    console.info("_clearAnimation", this, evt.srcElement.id, evt.animationName, evt.elapsedTime);
-
+                    if(this.debug){
+                        console.info("_clearAnimation", this, evt.srcElement.id, evt.animationName, evt.elapsedTime);
+                    }
                     etamina.animElementList[this.id] = false;
 
                     //恢复元素原有的class属性。
@@ -215,7 +221,19 @@ Jx().$package("JXAnimate", function(J){
                         etamina.deleteCSS(evt.animationName);
                     }
 
+                    var callbackObj = etamina.animCallbackList[this.id];
 
+                    if(callbackObj && callbackObj.hasCallback){
+                        //向回调中传入动画元素和事件参数。
+                        callbackObj.params = J.extend(
+                            {
+                                elem : this,
+                                event : evt
+                            },
+                            callbackObj.params);
+
+                        callbackObj.method(callbackObj.params);
+                    }
 
                     return;
                 },
@@ -245,7 +263,7 @@ Jx().$package("JXAnimate", function(J){
                 /**
                  *生成用于在element上应用动画效果class css
                  */
-                 getAnimationClassRule: function(params,animSetting){
+                getAnimationClassRule: function(params,animSetting){
                     var 
                     className = params.animType + '-' +(new Date()).getTime() + "-" + Math.floor(Math.random() * 1000),
                     css='',domino,dominoDelay=0,newDelay;
@@ -314,7 +332,7 @@ Jx().$package("JXAnimate", function(J){
                         elem.className = this.originalCssClasses[elem.id];
                     }
                  },
-                 //保存与在element上应用的动画class名称，用于在动画后删除相关的css
+                 //保存在element上应用的动画class名称，用于在动画后删除相关的css
                 pushAnimateClassName : function(id, className){
                     if(id && id!='' && className){
                         this.AnimatingClasses[id] = className;
@@ -591,13 +609,25 @@ Jx().$package("JXAnimate", function(J){
         return css;    
     };
 
+    /**
+     * 返回唯一的关键帧的名称
+     * @param  {[type]} animType [动画类型的名称]
+     * @return {[type]}          [唯一的关键帧名称]
+     */
     etamina.effects.buildUniqueKeyframeName = function(animType){
 
         return 'etamina-'+animType+'-'+(new Date()).getTime() + "-" + Math.floor(Math.random() * 1000);
     };
 
 
-
+    /**
+     * 开始播放元素对应的CSS动画
+     * @param  {[type]} elems       [HTML元素id的集合]
+     * @param  {[type]} playParam   [播放参数，时长、延时、重复等]
+     * @param  {[type]} animSetting [动画参数，多米诺效果、回调、声音等]
+     * @param  {[type]} getKeyframe [获取动画的具体keyframe的名称和代码的函数]
+     * @return {[type]}             [description]
+     */
     etamina.effects.go = function(elems,playParam,animSetting,getKeyframe){
 
     //还需实现保持动画后状态的方法。
@@ -612,7 +642,7 @@ Jx().$package("JXAnimate", function(J){
         var animSetting = animSetting||{};
 
         var //循环变量
-            elem,elemClass,keyframe,        
+            elem,elemClass,keyframe, animClassName,       
             elements = etamina.getHTMLelements(elems);
 
 
@@ -623,6 +653,18 @@ Jx().$package("JXAnimate", function(J){
 
                 elem = elements[i];
                 animSetting.index = i;
+
+                //设置动画的回调
+                etamina.animCallbackList[elem.id] = 
+                    J.isFunction(animSetting.callback)?
+                        {
+                            hasCallback:true,
+                            method:animSetting.callback,
+                            params:animSetting.callbackParam
+                        }
+                        :false;
+
+
                 //检查并设置元素的动画状态
                 if(etamina.animElementList[elem.id]){
                     //忽略正在动画中的的元素。
@@ -674,7 +716,14 @@ Jx().$package("JXAnimate", function(J){
 
 
                 //apply css animation
-                elem.className += ' ' + elemClass.name;
+                if(J.isString(animSetting.additionalClass)){
+                    animClassName = elemClass.name + ' ' + animSetting.additionalClass;                   
+                }
+                else{
+                    animClassName = elemClass.name
+                }
+                //J.dom.addClass(elem,animClassName);
+                elem.className += ' ' + animClassName;
 
                 if(animSetting.sound && JXAnimate.Audio){
 
@@ -689,8 +738,10 @@ Jx().$package("JXAnimate", function(J){
                         JXAnimate.Audio.playSound(animSetting.sound,animSetting.volume);
                     }
                 }
-
-                console.log(elem.className);
+                log(elem.classname);
+                if(this.debug){
+                    console.log(elem.className);
+                }
             }       
         }
 
@@ -812,11 +863,27 @@ Jx().$package("JXAnimate", function(J){
     };
 
 
-    var innerAnim = etamina.init();
+    var innerAnim = etamina.init(),
+        _debug=false;
+
+    var debugOn=function () {
+        _debug = true;
+    }
+    var debugOff=function (argument) {
+        _debug = false;
+    }
+    var log = function (argument) {
+        if(_debug == false){
+            return;
+        }
+        console.log(argument);
+    }
 
     J.extend(this,innerAnim);
     this.prefix = etamina.prefix;
     this.prefixJS = etamina.prefixJS;
+
+
 
 /*
     this.initAudio = function (params) {

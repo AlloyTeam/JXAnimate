@@ -33,22 +33,38 @@ Jx().$package("SlideShow", function(J){
         _prevImage,
         _playParam,
         _animSettings,
-        _orderMethods;
+        _orderMethods,
+        _slideEffects,
+        _currentEffect;
 
     var reset = function  () {
         //初始化参数，img(800x600)，卡片大小（10，10）
         _params = {
             imgW:800,
             imgH:600,
-            cardW:40,
-            cardH:40
+            num:5
+            //cardW:40,
+            //cardH:40
         };    
         _playParam={
             "duration" :'1s'
         };
         _animSettings={
-
+            //callback:cardCallback,
+            additionalClass:'visible',
+            domino:100
         };
+        _slideEffects = [
+            {
+                order:'row_col',
+                css:'flipOutY'
+            },
+            {
+                order:'col_row',
+                css:'flipOutX'
+            }
+        ];
+        _currentEffect=0;
     }
 
 
@@ -66,8 +82,10 @@ Jx().$package("SlideShow", function(J){
         if(_imgCount==0){
             return;
         }
+
         //生成卡片
         generateCards();
+        _animSettings.domino = Math.floor(1000/_cardNumber);
         //创建舞台stage元素div
         generateStage();
         //设置背景
@@ -90,14 +108,35 @@ Jx().$package("SlideShow", function(J){
         };
     }
 
+    var calculateNumber = function(){
+        var w,h;
+
+        if(_params.num||_params.numX||_params.numY){
+            _cardCol = _params.num||_params.numX;
+            _cardRow = _params.num||_params.numY;
+            _params.cardW = Math.ceil(_params.imgW/_cardCol);
+            _params.cardH = Math.ceil(_params.imgH/_cardRow);
+            return;
+        }
+        else //if(_params.cardW || _params.cardH)
+        {
+            w = _params.cardW;
+            h = _params.cardH;
+            _cardCol = Math.ceil(_params.imgW/w);
+            _cardRow = Math.ceil(_params.imgH/h);
+            return;
+        }
+
+
+    }
     var generateCards =function() {
         var card,
         x,y,w,h,
         style;
+        calculateNumber();
         w = _params.cardW;
         h = _params.cardH;
-        _cardCol = Math.ceil(_params.imgW/w);
-        _cardRow = Math.ceil(_params.imgH/h);
+
         _cards = [];
         for (var r = 0; r < _cardRow; r++) {
             _cards[r]=[];
@@ -154,23 +193,47 @@ Jx().$package("SlideShow", function(J){
                 //x = c*_params.cardW;
                 //y = r*_params.cardH;
                 $D.setStyle(card,'background-image','url('+src+')')
+                //$D.removeClass(card,'hidden');
+                
                 //$D.setStyle(card,'top','-'+y+'px');
                 //$D.setStyle(card,'left','-'+x+'px');          
             }
         }
     };
+
     var setStageBackground=function (src) {
         $D.setStyle(_stage,'background-image','url('+src+')')
     }
+
+    var cardCallback = function (argument) {
+        var card = argument.elem;
+        var src = _imgList[_currImage].src;
+        $D.addClass (card,'hidden');
+        //$D.setStyle(card,'background-image','url('+src+')')
+
+    }
+
     var setCurrentIndex = function(index){
-        _currImage=index;
-        _nextImage=(index+1) % _imgCount;;
-        _prevImage=(index+_imgCount-1) % _imgCount;;
+        index = index<0?0:index;
+        _currImage=index % _imgCount;
+        _nextImage=(index+1) % _imgCount;
+        _prevImage=(index+_imgCount-1) % _imgCount;
     }
 
     var initOrderMethods = function (argument) {
         _orderMethods={
             'row_col': function (params) {
+                var elems = [];
+                for (var r = 0; r < _cardRow;r++) {
+                    for(var c= 0; c < _cardCol;c++){
+                        elems.push(_cards[r][c]);
+                    }
+                }
+
+                playAnimate(elems,params);
+
+            },
+            'row_col_rev': function (params) {
                 var elems = [];
                 for (var r = _cardRow-1; r >=0; r--) {
                     for(var c=_cardCol-1; c >=0 ; c--){
@@ -179,8 +242,31 @@ Jx().$package("SlideShow", function(J){
                 }
 
                 playAnimate(elems,params);
+            },
+
+            'col_row': function (params) {
+                var elems = [];
+                for (var c = 0; c < _cardRow;c++) {
+                    for(var r= 0; r < _cardCol;r++){
+                        elems.push(_cards[r][c]);
+                    }
+                }
+
+                playAnimate(elems,params);
+
+            },
+            'col_row_rev': function (params) {
+                var elems = [];
+                for (var c = _cardRow-1; c >=0; c--) {
+                    for(var r=_cardCol-1; r >=0 ; r--){
+                        elems.push(_cards[r][c]);
+                    }
+                }
+
+                playAnimate(elems,params);
 
             }
+            
         };
 
     }
@@ -196,29 +282,50 @@ Jx().$package("SlideShow", function(J){
 
         }
     }
+    var gotoWithEffect = function(index, effect){
 
-    var next = function  (argument) {
         var orderName;
+        effect = effect || _slideEffects[_currentEffect];
 
-        setCurrentIndex(_nextImage);
         var src = _imgList[_currImage].src;
-        //setCardBackground(src);
+        //在动画开始前，设置卡片背景为当前图片，并可见。
+        setCardBackground(src);
+        //翻页，设置舞台
+        setCurrentIndex(index);
+        src = _imgList[_currImage].src;
         setStageBackground(src);
 
-        orderName = 'row_col'; //for test
-        
-        _orderMethods[orderName]({css:'flipOutY'});
+        orderName = effect.order;
 
-        //在结束时设置卡片的背景。需改造etamina
-        //在animSettings中增加回调。
-        //调整console.log。
+        _orderMethods[orderName](effect);
+       
+    }
+
+    var next = function  (argument) {
+        
+        _currentEffect = (_currentEffect+1)%_slideEffects.length;
+
+        var orderName, 
+            effect = _slideEffects[_currentEffect];
+
+        gotoWithEffect(_nextImage,effect);
+
+        //在结束时设置卡片的背景。需改造etamina √
+        //在animSettings中增加回调。√
+        //调整console.log。√
         //
-        //增加一些效果。
-        //
+        //增加一些效果：
+        //随机顺序
+        //所有CSS的效果列表
     }
 
     var prev =function (argument){
+        _currentEffect = (_currentEffect+1)%_slideEffects.length;
 
+        var orderName, 
+            effect = _slideEffects[_currentEffect];
+
+        gotoWithEffect(_prevImage,effect);
     }
 
     this.init = init;
