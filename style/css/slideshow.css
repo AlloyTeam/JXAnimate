@@ -22,7 +22,8 @@
 	visibility: visible;
 }
 .slide_Img{
-	visibility: hidden;
+	display: none;
+	visibility: collapse;
 }
 
 #stage
@@ -32,8 +33,9 @@
 	left: 50px;
 	width: 960px;
 	height: 600px;
+	/*
 	background: white;
-
+*/
 }
 
 

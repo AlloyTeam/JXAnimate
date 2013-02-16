@@ -172,7 +172,7 @@ Jx().$package("SlideShow", function(J){
     }
     var generateCards =function() {
         var card,
-        x,y,w,h,
+        x,y,w,h,pos,
         style;
         calculateNumber();
         w = _params.cardW;
@@ -195,8 +195,12 @@ Jx().$package("SlideShow", function(J){
                 $D.setStyle(card,'top',y+'px');
                 $D.setStyle(card,'left',x+'px');  
                 //background position
-                $D.setStyle(card,'background-position-y','-'+y+'px');
-                $D.setStyle(card,'background-position-x','-'+x+'px');                         
+                pos = '-'+x+'px -'+y+'px'
+                //$D.setStyle(card,'background-position-y','-'+y+'px');
+                //$D.setStyle(card,'background-position-x','-'+x+'px');
+                //$D.setStyle(card,'background-position',pos);
+                card.style.backgroundPosition = pos;
+                                       
             }
         }
         _cardNumber = _cardRow * _cardCol;
@@ -235,7 +239,8 @@ Jx().$package("SlideShow", function(J){
                 //background position;
                 //x = c*_params.cardW;
                 //y = r*_params.cardH;
-                $D.setStyle(card,'background-image','url("'+src+'")')
+                setBackground(card,src);
+                //$D.setStyle(card,'background-image','url("'+src+'")')
                 //$D.removeClass(card,'hidden');
                 
                 //$D.setStyle(card,'top','-'+y+'px');
@@ -245,7 +250,14 @@ Jx().$package("SlideShow", function(J){
     };
 
     var setStageBackground=function (src) {
-        $D.setStyle(_stage,'background-image','url("'+src+'")')
+        setBackground(_stage,src);
+    }
+    var setBackground = function(elem,src){
+        var url = 'url('+src+')';
+        console.log(url);
+        //$D.setStyle(_stage,'background-image',url);
+        //elem.style['background-image'] = url;
+        elem.style.backgroundImage = url;
     }
 
     var cardCallback = function (argument) {
