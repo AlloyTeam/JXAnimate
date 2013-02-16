@@ -16,6 +16,10 @@
  *
  */
 
+Jx().$package("SlideShow", function(J){
+
+var $D = J.dom;
+
 JXAnimate.addEffects({
     /**
      * [stageAnim1 description]
@@ -24,43 +28,170 @@ JXAnimate.addEffects({
      * @param  {[type]} animSetting [description]
      * @return {[type]}
      */
-    stageAnim1 : function(elems,playParam,animSetting){
+    flyOutToCenter2 : function(elems,playParam,animSetting){
         var animSetting = animSetting || {};
 
-        animSetting.animType = 'stageAnim1';
+        animSetting.animType = 'flyOutToCenter';
 
-        var    frames = [
-                {p:'0%',transform:'perspective(1200px) rotateX(0deg) rotateY(0deg) rotateZ(360deg) translate3d(0px, 0px, -400px)'},
-                //{p:'30%',transform:'perspective(1200px) rotateX(0deg)  translate3d(0px, 0px, 0px)'},
-                //{p:'100%',transform:'perspective(1200px) rotateX(37deg) rotateY(0deg) rotateZ(0deg) translate3d(0px, 0px, -400px)'}
-                {p:'100%',transform:'perspective(1200px) rotateX(90deg) rotateY(0deg) rotateZ(0deg) translate3d(0px, 0px, -400px)'}
-            
-            ];
+        var buildKeyframe = function(elem,setting){
+            var keyframeName = this.buildUniqueKeyframeName(animSetting.animType),
+                x1,y1,x2,y2,w,h,stage,stageW,stageH;
 
-        this.goWithFixFrames(elems,playParam,animSetting,frames);
+                x1 = $D.getPosX(elem);
+                y1 = $D.getPosY(elem);
+                w = $D.getWidth(elem);
+                h = $D.getHeight(elem);
 
+                stage = SlideShow.getStage();
+                stageW = SlideShow.getStageWidth();
+                stageH = SlideShow.getStageHeight();
+
+                x2 = (stageW - w)/2;
+                y2 = (stageH - h)/2;
+                x2+= 'px';
+                y2+= 'px';
+       
+                keyframeCss = '@'+this.prefix+'keyframes '+  keyframeName +'{\n'+
+                    '0% {-webkit-transform: scale(1);-webkit-transform-origin:50% 50%;}100% {-webkit-transform: scale(2) ;-webkit-transform-origin:50% 50%;}\n'+
+            '}';
+
+            return {
+                name:keyframeName,
+                css:keyframeCss
+            };
+        };
+
+        this.go(elems,playParam,animSetting,buildKeyframe);
     },
     /**
-     * [pageFlipRight description]
+     * [flyOutToCenter description]
      * @param  {[type]} elems       [description]
      * @param  {[type]} playParam   [description]
      * @param  {[type]} animSetting [description]
      * @return {[type]}
      */
-    pageFlipRight : function(elems,playParam,animSetting){
+    flyOutToCenter : function(elems,playParam,animSetting){
         var animSetting = animSetting || {};
 
-        animSetting.animType = 'pageFlipRight';
 
-        var    frames = [
-                {p:'0%',rotateY:'0deg',transformOrigin:'100% 50%'},
-                {p:'100%',rotateY:'360deg',transformOrigin:'100% 50%'}
-            ];
+        var buildKeyframe = function(elem,animSetting){
+                var index = animSetting.index,
+                    keyframeName = this.buildUniqueKeyframeName(animSetting.animType),
+                    x1,y1,x2,y2,w,h,stage,stageW,stageH,styleText1,styleText2;
 
-        this.goWithFixFrames(elems,playParam,animSetting,frames);
+                    x1 = $D.getPosX(elem);
+                    y1 = $D.getPosY(elem);
+                    w = $D.getWidth(elem);
+                    h = $D.getHeight(elem);
+
+                    stage = SlideShow.getStage();
+                    stageW = SlideShow.getStageWidth();
+                    stageH = SlideShow.getStageHeight();
+
+                    x2 = (stageW - w)/2;
+                    y2 = (stageH - h)/2;
+                    x1+= 'px';
+                    y1+= 'px';
+                    x2+= 'px';
+                    y2+= 'px';
+
+                animSetting.animType = 'flyOutToCenter2';
+                styleText1 = 'top:'+y1+';left:'+x1+';z-index:100';
+                styleText2 = 'top:'+y2+';left:'+x2+';z-index:100';
+
+                var frames = [
+                        {p:'0%',
+                            opacity:1,
+                            scale:'1',
+                            transformOrigin:'50% 50%',
+                            styleText:styleText1
+                        },
+                        {p:'100%',
+                            opacity:0,
+                            scale:'1.5',
+                            transformOrigin:'50% 50%',
+                            styleText:styleText2
+                        }
+                    ];
+
+
+
+                return {
+                    name:keyframeName,
+                    css: this.buildframes(keyframeName,frames)
+                };
+            };
+        
+        this.go(elems,playParam,animSetting,buildKeyframe);
 
     },
+    /**
+     * [flyOutToOutside description]
+     * @param  {[type]} elems       [description]
+     * @param  {[type]} playParam   [description]
+     * @param  {[type]} animSetting [description]
+     * @return {[type]}
+     */
+    flyOutToOutside : function(elems,playParam,animSetting){
+        var animSetting = animSetting || {};
+        animSetting.animType = 'flyOutToOutside';
 
+
+        var buildKeyframe = function(elem,animSetting){
+                var index = animSetting.index,
+                    keyframeName = this.buildUniqueKeyframeName(animSetting.animType),
+                    x1,y1,x2,y2,w,h,stage,stageW,stageH,styleText1,styleText2,
+                    xC,yC,r;
+
+                    x1 = $D.getPosX(elem);
+                    y1 = $D.getPosY(elem);
+                    w = $D.getWidth(elem);
+                    h = $D.getHeight(elem);
+
+                    stage = SlideShow.getStage();
+                    stageW = SlideShow.getStageWidth();
+                    stageH = SlideShow.getStageHeight();
+
+                    r = 4;
+
+                    xC = (stageW - w)/2;
+                    yC = (stageH - h)/2;
+                    x2 = ((r+1)*x1-xC)/r;
+                    y2 = ((r+1)*y1-yC)/r;
+                    x1+= 'px';
+                    y1+= 'px';
+                    x2+= 'px';
+                    y2+= 'px';
+
+                styleText1 = 'top:'+y1+';left:'+x1+';z-index:100';
+                styleText2 = 'top:'+y2+';left:'+x2+';z-index:100';
+
+                var frames = [
+                        {p:'0%',
+                            opacity:1,
+                            scale:'1',
+                            transformOrigin:'50% 50%',
+                            styleText:styleText1
+                        },
+                        {p:'100%',
+                            opacity:0,
+                            scale:'1.5',
+                            transformOrigin:'50% 50%',
+                            styleText:styleText2
+                        }
+                    ];
+
+
+
+                return {
+                    name:keyframeName,
+                    css: this.buildframes(keyframeName,frames)
+                };
+            };
+        
+        this.go(elems,playParam,animSetting,buildKeyframe);
+
+    },
     raceFlag : function(elems,playParam,animSetting){
         var animSetting = animSetting || {};
 
@@ -104,5 +235,7 @@ JXAnimate.addEffects({
         this.go(elems,playParam,animSetting,buildKeyframe);
     }
 });
+
+}); //end of package
 //----------------------------------------------------------------------------
 

@@ -11,6 +11,7 @@
     </style>
     <script src="modernizr-1.6.min.js"></script>
         <script src="./js/jx/jx.core.js"></script>
+        <script src="./js/jx/jx.array.js"></script>
         <script src="./js/jx/jx.base.js"></script>
         <script src="./js/jx/jx.dom.js"></script>
         <script src="./js/jx/jx.browser.js"></script>
@@ -26,7 +27,7 @@
         window.addEventListener('load', eventWindowLoaded, false);  
         function eventWindowLoaded() {
             SlideShow.init('slide_contrainer',{imgW:960,imgH:600,
-                num:5});
+                num:4});
                 //cardW:240,cardH:150});
                 //cardW:120,cardH:75});
 
@@ -39,7 +40,7 @@
                         SlideShow.next();
                     }
                     if(elem.id=='prev'){
-                        SlideShow.next();
+                        SlideShow.prev();
                     }
                 }
             );
@@ -58,6 +59,10 @@
             <img src="style/images/ww2.jpg">
             <img src="style/images/ww3.jpg">
             <img src="style/images/ww4.jpg">
+            <img src="style/images/ww5.jpg">
+            <img src="style/images/ww6.jpg">
+            <img src="style/images/ww7.jpg">
+            <img src="style/images/ww8.jpg">
         </div>
         <div id="nav_bar">
             <a id="prev" href="#">Prev</a><a id="next" href="#">Next</a>

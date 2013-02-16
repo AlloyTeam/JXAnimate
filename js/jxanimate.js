@@ -25,7 +25,7 @@ Jx().$package("JXAnimate", function(J){
                 id: "etamina",
                 name: "etamina",
                 description: "A CSS animation Engine and Library",
-                version: "0.5",
+                version: "1.0",
 
                 prefix: "",
                 prefixJS: "",
@@ -47,6 +47,8 @@ Jx().$package("JXAnimate", function(J){
                 animElementList: [],
                 //保存每个元素在动画播放完毕之后的回调函数,以元素id为索引
                 animCallbackList:[],
+                //保存domino效果中每一个合并元素组。
+                donimoElementGroups:{},
 
                 /**
                  * Returns array of HTML elements by string, HTML elements or string array.
@@ -176,7 +178,8 @@ Jx().$package("JXAnimate", function(J){
                         i,sheets = document.styleSheets;
                     if (sheets && sheets.length) {
                         sheets:for (var j = sheets.length - 1; j >= 0; j--) {
-                            if(sheets[j][cssrules].length){
+                            if(sheets[j][cssrules] &&
+                                sheets[j][cssrules].length>0){
                                 rules:for (i = 0; i < sheets[j][cssrules].length; i += 1) {
                                     var rule = sheets[j][cssrules][i];
                                     if (rule.name === ruleName || rule.selectorText === '.'+ruleName) {
@@ -199,17 +202,17 @@ Jx().$package("JXAnimate", function(J){
                  * 动画结束时的统一回调参数。
                  * Clear animation settings
                  */
-                clearAnimation: function (evt) {
+                clearAnimation: function (elem,evt) {
                     if(this.debug){
-                        console.info("_clearAnimation", this, evt.srcElement.id, evt.animationName, evt.elapsedTime);
+                        console.info("_clearAnimation", elem, evt.srcElement.id, evt.animationName, evt.elapsedTime);
                     }
-                    etamina.animElementList[this.id] = false;
+                    etamina.animElementList[elem.id] = false;
 
                     //恢复元素原有的class属性。
-                    etamina.restoreCssClass(this);
+                    etamina.restoreCssClass(elem);
                     
                     //结束时删除 动画class。 动画class也要记录。
-                    var classname = etamina.popAnimateClassName(this.id);
+                    var classname = etamina.popAnimateClassName(elem.id);
                     etamina.deleteCSS(classname);
 
 
@@ -221,13 +224,13 @@ Jx().$package("JXAnimate", function(J){
                         etamina.deleteCSS(evt.animationName);
                     }
 
-                    var callbackObj = etamina.animCallbackList[this.id];
+                    var callbackObj = etamina.animCallbackList[elem.id];
 
                     if(callbackObj && callbackObj.hasCallback){
                         //向回调中传入动画元素和事件参数。
                         callbackObj.params = J.extend(
                             {
-                                elem : this,
+                                elem : elem,
                                 event : evt
                             },
                             callbackObj.params);
@@ -237,6 +240,25 @@ Jx().$package("JXAnimate", function(J){
 
                     return;
                 },
+                onDonimoGroupAnimationEnd:function(evt) {
+                    if(this.debug){
+                        console.info("_onDonimoGroupAnimationEnd", this, evt.srcElement.id, evt.animationName, evt.elapsedTime);
+                    }
+                    var group = etamina.donimoElementGroups[this.id],
+                        length;
+                    if(J.isArray(group)){
+                        length = group.length;
+                        for (var i =0; i < length; i++) {
+                            etamina.clearAnimation(group[i],evt);
+                        };
+
+                    }
+                    delete etamina.donimoElementGroups[this.id];
+                },
+                onAnimationEnd:function(evt){
+                    etamina.clearAnimation(this,evt);
+                },
+
                 /**
                  * initialize animation playing param
                  */
@@ -433,6 +455,10 @@ Jx().$package("JXAnimate", function(J){
     }());
 
 
+    var onDonimoGroupAnimationEnd =function(evt) {
+
+    };
+
 
 
 
@@ -599,7 +625,7 @@ Jx().$package("JXAnimate", function(J){
             css += (styleText)?         '\t\t' + f.styleText+';\n':'';
             css += (transform)?         '\t\t' + etamina.prefix + 'transform:' + transform + ';' + '\n' : '';
             css += (transformOrigin) ?  '\t\t' + etamina.prefix + 'transform-origin:' + transformOrigin + ';' + '\n' : '';
-            css += (opacity) ?          '\t\t' + 'opacity: ' + opacity + ';' + '\n' : '';
+            css += ('opacity' in f) ?   '\t\t' + 'opacity: ' + opacity + ';' + '\n' : '';
             css += (shadow) ?           '\t\t' + etamina.prefix + 'box-shadow: ' + shadow + ';' + '\n' : '';
             css +=                      '\t' + '}' + '\n';
         }
@@ -618,6 +644,21 @@ Jx().$package("JXAnimate", function(J){
 
         return 'etamina-'+animType+'-'+(new Date()).getTime() + "-" + Math.floor(Math.random() * 1000);
     };
+
+    /*
+    animSetting{
+        domino: 100 , // 设置domino中间的间隔时间。 数字或字符串。100或‘100ms’
+        animType: 'rotateOut', //动画类型，内部用。
+        index: 1,               //序列号，内部用。
+        dominoGroupEventElements: [], //保存用于处理合并事件的元素id
+        callback: method,       //每个元素动画结束后的回调。
+        callbackParam: object,  //回调的参数。
+        doNotDeleteKeyframe: true,  //标识动画结束后是否删除关键帧CSS。
+        additionalClass: 'className', //设置动画时可以同时附加其他的css类。
+        sound:'soundName',              //播放声音的名称。
+        volume: '',                     //声音音量。
+    }
+     */
 
 
     /**
@@ -639,7 +680,15 @@ Jx().$package("JXAnimate", function(J){
             return;
         }
 
-        var animSetting = animSetting||{};
+        var animSetting = animSetting||{},
+            /**
+             * domino效果中事件太多，浏览器响应不过来，
+             * 可以将邻近的domino元素的动画结束事件合并到一个元素中。
+             * 此变量中保存用于处理合并事件的元素id。
+             * @type {[type]}
+             */
+            groupEventElems = animSetting.dominoGroupEventElements,
+            tempEventElemGroup=[];
 
         var //循环变量
             elem,elemClass,keyframe, animClassName,       
@@ -701,11 +750,39 @@ Jx().$package("JXAnimate", function(J){
 
 
                 // Add listener to clear animation after it's done
-                if (etamina.prefix == "-moz-") {
-                    elem.addEventListener("animationend", etamina.clearAnimation, false);
+                //如果针对了domino效果设置了事件优化
+                if(animSetting.domino &&
+                    J.isArray(groupEventElems)){
+
+                    tempEventElemGroup.push(elem);
+
+                    if(groupEventElems.indexOf(elem.id)>-1){
+
+                        etamina.donimoElementGroups[elem.id] = tempEventElemGroup;
+                        tempEventElemGroup=[];
+
+                        //设置合并组的动画结束的回调事件。
+                        if (etamina.prefix == "-moz-") {
+                            elem.addEventListener("animationend", etamina.onDonimoGroupAnimationEnd, false);
+                        }
+                        else {
+                            elem.addEventListener(etamina.prefixJS + "AnimationEnd", etamina.onDonimoGroupAnimationEnd, false);
+                        }
+
+                    }
+                    else{
+                    }
                 }
-                else {
-                    elem.addEventListener(etamina.prefixJS + "AnimationEnd", etamina.clearAnimation, false);
+                else{
+                    etamina.donimoElementGroups[elem.id] = null;
+                    //设置动画结束的回调事件。
+                    if (etamina.prefix == "-moz-") {
+                        elem.addEventListener("animationend", etamina.onAnimationEnd, false);
+                    }
+                    else {
+                        elem.addEventListener(etamina.prefixJS + "AnimationEnd", etamina.onAnimationEnd, false);
+                    }
+
                 }
                 //TODO: 是否在动画后保留结束时的状态。
 
@@ -716,6 +793,8 @@ Jx().$package("JXAnimate", function(J){
 
 
                 //apply css animation
+                
+
                 if(J.isString(animSetting.additionalClass)){
                     animClassName = elemClass.name + ' ' + animSetting.additionalClass;                   
                 }

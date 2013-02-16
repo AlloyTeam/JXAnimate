@@ -22,12 +22,15 @@ Jx().$package("SlideShow", function(J){
         _container,
         _params,
         _stage,
+        _stageWidth,
+        _stageHeight,
         _imgList,
         _imgCount,
         _cardRow,
         _cardCol,
         _cards,
         _cardNumber,
+        _cardGroupIndex,
         _currImage,
         _nextImage,
         _prevImage,
@@ -47,7 +50,7 @@ Jx().$package("SlideShow", function(J){
             //cardH:40
         };    
         _playParam={
-            "duration" :'1s'
+            "duration" :'600ms'
         };
         _animSettings={
             //callback:cardCallback,
@@ -56,13 +59,33 @@ Jx().$package("SlideShow", function(J){
         };
         _slideEffects = [
             {
+                order:'random',
+                css:'hinge'
+            },
+            {
+                order:'random',
+                effect:'flyOutToCenter'
+            },
+            {
+                order:'row_col',
+                effect:'flyOutToOutside'
+            },
+            {
                 order:'row_col',
                 css:'flipOutY'
             },
             {
                 order:'col_row',
                 css:'flipOutX'
-            }
+            },
+            {
+                order:'random',
+                css:'rotateOut'
+            },
+            {
+                order:'random',
+                css:'flipOutX'
+            } 
         ];
         _currentEffect=0;
     }
@@ -85,7 +108,25 @@ Jx().$package("SlideShow", function(J){
 
         //生成卡片
         generateCards();
-        _animSettings.domino = Math.floor(1000/_cardNumber);
+
+        _animSettings.domino = 200;// Math.floor(2000/_cardNumber);
+        _cardGroupIndex=[];
+        //根据列数指定分组
+        for (var i = 0; i < _cardRow; i++) {
+            _cardGroupIndex.push((i+1)*_cardCol - 1);
+        };
+
+        //根据给定的数字进行分组。
+        var capacity = 2,tmp = 0;
+        for (var i = 0; i < _cardNumber; i++) {
+            tmp++;
+            if(tmp==capacity || i == _cardNumber-1){
+                _cardGroupIndex.push(i);
+                tmp=0;
+            }
+        };      
+
+
         //创建舞台stage元素div
         generateStage();
         //设置背景
@@ -99,7 +140,7 @@ Jx().$package("SlideShow", function(J){
         _imgList=[];
         var children = _container.children,
         node;
-        for (var i = children.length - 1; i >= 0; i--) {
+        for (var i=0; i < children.length; i ++) {
             node = children[i];
             if(node.tagName.toLowerCase()==='img'){
                 _imgList.push(node);
@@ -179,6 +220,8 @@ Jx().$package("SlideShow", function(J){
         }
 
         _container.appendChild(_stage);
+        _stageWidth = $D.getWidth(_stage);
+        _stageHeight = $D.getHeight(_stage);
     }
 
     var setCardBackground=function (src) {
@@ -192,7 +235,7 @@ Jx().$package("SlideShow", function(J){
                 //background position;
                 //x = c*_params.cardW;
                 //y = r*_params.cardH;
-                $D.setStyle(card,'background-image','url('+src+')')
+                $D.setStyle(card,'background-image','url("'+src+'")')
                 //$D.removeClass(card,'hidden');
                 
                 //$D.setStyle(card,'top','-'+y+'px');
@@ -202,7 +245,7 @@ Jx().$package("SlideShow", function(J){
     };
 
     var setStageBackground=function (src) {
-        $D.setStyle(_stage,'background-image','url('+src+')')
+        $D.setStyle(_stage,'background-image','url("'+src+'")')
     }
 
     var cardCallback = function (argument) {
@@ -220,6 +263,11 @@ Jx().$package("SlideShow", function(J){
         _prevImage=(index+_imgCount-1) % _imgCount;
     }
 
+    /**
+     * 定义一系列获得卡片顺序的函数
+     * @param  {[type]} argument [description]
+     * @return {[type]}          [description]
+     */
     var initOrderMethods = function (argument) {
         _orderMethods={
             'row_col': function (params) {
@@ -265,20 +313,76 @@ Jx().$package("SlideShow", function(J){
 
                 playAnimate(elems,params);
 
+            },
+            'random': function (params) {
+                var elems = [],
+                    i=0;
+                for (var c = _cardRow-1; c >=0; c--) {
+                    for(var r=_cardCol-1; r >=0 ; r--){
+                        elems.push({
+                            card:_cards[r][c],
+                            index:Math.random()
+                        });
+                    }
+                }
+
+                elems = elems.sort(
+                    function(a,b){
+                        return a.index - b.index;
+                });
+                for (var i = elems.length - 1; i >= 0; i--) {
+                    elems[i] = elems[i].card;
+                };
+
+                /*
+                 *此处可以覆盖全局的动画设定参数。
+                 *
+                params.animSetting = J.extend(params.animSetting,
+                    {
+                        domino:150
+                    }
+                );
+                */
+                playAnimate(elems,params);
+
             }
-            
         };
 
     }
 
     var playAnimate = function (elems,params) {
+        var isGroup = false, //调试分组的开关。
+            animSetting,tempSetting;
+
+        params = params || {};
+        animSetting = params.animSetting ||{};
+        tempSetting = J.clone(_animSettings);
+        animSetting = J.extend(tempSetting,animSetting);
+
+        animSetting.test = true;
+
+        if(isGroup){
+            //设置donimo元素分组
+            animSetting.dominoGroupEventElements=[];
+            var idx;
+            for (var i in _cardGroupIndex) {
+                idx = _cardGroupIndex[i];
+                animSetting.dominoGroupEventElements.push(elems[idx].id);
+            };
+        }
+        else{
+            animSetting.dominoGroupEventElements=null;
+        }
+
+
         if('css' in params){
-            _animSettings.name = params.css;
-            JXAnimate.applyCss(elems,_playParam,_animSettings);
+            animSetting.name = params.css;
+            JXAnimate.applyCss(elems,_playParam,animSetting);
         }
         else if('effect' in params){
-            _animSettings.name = '';
-            JXAnimate[effectName].call(JXAnimate,elems,_playParam,_animSettings);
+            animSetting.name = '';
+            var effectName = params.effect;
+            JXAnimate[effectName].call(JXAnimate,elems,_playParam,animSetting);
 
         }
     }
@@ -305,22 +409,17 @@ Jx().$package("SlideShow", function(J){
         
         _currentEffect = (_currentEffect+1)%_slideEffects.length;
 
+//_currentEffect=0; //test
         var orderName, 
             effect = _slideEffects[_currentEffect];
 
         gotoWithEffect(_nextImage,effect);
 
-        //在结束时设置卡片的背景。需改造etamina √
-        //在animSettings中增加回调。√
-        //调整console.log。√
-        //
-        //增加一些效果：
-        //随机顺序
-        //所有CSS的效果列表
+
     }
 
     var prev =function (argument){
-        _currentEffect = (_currentEffect+1)%_slideEffects.length;
+        _currentEffect = (_currentEffect+_slideEffects.length-1)%_slideEffects.length;
 
         var orderName, 
             effect = _slideEffects[_currentEffect];
@@ -328,8 +427,40 @@ Jx().$package("SlideShow", function(J){
         gotoWithEffect(_prevImage,effect);
     }
 
+    var getContrainer=function(){
+        return _container;
+    }
+    var getStage=function(){
+        return _stage;
+    }
+    var getStageWidth = function(){
+        return _stageWidth;
+    }
+    var getStageHeight = function(){
+        return _stageHeight;
+    }
+
     this.init = init;
     this.next = next;
+    this.prev = prev;
+    this.getContrainer = getContrainer;
+    this.getStage = getStage;
+    this.getStageWidth = getStageWidth;
+    this.getStageHeight = getStageHeight;
 });
 //----------------------------------------------------------------------------
-
+        //在结束时设置卡片的背景。需改造etamina √
+        //在animSettings中增加回调。√
+        //调整console.log。√
+        //
+        //增加一些效果：
+        //随机顺序 √
+        //所有CSS的效果列表
+        //向中间飞入，向四周飞出。√
+        //闪烁问题的优化：
+        //JxAnimation中定义了分组donimo的方法，
+        //可以将邻近的动画元素合并到一个onAnimationEnd事件中处理，但是效果不好。
+        //依旧有闪烁。调用方法参考playAnimation
+        //
+        //添加声音。
+        //美化翻页按钮的样式。
