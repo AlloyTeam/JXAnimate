@@ -60,4 +60,68 @@
 	color: #fff;
 }
 
+.sprite30x30{
+        background-image: url('../images/sprite_30x30.png');
+      }
+div,label{
+	margin:0;
+	padding:0;
+	border:0;
+	font-size:100%;
+	font:inherit;
+	vertical-align:
+	baseline
+}
+label{
+	font-size:14px;
+	font-size:.875rem;
+	line-height:1.25;
+	font-weight:400
+}
+.checkbox{
+	height:24px;
+	margin:0 8px 8px -5px
+}
+.checkbox label.domino{
+	display:inline-block
+}
+.checkbox input{
+	opacity:0;
+	float:left;
+	position:absolute;
+	width:18px
+}
+.checkbox input+label{
+	margin:0;
+	clear:none;
+	font-size:13px;
+	font-size:.8125rem;
+	padding:4px 0 0 30px;
+	cursor:pointer;
+	background-position:-30px -934px;
+	background-repeat:no-repeat;
+	height:20px;
+	font-weight:400
+}
+.checkbox input:checked+label{
+	background-position:-30px -964px
+}
+/*
+label{
+	display:none
+}
+*/
+input{
+	-webkit-transition:.3s ease-in-out opacity;
+	-moz-transition:.3s ease-in-out opacity;
+	-ms-transition:.3s ease-in-out opacity;
+	-o-transition:.3s ease-in-out opacity;
+	transition:.3s ease-in-out opacity
+}
+.checkbox{
+	text-align:left;
+	font-size:16px;
+	font-family:adobe-clean, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	color:rgb(255, 255, 255);
+}
 

@@ -26,11 +26,17 @@
     <script type="text/javascript">
         window.addEventListener('load', eventWindowLoaded, false);  
         function eventWindowLoaded() {
+
+            var audio = ['song1','explode1','chimes','notify','tada','logoff','Whistling','WHOOSH'];
+
+            JXAnimate.Audio.init({path:'./sounds/'});
+            JXAnimate.Audio.preload(audio);
+
+
             SlideShow.init('slide_contrainer',{imgW:960,imgH:600,
-                num:4});
+                num:3});
                 //cardW:240,cardH:150});
                 //cardW:120,cardH:75});
-
                 //cardW:480,cardH:300});
 
             nav_bar.addEventListener("click",
@@ -38,12 +44,26 @@
                     var elem = e.target, cssName;
                     if(elem.id=='next'){
                         SlideShow.next();
+                        JXAnimate.Audio.playSound('Whistling');
                     }
                     if(elem.id=='prev'){
                         SlideShow.prev();
+                        JXAnimate.Audio.playSound('chimes');
                     }
                 }
             );
+            switch_domino.addEventListener('click',
+                function(e){
+                    if(switch_domino.checked){
+                        SlideShow.setDonimo(200);
+                    }
+                    else{
+                        SlideShow.setDonimo(false);
+                    }
+                }
+            );
+
+
         }
 
 
@@ -66,6 +86,9 @@
         </div>
         <div id="nav_bar">
             <a id="prev" href="#">Prev</a><a id="next" href="#">Next</a>
+            <div class="checkbox">
+                <input tabindex="3" class="domino" type="checkbox" id="switch_domino" checked='true'>
+                <label class="sprite30x30 domino" for="switch_domino">多米诺效果</label></div>
         </div>
 
     </div>

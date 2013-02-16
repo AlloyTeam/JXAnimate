@@ -439,6 +439,9 @@ Jx().$package("SlideShow", function(J){
     var getStageHeight = function(){
         return _stageHeight;
     }
+    var setDonimo = function(value){
+        _animSettings.domino = value;
+    }
 
     this.init = init;
     this.next = next;
@@ -447,6 +450,7 @@ Jx().$package("SlideShow", function(J){
     this.getStage = getStage;
     this.getStageWidth = getStageWidth;
     this.getStageHeight = getStageHeight;
+    this.setDonimo = setDonimo;
 });
 //----------------------------------------------------------------------------
         //在结束时设置卡片的背景。需改造etamina √

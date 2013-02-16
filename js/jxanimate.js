@@ -284,6 +284,7 @@ Jx().$package("JXAnimate", function(J){
 
                 /**
                  *生成用于在element上应用动画效果class css
+                 *在此处应用多米诺效果
                  */
                 getAnimationClassRule: function(params,animSetting){
                     var 
@@ -738,6 +739,7 @@ Jx().$package("JXAnimate", function(J){
                 }
 
                 //prepare class for element to play the animation.
+                //多米诺domino效果在此处应用。
                 playParam.name = keyframe.name;
                 elemClass = etamina.getAnimationClassRule(playParam,animSetting);
                 //add css text into DOM style
