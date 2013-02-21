@@ -199,7 +199,7 @@ Jx().$package("SlideShow", function(J){
                 //$D.setStyle(card,'background-position-y','-'+y+'px');
                 //$D.setStyle(card,'background-position-x','-'+x+'px');
                 //$D.setStyle(card,'background-position',pos);
-                card.style.backgroundPosition = pos;
+                card.style.backgroundPosition = pos; //兼容FireFox
                                        
             }
         }
@@ -478,5 +478,5 @@ Jx().$package("SlideShow", function(J){
         //可以将邻近的动画元素合并到一个onAnimationEnd事件中处理，但是效果不好。
         //依旧有闪烁。调用方法参考playAnimation
         //
-        //添加声音。
+        //添加声音。 √
         //美化翻页按钮的样式。
