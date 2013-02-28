@@ -36,7 +36,7 @@ Jx().$package("JXAnimate", function(J){
                 helper: {},
                 effects: {},
 
-                debug: false,
+                debug: true,
 
                 originalCssClasses: {},
                 //保存在element上应用的动画class名称，用于在动画后删除相关的css
@@ -108,7 +108,7 @@ Jx().$package("JXAnimate", function(J){
                         this.prefixJS = "Moz";
                     }
                     // Internet Explorer 10+
-                    else if ("MSAnimation" in el.style) {
+                    else if ("msAnimation" in el.style) {
                         this.prefix = "-ms-";
                         this.prefixJS = "MS";
                     }
@@ -353,6 +353,9 @@ Jx().$package("JXAnimate", function(J){
                 restoreCssClass : function(elem){
                     if(elem && elem.id && elem.id!=''){
                         elem.className = this.originalCssClasses[elem.id];
+                        if(etamina.debug){
+                            console.log('restor #'+elem.id+' to '+elem.className+'\n');
+                        }
                     }
                  },
                  //保存在element上应用的动画class名称，用于在动画后删除相关的css

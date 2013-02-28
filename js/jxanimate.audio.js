@@ -40,7 +40,7 @@ Jx().$package("JXAnimate.Audio", function(J){
 		loadCount++;
 		//raise 
 		onItemLoaded(J.extend(event,{'loadCount':loadCount,'itemsToLoadCount':itemsToLoadCount}));
-
+		var item;
 		if (loadCount >= itemsToLoadCount) {
 			console.log('itemLoaded: total item is '+loadCount);
 			for (var i = itemsToLoadCount - 1; i >= 0; i--) {
