@@ -38,20 +38,26 @@
                 //cardW:240,cardH:150});
                 //cardW:120,cardH:75});
                 //cardW:480,cardH:300});
+            
 
-            nav_bar.addEventListener("click",
+
+            document.addEventListener("click",
                 function(e) { 
                     var elem = e.target, cssName;
-                    if(elem.id=='next'){
+
+                    var cmd = elem.getAttribute("cmd");
+                    if(cmd=='next'){
                         SlideShow.next();
                         JXAnimate.Audio.playSound('Whistling');
                     }
-                    if(elem.id=='prev'){
+                    if(cmd=='prev'){
                         SlideShow.prev();
                         JXAnimate.Audio.playSound('chimes');
                     }
                 }
             );
+
+
             switch_domino.addEventListener('click',
                 function(e){
                     if(switch_domino.checked){
@@ -71,24 +77,112 @@
 
     </script>
 
+    <style type="text/css">
+        div{margin:0;padding:0;}
+        a{color:#9A9A9A; text-decoration:none;outline:none}
+        a:hover,a:active{color:#FF0000;text-decoration:underline}
+
+
+        #mouseOverleft {
+            z-index: 200;
+        }
+        #mouseOverright{
+            z-index: 200;
+        }
+
+        #mouseOverleft:hover .pageLeft{
+            display: block;
+        }
+
+        #mouseOverleft .pageLeft{
+            display: none;
+            position:absolute;
+            left:0;
+            top:0;
+            width:100%;
+            cursor:pointer;
+            height: 600px;
+            z-index:201}
+
+
+        .pageLeft span{
+            float:left;
+            width:102px;
+            height:95px;
+            margin:0 0 0 24px;
+            display:inline;
+            background-image: url(./style/images/right.png);
+            background-repeat: no-repeat;
+        }
+        .pageLeft span a{display:block;position:relative;width:102px;height:95px;}
+
+
+        .pageRight span a{display:block;position:relative;width:102px;height:95px;}
+
+        #mouseOverright:hover .pageRight{
+            display: block;
+        }
+
+        #mouseOverright .pageRight{
+            display: none;
+            position:absolute;
+            left:0;
+            top:0;
+            width:100%;
+            cursor:pointer;
+            height: 600px;
+            z-index:201
+        }
+        .pageRight span{
+            float:right;
+            width:102px;
+            height:95px;
+            margin:0 24px 0 0;
+            display:inline;
+            background-image: url(http://mat1.gtimg.com/www/hd2011/left.png);
+            background-repeat: no-repeat;
+        }
+        </style>
 </head>
 <body>
     <div id="wrapper">
-        <div id="slide_contrainer">
-            <img src="style/images/ww1.jpg">
-            <img src="style/images/ww2.jpg">
-            <img src="style/images/ww3.jpg">
-            <img src="style/images/ww4.jpg">
-            <img src="style/images/ww5.jpg">
-            <img src="style/images/ww6.jpg">
-            <img src="style/images/ww7.jpg">
-            <img src="style/images/ww8.jpg">
+        <div class="title">
+            <span >JXAnimation CSS3 Animate Engine</span>            
+            
+            <span class="nav">
+                <a href="jxanimate_demo.html">Demo</a>
+                <a href="about.html">About</a>
+            </span>
         </div>
         <div id="nav_bar">
-            <a id="prev" href="#">Prev</a><a id="next" href="#">Next</a>
+            <a id="prev" cmd="prev" href="#">Prev</a><a id="next" cmd="next" href="#">Next</a>
             <div class="checkbox">
                 <input tabindex="3" class="domino" type="checkbox" id="switch_domino" checked='true'>
                 <label class="sprite30x30 domino" for="switch_domino">多米诺效果</label></div>
+        </div>
+        <div>
+            <div id="mouseOverleft" style="width:480px;position:absolute;left:0;height:600px;">
+                <div class="pageLeft" cmd="prev">
+                    <span style="margin-top: 252px;"><a href="javascript:void(0);" cmd="prev" onfocus="this.blur()"></a></span>
+                </div>
+                <div class="pageLeft-bg" style="display:none"></div>
+            </div>
+            <div id="mouseOverright" style="width:480px;position:absolute;left:480px;height:600px;">
+                <div class="pageRight" cmd="next">
+                    <span style="margin-top: 252px;"><a href="javascript:void(0);" cmd="next" onfocus="this.blur()"></a></span>
+                </div>
+                <div class="pageRight-bg" style="display:none"></div>
+            </div>
+            <div id="slide_contrainer">
+                <img src="style/images/ww1.jpg">
+                <img src="style/images/ww2.jpg">
+                <img src="style/images/ww3.jpg">
+                <img src="style/images/ww4.jpg">
+                <img src="style/images/ww5.jpg">
+                <img src="style/images/ww6.jpg">
+                <img src="style/images/ww7.jpg">
+                <img src="style/images/ww8.jpg">
+            </div>
         </div>
 
     </div>

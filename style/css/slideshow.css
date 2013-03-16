@@ -6,6 +6,12 @@
 
 	background: black;
 }
+.title{
+	font-family: 'Cambria';
+	font-size: 28px;
+	color: white;
+	padding-left: 30px;
+}
 
 #slide_contrainer{
 	height: 0px;
@@ -28,9 +34,9 @@
 
 #stage
 {
-	position: absolute;
-	top: 50px;
-	left: 50px;
+	position: relative;
+	top: 0px;
+	left: 0px;
 	width: 960px;
 	height: 600px;
 	/*
@@ -126,4 +132,29 @@ input{
 	font-family:adobe-clean, 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	color:rgb(255, 255, 255);
 }
+
+.nav{
+	float: right;
+}
+
+.nav a{
+    float:left;
+    height:32px;
+    font-size:26px;
+    margin-right:20px;
+    font-family:Michroma,'Segoe UI Light','Segoe UI','Segoe UI WP','Microsoft Jhenghei','微软雅黑',tahoma,'Hiragino Sans GB W3';
+    color:#c58043;
+
+}
+.nav a:hover{
+    text-shadow:0 0 2px yellow;
+}
+#home{
+    background-position:0 0;
+    margin-left:6px;
+}
+#home:hover{
+    background-position:-59px 0;
+}
+#home{text-align:start;font-size:26px;font-family:Michroma, 'Segoe UI Light', 'Segoe UI', 'Segoe UI WP', 'Microsoft Jhenghei', 微软雅黑, tahoma, 'Hiragino Sans GB W3';color:rgb(197, 128, 67);}
 
