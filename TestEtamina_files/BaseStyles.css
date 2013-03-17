@@ -1,0 +1,49 @@
+*
+{
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+}
+
+html
+{
+    height: 100%;
+    background-image: url(build-code-slide-bg-top-left.png), url(build-code-slide-bg-top-right.png);
+    background-position: top left, top right;
+    background-repeat: no-repeat;
+    overflow-y: scroll;
+}
+
+html.nobackground
+{
+    background-image: none;
+}
+
+body
+{
+    font-family: 'Segoe UI' , Verdana, Arial, Sans-Serif;
+    font-size: 10pt;
+    height: 100%;
+    color: #232323;
+}
+
+p
+{
+    padding: 0px 0px 10pt 0px;
+}
+
+a
+{
+    text-decoration: none;
+}
+
+a, a:link, a:visited, a:hover
+{
+    color: rgb(0,135,255);
+}
+
+a:hover, a:visited:hover
+{
+    color: rgb(0,135,255);
+    text-decoration: underline;
+}
+

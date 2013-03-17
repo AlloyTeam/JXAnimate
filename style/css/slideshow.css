@@ -1,0 +1,160 @@
+﻿body
+{
+	font-family: 'Segoe UI' , sans-serif;
+	color: black;
+	font-size: 16px;
+
+	background: black;
+}
+.title{
+	font-family: 'Cambria';
+	font-size: 28px;
+	color: white;
+	padding-left: 30px;
+}
+
+#slide_contrainer{
+	height: 0px;
+}
+
+.card_piece{
+	position: absolute;
+	visibility: hidden;
+}
+.hidden{
+	visibility: hidden;
+}
+.visible{
+	visibility: visible;
+}
+.slide_Img{
+	display: none;
+	visibility: collapse;
+}
+
+#stage
+{
+	position: relative;
+	top: 0px;
+	left: 0px;
+	width: 960px;
+	height: 600px;
+	/*
+	background: white;
+*/
+}
+
+
+/*buttons */
+.butt {
+	color: #fff;
+	background: #a3abae;
+	background-image: -webkit-linear-gradient(rgba(255,255,255,.4), rgba(255,255,255,0));
+	background-image: -moz-linear-gradient(rgba(255,255,255,.4), rgba(255,255,255,0));
+	background-image: -ms-linear-gradient(rgba(255,255,255,.4), rgba(255,255,255,0));
+	background-image: linear-gradient(rgba(255,255,255,.4), rgba(255,255,255,0));
+	text-shadow: 0 1px 1px rgba(0,0,0,.1);
+	padding: .4em .75em .5em;
+	font-weight: bold;
+	text-decoration: none;
+	border-radius: 5px;
+	margin: .5em .25em;
+	line-height: 1.5em;
+	display: inline-block;
+	cursor: pointer;
+}
+
+.butt:hover {
+	color: #fff;
+}
+
+.sprite30x30{
+        background-image: url('../images/sprite_30x30.png');
+      }
+div,label{
+	margin:0;
+	padding:0;
+	border:0;
+	font-size:100%;
+	font:inherit;
+	vertical-align:
+	baseline
+}
+label{
+	font-size:14px;
+	font-size:.875rem;
+	line-height:1.25;
+	font-weight:400
+}
+.checkbox{
+	height:24px;
+	margin:0 8px 8px -5px
+}
+.checkbox label.domino{
+	display:inline-block
+}
+.checkbox input{
+	opacity:0;
+	float:left;
+	position:absolute;
+	width:18px
+}
+.checkbox input+label{
+	margin:0;
+	clear:none;
+	font-size:13px;
+	font-size:.8125rem;
+	padding:4px 0 0 30px;
+	cursor:pointer;
+	background-position:-30px -934px;
+	background-repeat:no-repeat;
+	height:20px;
+	font-weight:400
+}
+.checkbox input:checked+label{
+	background-position:-30px -964px
+}
+/*
+label{
+	display:none
+}
+*/
+input{
+	-webkit-transition:.3s ease-in-out opacity;
+	-moz-transition:.3s ease-in-out opacity;
+	-ms-transition:.3s ease-in-out opacity;
+	-o-transition:.3s ease-in-out opacity;
+	transition:.3s ease-in-out opacity
+}
+.checkbox{
+	text-align:left;
+	font-size:16px;
+	font-family:adobe-clean, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	color:rgb(255, 255, 255);
+}
+
+.nav{
+	float: right;
+}
+
+.nav a{
+    float:left;
+    height:32px;
+    font-size:26px;
+    margin-right:20px;
+    font-family:Michroma,'Segoe UI Light','Segoe UI','Segoe UI WP','Microsoft Jhenghei','微软雅黑',tahoma,'Hiragino Sans GB W3';
+    color:#c58043;
+
+}
+.nav a:hover{
+    text-shadow:0 0 2px yellow;
+}
+#home{
+    background-position:0 0;
+    margin-left:6px;
+}
+#home:hover{
+    background-position:-59px 0;
+}
+#home{text-align:start;font-size:26px;font-family:Michroma, 'Segoe UI Light', 'Segoe UI', 'Segoe UI WP', 'Microsoft Jhenghei', 微软雅黑, tahoma, 'Hiragino Sans GB W3';color:rgb(197, 128, 67);}
+
