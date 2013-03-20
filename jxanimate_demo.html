@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<!--
+Etamina Demo Page
+-->
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <title>etamina Demo</title>
+        <link href="../favicon.ico" rel="icon" type="image/x-icon">
+        <link href="./style/css/sliderControl.css" rel="stylesheet" type="text/css">
+        <link href="./style/css/hands-on.css" rel="stylesheet" type="text/css" >
+        <link href="./style/css/animate.css" rel="stylesheet" type="text/css">
+<!--
+        <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css">
+    -->
+        <link rel="stylesheet" href="./style/css/jquery-ui.css">
+
+        <script src="./js/jquery-1.8.2.js"></script>
+        <script src="./js/jquery-ui.js"></script>
+
+    <style type="text/css">
+        body {
+          min-width: 720px;      /* 2x LC width + RC width */
+        }
+        #container {
+          padding-left: 600px;   /* LC width */
+          padding-right: 20px;  /* RC width */
+        }
+        #container .column {
+          position: relative;
+          float: left;
+        }
+        #center {
+          width: 100%;
+        }
+        #left {
+          width: 600px;          /* LC width */
+          right: 600px;          /* LC width */
+          margin-left: -100%;
+        }
+        #right {
+          width: 20px;          /* RC width */
+          margin-right: -20px;  /* RC width */
+        }
+        #footer {
+          clear: both;
+        }
+
+        
+        #controls tr.keyframe td:first-child, #controls tr.fromframe td:first-child, #controls tr.toframe td:first-child
+        {
+            padding-left: 1em;
+        }
+        #controls tr.keyframe td
+        {
+            padding-top: 16px;
+        }
+        #controls tr.keyframeTiming td
+        {
+            vertical-align: top;
+        }
+        #controls tr.keyframeTiming td:first-child, #controls tr.keyframeProperty td:first-child
+        {
+            padding-left: 2em;
+        }
+        #controls tr.keyframeTiming div.cubicBezierTimingCanvasWrapper
+        {
+            padding-top: 8px;
+            text-align: right;
+            padding-right: 24px;
+            display: none;
+        }
+        #controls tr.keyframeTiming div.cubicBezierTimingCanvasWrapper span:first-child
+        {
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        .animateTest {
+            text-align: center;
+            background: #123;
+            padding: 15px 15px;
+            
+            color: #fff;
+            margin: 0 auto;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        a{
+            font-family:Michroma,'Segoe UI Light','Segoe UI','Segoe UI WP','Microsoft Jhenghei','微软雅黑',tahoma,'Hiragino Sans GB W3';
+            color:#c58043;
+
+        }
+        a:hover{
+            text-shadow:0 0 2px yellow;
+        }
+    </style>
+
+    </head>
+    <body onload="Init();">
+
+        <div id="header">
+            <span class="nav">
+                <a href="slideshow.html">HomePage</a>
+                <a href="jxanimate_demo.html">Demo</a>
+                <a href="about.html">About</a>
+            </span>
+
+        <span><h1>JXAnimate Test Page</h1></span>            
+            
+
+        </div>
+
+        <div id="container">
+          <div id="center" class="column">
+            <div>
+                <span>Element Count:</span>
+                <span id="expamleCount" class="sliderControl" slideroptions="min:0;max:15;step:1;value=10;animateclick=false;setter=SetExampleCount">
+                </span>
+            </div>
+            <div>
+                <span>Domino Delay :</span>
+                <span id="Domino" class="sliderControl" slideroptions="min:0;max:5;step:0.1;units=s;value=0;animateclick=false;setter=SetDomino">
+                </span>
+            </div>
+            <ul id="example">
+
+            </ul>
+
+          </div>
+          <div id="left" class="column">
+            <div id="DemoContent">
+                <div id="controls">
+                    <table>
+                        <tr>
+                            <td>
+                                animation-delay:
+                            </td>
+                            <td>
+                                <span id="delay" class="sliderControl" slideroptions="min:0;max:5;step:0.1;value=0;units=s;animateclick=false;setter=SetDelay">
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                animation-duration:
+                            </td>
+                            <td>
+                                <span id="duration" class="sliderControl" slideroptions="min:0;max:10;step:0.1;value=2;units=s;animateclick=false;setter=SetDuration">
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                animation-iteration-count:
+                            </td>
+                            <td>
+                                <span id="iterationCount" class="sliderControl" slideroptions="min:0;max:10;value=1;animateclick=false;setter=SetIterationCount">
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                animation-fill-mode:
+                            </td>
+                            <td>
+                                <span class="sliderControl" slideroptions="values=none | forwards | backwards | both;value=0;animateclick=false;setter=SetFillMode">
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                animation-direction:
+                            </td>
+                            <td>
+                                <span class="sliderControl" slideroptions="values=normal|alternate|reverse|alternate-reverse;value=0;animateclick=false;setter=SetDirection">
+                                </span>
+                        </td>
+                        </tr>
+                        <tr>
+                            <td style="vertical-align: top;">animation-timing-function: </td>
+                            <td>
+                            <div>
+                                <span id="timingFunction" class="sliderControl" slideroptions="values=ease | linear | ease-in | ease-out | ease-in-out;animateclick=false;setter=SetTimingFunction">
+                                </span>
+                            </div>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="vertical-align: top;">perspective: </td>
+                            <td>
+                            <div>
+                                <span id="Perspective" class="sliderControl" slideroptions="min:0;max:1000;step:50;value=400;units=px;animateclick=false;setter=SetPespective">
+                                </span>
+                            </div>
+
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+
+                <div id="Effects">
+                    <ul>
+                        <li><a href="#applyCSSAnimations"><span>CSS Files</span></a></li>
+                        <li><a href="#buildInAnimations"><span>Build-in</span></a></li>
+                        <li><a href="#animationWithSound"><span>With Sound</span></a></li>
+                    </ul>                    
+                    <div id="applyCSSAnimations">
+                        <h3>Attention seekers</h3>
+                        <a class="butt butt-small" data-test="flash">flash</a>
+                        <a class="butt butt-small" data-test="bounce">bounce</a>
+                        <a class="butt butt-small" data-test="shake">shake</a>
+                        <a class="butt butt-small" data-test="tada">tada</a>
+                        <a class="butt butt-small" data-test="swing">swing</a>
+                        <a class="butt butt-small" data-test="wobble">wobble</a>
+                        <a class="butt butt-small" data-test="wiggle">wiggle</a>
+                        <a class="butt butt-small" data-test="pulse">pulse</a>
+
+                        <h3>Flippers (currently Webkit, Firefox, &amp; IE10 only)</h3>
+                        <a class="butt butt-small" data-test="flip">flip</a>
+                        <a class="butt butt-small" data-test="flipInX">flipInX</a>
+                        <a class="butt butt-small" data-test="flipOutX">flipOutX</a>
+                        <a class="butt butt-small" data-test="flipInY">flipInY</a>
+                        <a class="butt butt-small" data-test="flipOutY">flipOutY</a>
+
+                        <h3>Fading entrances</h3>
+                        <a class="butt butt-small" data-test="fadeIn">fadeIn</a>
+                        <a class="butt butt-small" data-test="fadeInUp">fadeInUp</a>
+                        <a class="butt butt-small" data-test="fadeInDown">fadeInDown</a>
+                        <a class="butt butt-small" data-test="fadeInLeft">fadeInLeft</a>
+                        <a class="butt butt-small" data-test="fadeInRight">fadeInRight</a>
+                        <a class="butt butt-small" data-test="fadeInUpBig">fadeInUpBig</a>
+                        <a class="butt butt-small" data-test="fadeInDownBig">fadeInDownBig</a>
+                        <a class="butt butt-small" data-test="fadeInLeftBig">fadeInLeftBig</a>
+                        <a class="butt butt-small" data-test="fadeInRightBig">fadeInRightBig</a>
+
+                        <h3>Fading exits</h3>
+                        <a class="butt butt-small" data-test="fadeOut">fadeOut</a>
+                        <a class="butt butt-small" data-test="fadeOutUp">fadeOutUp</a>
+                        <a class="butt butt-small" data-test="fadeOutDown">fadeOutDown</a>
+                        <a class="butt butt-small" data-test="fadeOutLeft">fadeOutLeft</a>
+                        <a class="butt butt-small" data-test="fadeOutRight">fadeOutRight</a>
+                        <a class="butt butt-small" data-test="fadeOutUpBig">fadeOutUpBig</a>
+                        <a class="butt butt-small" data-test="fadeOutDownBig">fadeOutDownBig</a>
+                        <a class="butt butt-small" data-test="fadeOutLeftBig">fadeOutLeftBig</a>
+                        <a class="butt butt-small" data-test="fadeOutRightBig">fadeOutRightBig</a>
+
+                        <h3>Bouncing entrances</h3>
+                        <a class="butt butt-small" data-test="bounceIn">bounceIn</a>
+                        <a class="butt butt-small" data-test="bounceInDown">bounceInDown</a>
+                        <a class="butt butt-small" data-test="bounceInUp">bounceInUp</a>
+                        <a class="butt butt-small" data-test="bounceInLeft">bounceInLeft</a>
+                        <a class="butt butt-small" data-test="bounceInRight">bounceInRight</a>
+
+                        <h3>Bouncing exits</h3>
+                        <a class="butt butt-small" data-test="bounceOut">bounceOut</a>
+                        <a class="butt butt-small" data-test="bounceOutDown">bounceOutDown</a>
+                        <a class="butt butt-small" data-test="bounceOutUp">bounceOutUp</a>
+                        <a class="butt butt-small" data-test="bounceOutLeft">bounceOutLeft</a>
+                        <a class="butt butt-small" data-test="bounceOutRight">bounceOutRight</a>
+
+                        <h3>Rotating entrances</h3>
+                        <a class="butt butt-small" data-test="rotateIn">rotateIn</a>
+                        <a class="butt butt-small" data-test="rotateInDownLeft">rotateInDownLeft</a>
+                        <a class="butt butt-small" data-test="rotateInDownRight">rotateInDownRight</a>
+                        <a class="butt butt-small" data-test="rotateInUpLeft">rotateInUpLeft</a>
+                        <a class="butt butt-small" data-test="rotateInUpRight">rotateInUpRight</a>
+
+                        <h3>Rotating exits</h3>
+                        <a class="butt butt-small" data-test="rotateOut">rotateOut</a>
+                        <a class="butt butt-small" data-test="rotateOutDownLeft">rotateOutDownLeft</a>
+                        <a class="butt butt-small" data-test="rotateOutDownRight">rotateOutDownRight</a>
+                        <a class="butt butt-small" data-test="rotateOutUpLeft">rotateOutUpLeft</a>
+                        <a class="butt butt-small" data-test="rotateOutUpRight">rotateOutUpRight</a>
+
+                        <h3>Lightspeed</h3>
+                        <a class="butt butt-small" data-test="lightSpeedIn">lightSpeedIn</a>
+                        <a class="butt butt-small" data-test="lightSpeedOut">lightSpeedOut</a>
+
+                        <h3>Specials</h3>
+                        <a class="butt butt-small" data-test="hinge">hinge</a>
+                        <a class="butt butt-small" data-test="rollIn">rollIn</a>
+                        <a class="butt butt-small" data-test="rollOut">rollOut</a>
+                    </div>
+                    <div id="buildInAnimations">
+                        <h3>Attention seekers</h3>
+                        <a class="butt butt-small" data-test="flash">flash</a>
+                        <a class="butt butt-small" data-test="pageFlipLeft">pageFlipLeft</a>
+                        <a class="butt butt-small" data-test="pageFlipRight">pageFlipRight</a>
+                        <a class="butt butt-small" data-test="raceFlag">raceFlag</a>
+                        
+                    </div>
+                    <div id="animationWithSound">
+                        <h3>Attention seekers</h3>
+                        <a class="butt butt-small" data-test="flash" sound="notify">flash</a>
+                        <a class="butt butt-small" data-test="tada" sound="chimes">tada</a>
+                        <a class="butt butt-small" data-test="raceFlag"  sound="Whistling">raceFlag</a>
+                        <a class="butt butt-small" data-test="pageFlipLeft" sound="WHOOSH">pageFlipLeft</a>
+                        <a class="butt butt-small" data-test="swing" sound="logoff">swing</a>
+                    </div>
+                </div>
+            </div>
+          </div>
+          <div id="right" class="column"></div>
+
+        </div>
+
+        <div id="footer"></div>
+
+        <script src="./js/jx/jx.core.js"></script>
+        <script src="./js/jx/jx.base.js"></script>
+        <script src="./js/jx/jx.array.js"></script>
+        <script src="./js/jxanimate.js"></script>
+        <script src="./js/jxanimate.effects.js"></script>
+        <script src="./js/jxanimate.audio.js"></script>
+        
+        <script src="./js/PointerDraw.js" type="text/javascript"></script>
+        <script src="./js/sliderControl.js" type="text/javascript"></script>
+        <script type="text/javascript">
+
+            var playParam = {},myAnim,
+                animSettings = {},
+                //myAudio = etamina.audio,
+                audio = ['song1','explode1','chimes','notify','tada','logoff','Whistling','WHOOSH'];
+
+
+            var elems = ["elem1", "elem2", "elem3", "elem4", "elem5", "elem6", "elem7", "elem8", "elem9", "elem10", "elem11", "elem12", "elem13", "elem14", "elem15", "elem16", "elem17", "elem18", "elem19", "elem20"];
+
+            function Init() {
+                _Slider.init();
+                $( "#tabs" ).tabs();
+
+
+                $('#Effects').tabs();
+
+                initExamples();
+
+                 //myAnim = etamina.init();
+                 JXAnimate.Audio.init({path:'./sounds/'});
+                 JXAnimate.Audio.preload(audio);
+
+                //elems = ["elem1"];
+                //应用CSS的动画
+                applyCSSAnimations.addEventListener("click",
+                    function(e) { 
+                        var elem = e.target, cssName;
+                        if(elem.hasAttribute('data-test')){
+                            cssName = elem.getAttribute('data-test');
+                            //需要对animSettings做扩展
+                            animSettings.name = cssName;
+                            JXAnimate.applyCss(elems,playParam,animSettings);
+                        }
+                         
+
+                    });
+
+                //应用effects动画库中的效果
+                buildInAnimations.addEventListener("click",
+                    function(e) { 
+                        var elem = e.target, effectName;
+                        if(elem.hasAttribute('data-test')){
+                            effectName = elem.getAttribute('data-test');
+
+
+                            if(effectName in JXAnimate){
+                                animSettings.name = '';
+                                JXAnimate[effectName].call(JXAnimate,elems,playParam,animSettings);
+                            }
+                        }
+                         
+
+                    });
+
+                //应用effects动画库中的效果
+                animationWithSound.addEventListener("click",
+                    function(e) { 
+                        var elem = e.target, effectName;
+                        if(elem.hasAttribute('data-test')){
+                            effectName = elem.getAttribute('data-test');
+                            var animSettings = {};
+
+                            if(elem.hasAttribute('sound')){
+                                animSettings.sound = elem.getAttribute('sound')
+                            }
+                            if(elem.hasAttribute('volume')){
+                                animSettings.volume = elem.getAttribute('volume')
+                            }
+                            if(effectName in JXAnimate){
+                                animSettings.name = '';
+                                JXAnimate[effectName].call(JXAnimate,elems,playParam,animSettings);
+                            }
+                            else{
+                                animSettings.name = effectName;
+                                JXAnimate.applyCss(elems,playParam,animSettings);
+                            }
+                        }
+                         
+
+                    });
+
+                
+
+                SetDelay(document.getElementById("delay").getAttribute("value"));
+                SetDuration(document.getElementById("duration").getAttribute("value"));    
+                SetExampleCount(document.getElementById("expamleCount").getAttribute("value"))            
+
+            }
+
+
+            function setPlayParam(prop, newValue) {
+                playParam[prop] = newValue;
+            }
+
+            function SetDelay(newValue) {
+                setPlayParam("delay", newValue);
+            }
+
+            function SetDuration(newValue) {
+                setPlayParam("duration", newValue);
+            }
+
+            function SetIterationCount(newValue) {
+                setPlayParam("iteration", newValue);
+            }
+
+            function SetDirection(newValue) {
+                setPlayParam("direction", newValue);
+            }
+
+            function SetFillMode(newValue) {
+                setPlayParam("fillMode", newValue);
+            }
+            function SetTimingFunction(newValue) {
+                setPlayParam("timing", newValue);
+            }
+            function SetPespective(newValue) {
+                setPlayParam("perspective", newValue);
+            }
+
+            function setAnimSettings(prop, newValue) {
+                animSettings[prop] = newValue;
+            }
+            function SetDomino(newValue) {
+                setAnimSettings("domino", newValue);
+            }           
+            // playstate,perspective,perspectiveOrigin,backfaceVisibility
+
+            function SetExampleCount(newValue){
+                initExamples(newValue);
+            }
+            function initExamples(count)
+            {
+                var example = document.getElementById("example");
+                    
+
+                var html='',id,tmp;
+
+                for (var i = 0; i < count; i++) {
+                    tmp='';           
+                    //tmp= '<li id="elem%id%">'.replace('%id%',i+1);
+
+                    tmp+='<div id="elem%id%" class="animateTest"  ><img src="http://imgcache.qq.com/ptlogin/head/1_100.gif" width="100" height="100"></div>'.replace('%id%',i+1);
+
+                    html+=tmp;
+
+
+                };
+                example.innerHTML = html;
+
+            }
+        </script>
+    </body>
+</html>

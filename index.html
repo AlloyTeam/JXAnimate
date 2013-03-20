@@ -1,73 +1,196 @@
 <!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>JX.Animate by AlloyTeam</title>
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/respond.js"></script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <!--[if lt IE 8]>
-    <link rel="stylesheet" href="stylesheets/ie.css">
-    <![endif]-->
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JXAnimate Show </title>
+    <link href="./style/css/animate.css" rel="stylesheet" type="text/css">
+    
+    <link rel="stylesheet" type="text/css" href="./style/css/slideshow.css">
 
-  </head>
-  <body>
-      <div id="header">
-        <nav>
-          <li class="fork"><a href="https://github.com/AlloyTeam/JXAnimate">View On GitHub</a></li>
-          <li class="downloads"><a href="https://github.com/AlloyTeam/JXAnimate/zipball/master">ZIP</a></li>
-          <li class="downloads"><a href="https://github.com/AlloyTeam/JXAnimate/tarball/master">TAR</a></li>
-          <li class="title">DOWNLOADS</li>
-        </nav>
-      </div><!-- end header -->
+    <style type="text/css">
+    </style>
+    <script src="modernizr-1.6.min.js"></script>
+        <script src="./js/jx/jx.core.js"></script>
+        <script src="./js/jx/jx.array.js"></script>
+        <script src="./js/jx/jx.base.js"></script>
+        <script src="./js/jx/jx.dom.js"></script>
+        <script src="./js/jx/jx.browser.js"></script>
 
-    <div class="wrapper">
+        <script src="./js/jxanimate.js"></script>
+        <script src="./js/jxanimate.effects.js"></script>
+        <script src="./js/jxanimate.audio.js"></script>
 
-      <section>
-        <div id="title">
-          <h1>JX.Animate</h1>
-          <p>JX.Animate</p>
-          <hr>
-          <span class="credits left">Project maintained by <a href="https://github.com/AlloyTeam">AlloyTeam</a></span>
-          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
+        <script src="./js/slideshow.js"></script>
+        <script src="./js/slideshow.effects.js"></script>
+
+    <script type="text/javascript">
+        window.addEventListener('load', eventWindowLoaded, false);  
+        function eventWindowLoaded() {
+
+            var audio = ['song1','explode1','chimes','notify','tada','logoff','Whistling','WHOOSH'];
+
+            JXAnimate.Audio.init({path:'./sounds/'});
+            JXAnimate.Audio.preload(audio);
+
+
+            SlideShow.init('slide_contrainer',{imgW:960,imgH:600,
+                num:2});
+                //cardW:240,cardH:150});
+                //cardW:120,cardH:75});
+                //cardW:480,cardH:300});
+            
+
+
+            document.addEventListener("click",
+                function(e) { 
+                    var elem = e.target, cssName;
+
+                    var cmd = elem.getAttribute("cmd");
+                    if(cmd=='next'){
+                        SlideShow.next();
+                        JXAnimate.Audio.playSound('Whistling');
+                    }
+                    if(cmd=='prev'){
+                        SlideShow.prev();
+                        JXAnimate.Audio.playSound('chimes');
+                    }
+                }
+            );
+
+
+            switch_domino.addEventListener('click',
+                function(e){
+                    if(switch_domino.checked){
+                        SlideShow.setDonimo(80);
+                    }
+                    else{
+                        SlideShow.setDonimo(false);
+                    }
+                }
+            );
+
+
+        }
+
+
+
+
+    </script>
+
+    <style type="text/css">
+        div{margin:0;padding:0;}
+        a{color:#9A9A9A; text-decoration:none;outline:none}
+        a:hover,a:active{color:#FF0000;text-decoration:underline}
+
+
+        #mouseOverleft {
+            z-index: 200;
+        }
+        #mouseOverright{
+            z-index: 200;
+        }
+
+        #mouseOverleft:hover .pageLeft{
+            display: block;
+        }
+
+        #mouseOverleft .pageLeft{
+            display: none;
+            position:absolute;
+            left:0;
+            top:0;
+            width:100%;
+            cursor:pointer;
+            height: 600px;
+            z-index:201}
+
+
+        .pageLeft span{
+            float:left;
+            width:102px;
+            height:95px;
+            margin:0 0 0 24px;
+            display:inline;
+            background-image: url(./style/images/right.png);
+            background-repeat: no-repeat;
+        }
+        .pageLeft span a{display:block;position:relative;width:102px;height:95px;}
+
+
+        .pageRight span a{display:block;position:relative;width:102px;height:95px;}
+
+        #mouseOverright:hover .pageRight{
+            display: block;
+        }
+
+        #mouseOverright .pageRight{
+            display: none;
+            position:absolute;
+            left:0;
+            top:0;
+            width:100%;
+            cursor:pointer;
+            height: 600px;
+            z-index:201
+        }
+        .pageRight span{
+            float:right;
+            width:102px;
+            height:95px;
+            margin:0 24px 0 0;
+            display:inline;
+            background-image: url(http://mat1.gtimg.com/www/hd2011/left.png);
+            background-repeat: no-repeat;
+        }
+        </style>
+</head>
+<body>
+    <div id="wrapper">
+        <div class="title">
+            <span >JXAnimation CSS3 Animate Engine</span>            
+            
+            <span class="nav">
+                <a href="jxanimate_demo.html">Demo</a>
+                <a href="about.html">About</a>
+            </span>
+        </div>
+        <div id="nav_bar">
+            <a id="prev" cmd="prev" href="#">Prev</a><a id="next" cmd="next" href="#">Next</a>
+            <div class="checkbox">
+                <input tabindex="3" class="domino" type="checkbox" id="switch_domino" checked='true'>
+                <label class="sprite30x30 domino" for="switch_domino">多米诺效果</label></div>
+        </div>
+        <div>
+            <div id="mouseOverleft" style="width:480px;position:absolute;left:0;height:600px;">
+                <div class="pageLeft" cmd="prev">
+                    <span style="margin-top: 252px;"><a href="javascript:void(0);" cmd="prev" onfocus="this.blur()"></a></span>
+                </div>
+                <div class="pageLeft-bg" style="display:none"></div>
+            </div>
+            <div id="mouseOverright" style="width:480px;position:absolute;left:480px;height:600px;">
+                <div class="pageRight" cmd="next">
+                    <span style="margin-top: 252px;"><a href="javascript:void(0);" cmd="next" onfocus="this.blur()"></a></span>
+                </div>
+                <div class="pageRight-bg" style="display:none"></div>
+            </div>
+            <div id="slide_contrainer">
+                <img src="style/images/ww1.jpg">
+                <img src="style/images/ww2.jpg">
+                <img src="style/images/ww3.jpg">
+                <img src="style/images/ww4.jpg">
+                <img src="style/images/ww5.jpg">
+                <img src="style/images/ww6.jpg">
+                <img src="style/images/ww7.jpg">
+                <img src="style/images/ww8.jpg">
+            </div>
         </div>
 
-        <h3>Welcome to GitHub Pages.</h3>
-
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
-
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
-
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
-
-<h3>Designer Templates</h3>
-
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
-
-<h3>Rather Drive Stick?</h3>
-
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
-
-<h3>Authors and Contributors</h3>
-
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
-
-<h3>Support or Contact</h3>
-
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
-      </section>
-
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-    
-  </body>
+
+
+</body>
 </html>
+
+
+
+
