@@ -531,7 +531,7 @@ table {
 body {
   padding: 0px 0 20px 0px;
   margin: 0px;
-  font: 14px/1.5 "OpenSansRegular", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font: 14px/1.8 "OpenSansRegular", "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #f0e7d5;
   font-weight: normal;
   background: #252525;
@@ -698,7 +698,7 @@ dt {
   z-index: 100;
   left: 0;
   top: 0px;
-  height: 60px;
+  height: 70px;
   width: 100%;
   position: fixed;
   background: url(../images/nav-bg.gif) #353535;
@@ -707,9 +707,10 @@ dt {
   -webkit-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.25);
   -o-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.25);
   box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.25);
+
+  text-align: center;
 }
 #header nav {
-  max-width: 650px;
   margin: 0 auto;
   padding: 0 10px;
   background: blue;
@@ -780,9 +781,14 @@ dt {
   font-size: 11px;
 }
 
+.credits.right{
+  color: white;
+  font-size: 8px;
+}
+
 section {
   max-width: 650px;
-  padding: 30px 0px 50px 0px;
+  padding: 10px 0px 50px 0px;
   margin: 20px 0;
   margin-top: 70px;
 }
@@ -848,4 +854,146 @@ section #title .credits.right {
   nav {
     display: none;
   }
+}
+
+
+#main{
+  text-align: center;
+}
+
+#slide_contrainer{
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.card_piece{
+  position: absolute;
+  visibility: hidden;
+}
+.hidden{
+  visibility: hidden;
+}
+.visible{
+  visibility: visible;
+}
+.slide_Img{
+  display: none;
+  visibility: collapse;
+}
+
+#stage
+{
+  position: relative;
+  top: 0px;
+  left: 0px;
+  width: 960px;
+  height: 600px;
+  /*
+  background: white;
+*/
+}
+
+
+/*buttons */
+.butt {
+  color: #fff;
+  background: #a3abae;
+  background-image: -webkit-linear-gradient(rgba(255,255,255,.4), rgba(255,255,255,0));
+  background-image: -moz-linear-gradient(rgba(255,255,255,.4), rgba(255,255,255,0));
+  background-image: -ms-linear-gradient(rgba(255,255,255,.4), rgba(255,255,255,0));
+  background-image: linear-gradient(rgba(255,255,255,.4), rgba(255,255,255,0));
+  text-shadow: 0 1px 1px rgba(0,0,0,.1);
+  padding: .4em .75em .5em;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 5px;
+  margin: .5em .25em;
+  line-height: 1.5em;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.butt:hover {
+  color: #fff;
+}
+
+.sprite30x30{
+        background-image: url('../images/sprite_30x30.png');
+      }
+
+
+.checkbox label.domino{
+  display:inline-block
+}
+.checkbox input{
+  opacity:0;
+  float:left;
+  position:absolute;
+  width:18px
+}
+.checkbox input+label{
+  margin:0;
+  clear:none;
+  padding:4px 0 0 30px;
+  cursor:pointer;
+  background-position:-30px -934px;
+  background-repeat:no-repeat;
+  height:20px;
+  font-weight:400
+}
+.checkbox input:checked+label{
+  background-position:-30px -964px
+}
+/*
+label{
+  display:none
+}
+*/
+input{
+  -webkit-transition:.3s ease-in-out opacity;
+  -moz-transition:.3s ease-in-out opacity;
+  -ms-transition:.3s ease-in-out opacity;
+  -o-transition:.3s ease-in-out opacity;
+  transition:.3s ease-in-out opacity
+}
+.checkbox{
+  height:24px;
+  text-align:left;
+  color:rgb(255, 255, 255);
+  position: absolute;
+  right: 5px;
+  top: 20px;
+}
+
+.nav{
+  float: right;
+}
+
+.nav a{
+    float:left;
+    height:32px;
+    font-size:26px;
+    margin-right:20px;
+    font-family:Michroma,'Segoe UI Light','Segoe UI','Segoe UI WP','Microsoft Jhenghei','微软雅黑',tahoma,'Hiragino Sans GB W3';
+    color:#c58043;
+
+}
+.nav a:hover{
+    text-shadow:0 0 2px yellow;
+}
+#home{
+    background-position:0 0;
+    margin-left:6px;
+}
+#home:hover{
+    background-position:-59px 0;
+}
+#home{text-align:start;font-size:26px;font-family:Michroma, 'Segoe UI Light', 'Segoe UI', 'Segoe UI WP', 'Microsoft Jhenghei', 微软雅黑, tahoma, 'Hiragino Sans GB W3';color:rgb(197, 128, 67);}
+
+.footer{
+  text-align: center;
+}
+.copyright{
+  .margin-left: auto;
+  .margin-right: auto;
 }

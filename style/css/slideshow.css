@@ -13,8 +13,13 @@
 	padding-left: 30px;
 }
 
+#main{
+	text-align: center;
+}
+
 #slide_contrainer{
-	height: 0px;
+	margin-right: auto;
+	margin-left: auto;
 }
 
 .card_piece{
@@ -86,10 +91,7 @@ label{
 	line-height:1.25;
 	font-weight:400
 }
-.checkbox{
-	height:24px;
-	margin:0 8px 8px -5px
-}
+
 .checkbox label.domino{
 	display:inline-block
 }
@@ -102,8 +104,6 @@ label{
 .checkbox input+label{
 	margin:0;
 	clear:none;
-	font-size:13px;
-	font-size:.8125rem;
 	padding:4px 0 0 30px;
 	cursor:pointer;
 	background-position:-30px -934px;
@@ -127,10 +127,12 @@ input{
 	transition:.3s ease-in-out opacity
 }
 .checkbox{
+	height:24px;
 	text-align:left;
-	font-size:16px;
-	font-family:adobe-clean, 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	color:rgb(255, 255, 255);
+	position: absolute;
+	right: 5px;
+	top: 0px;
 }
 
 .nav{
