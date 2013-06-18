@@ -43,6 +43,12 @@
                 }
             );
 
+            function playslide(){
+                SlideShow.next();
+                setTimeout(playslide,3000);
+            };
+            setTimeout(playslide,3000);
+
 
         }
 
