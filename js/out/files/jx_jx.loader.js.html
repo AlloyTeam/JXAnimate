@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>jx/jx.loader.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/JXAnimation.Audio.html">JXAnimation.Audio</a></li>
+            
+                <li><a href="../classes/Log.html">Log</a></li>
+            
+                <li><a href="../classes/Tab.html">Tab</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/JXAnimate.Audio.html">JXAnimate.Audio</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: jx/jx.loader.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ * Jx loader module
+ * */
+Jx().$package(function(J){
+    var depends={}, //key:module name, value:array of module name
+        sheet2Module={},
+        module2Sheet={};
+        moduleLoaded={};
+    var included,
+        processing;
+    /**
+     * @namespace
+     * @name loader
+     */
+    var $L = J.loader = J.loader || {};
+    /**
+     * @param {string} url
+     * @param {function} callback
+     */
+    var loadScript = function(url,callback){
+        var node=document.createElement(&#x27;script&#x27;);
+        node.onload=node.onreadystatechange=function(){
+            var rs=node.readyState;
+            if(&#x27;undefined&#x27;===typeof rs || &#x27;loaded&#x27;===rs || &#x27;complete&#x27;===rs){
+                try{
+                    callback &amp;&amp; callback(J);
+                }finally{
+                    node.onload=node.onreadystatechange=null;
+                    node=null;
+                }
+            }
+        };
+        node.async=true;
+        node.charset=&#x27;utf-8&#x27;;
+        node.src=url;
+        (document.head || document.documentElement).appendChild(node);
+    };
+    /**
+     * @param {string} key 模块名称
+     * @return {array} 依赖模块名称
+     */
+    var getDepend = function(key){
+        if(depends.hasOwnProperty(key)){
+            return depends[key];
+        }
+        return [];
+    };
+    /**
+     * @method addDepend
+     * @memberOf loader
+     * @param {string} key 模块名称
+     * @param {array} list 依赖模块名称
+     */
+    var addDepend = function(key,list){
+        if(&#x27;string&#x27;===typeof list){
+            list=Array.prototype.slice.call(arguments,1);
+        }
+        if(!depends.hasOwnProperty(key)){
+            depends[key]=list.slice(0);
+        }else{
+            depends[key]=depends[key].concat(list);
+        }
+        depends[key].sort();
+    };
+    /**
+     * @method addDepends
+     * @memberOf loader
+     * @param {object} depends {key:list,...}
+     */
+    var addDepends = function(depends){
+        for(var key in depends){
+            if(depends.hasOwnProperty(key)){
+                addDepend(key,depends[key]);
+            }
+        }
+    };
+    /**
+     * @method addSheet
+     * @memberOf loader
+     * @param {string} sheet 样式表名称
+     * @param {string} module 对应的模块,没有对应模块填null
+     */
+    var addSheet = function(sheet,module){
+        sheet2Module[sheet]=module;
+        if(module){
+            module2Sheet[module]=sheet;
+        }
+    };
+    /**
+     * @method addSheets
+     * @memberOf loader
+     * @param {object} sheets {sheet:module,...}
+     */
+    var addSheets = function(sheets){
+        for(var sheet in sheets){
+            if(sheets.hasOwnProperty(sheet)){
+                addSheet(sheet,sheets[sheet]);
+            }
+        }
+    };
+    /**
+     * @param {string} name 模块名称
+     * @return {boolean} 是否已加载
+     */
+    var isModuleLoaded = function(name){
+        if(moduleLoaded[name.toLowerCase()]){
+            return true;
+        }else{
+            if(&#x27;function&#x27;===typeof $L.featureDetect){
+                return moduleLoaded[name.toLowerCase()]=$L.featureDetect(name);
+            }
+            return false;
+        }
+    };
+    /**
+     * @param {string} name 模块名称
+     */
+    var markModuleLoaded = function(name){
+        moduleLoaded[name.toLowerCase()]=true;
+    };
+    /**
+     * @memberOf loader
+     * @method require
+     * @param {array} modules 请求的模块
+     * @param {function} callback
+     * @example
+     * Jx().$require([&#x27;dom&#x27;],function(J){
+     *  var $D=J.dom,
+     *      node=$D.node(&#x27;div&#x27;);
+     * });
+     */
+    var require = function(modules,callback){
+        if(&#x27;string&#x27;===typeof(modules)){
+            modules=Array.prototype.slice.call(arguments,0,-1);
+            callback=arguments[arguments.length-1];
+        }
+        var list=getRequiredList(modules),
+            cssList=[],
+            sheet;
+        for(var i=0,len=list.length;i&lt;len;i++){
+            if(sheet=module2Sheet[list[i]]){
+                cssList.push(sheet+&#x27;.css&#x27;);
+            }
+        }
+        if(list.length){
+            var url=$L.joinUrlByList(cssList.concat(list));
+            loadScript(url,callback);
+        }else{
+            try{
+                callback &amp;&amp; callback(J);
+            }finally{}
+        }
+    };
+    /**
+     * @param {array} modules
+     * @return {array} require list
+     */
+    var getRequiredList = function(modules){
+        modules.sort();
+        processing={};
+        included={};
+        var result=deepSearch(modules);
+        processing=included=null;
+        return result;
+    };
+    /**
+     * @param {array} modules
+     * @return {array} require list
+     */
+    var deepSearch = function(modules){
+        var module,
+            dependList,
+            resList,
+            result=[];
+        for(var i=0,l=modules.length;i&lt;l;i++){
+            module=modules[i];
+            if(processing[module]){
+                throw new Error(&#x27;Dependency error in [&#x27;+module+&#x27;] module!&#x27;); //出现环,不合理的模块依赖关系
+            }
+            if(isModuleLoaded(module) || included[module]){
+                
+            }else{
+                var dependList=getDepend(module);
+                if(dependList.length){
+                    processing[module]=true;
+                    resList=deepSearch(dependList);
+                    result=result.concat(resList);
+                    delete processing[module];
+                }
+                result.push(module);
+                included[module]=true;
+            }
+        }
+        return result;
+    };
+    /**
+     * @param {array} require list
+     * @return {string} script url
+     */
+    var joinUrlByList = function(list){
+        throw new Error(&#x27;[loader] module needs your own joinUrlByList method!&#x27;);
+    };
+    $L.addDepend = addDepend;
+    $L.addDepends = addDepends;
+    $L.addSheet = addSheet;
+    $L.addSheets = addSheets;
+    $L.joinUrlByList = joinUrlByList;
+    $L.featureDetect = null;
+    $L.markModuleLoaded = markModuleLoaded;
+    J.$require = $L.require = require;
+});
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

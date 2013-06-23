@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>slideshow.effects.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/JXAnimation.Audio.html">JXAnimation.Audio</a></li>
+            
+                <li><a href="../classes/Log.html">Log</a></li>
+            
+                <li><a href="../classes/Tab.html">Tab</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/JXAnimate.Audio.html">JXAnimate.Audio</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: slideshow.effects.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+
+/* ===========================================================================
+ * Demo of JXAnimate Effects Libray
+ * 
+ *
+ * @description
+ * Define animations for the demo of the JXAnimation.
+ * 
+ * @author minren 
+ * ===========================================================================
+ * 
+ */
+
+/**
+ * @description
+ *
+ */
+
+Jx().$package(&quot;SlideShow&quot;, function(J){
+
+var $D = J.dom;
+
+JXAnimate.addEffects({
+    /**
+     * [stageAnim1 description]
+     * @param  {[type]} elems       [description]
+     * @param  {[type]} playParam   [description]
+     * @param  {[type]} animSetting [description]
+     * @return {[type]}
+     */
+    flyOutToCenter2 : function(elems,playParam,animSetting){
+        var animSetting = animSetting || {};
+
+        animSetting.animType = &#x27;flyOutToCenter&#x27;;
+
+        var buildKeyframe = function(elem,setting){
+            var keyframeName = this.buildUniqueKeyframeName(animSetting.animType),
+                x1,y1,x2,y2,w,h,stage,stageW,stageH;
+
+                x1 = $D.getPosX(elem);
+                y1 = $D.getPosY(elem);
+                w = $D.getWidth(elem);
+                h = $D.getHeight(elem);
+
+                stage = SlideShow.getStage();
+                stageW = SlideShow.getStageWidth();
+                stageH = SlideShow.getStageHeight();
+
+                x2 = (stageW - w)/2;
+                y2 = (stageH - h)/2;
+                x2+= &#x27;px&#x27;;
+                y2+= &#x27;px&#x27;;
+       
+                keyframeCss = &#x27;@&#x27;+this.prefix+&#x27;keyframes &#x27;+  keyframeName +&#x27;{\n&#x27;+
+                    &#x27;0% {-webkit-transform: scale(1);-webkit-transform-origin:50% 50%;}100% {-webkit-transform: scale(2) ;-webkit-transform-origin:50% 50%;}\n&#x27;+
+            &#x27;}&#x27;;
+
+            return {
+                name:keyframeName,
+                css:keyframeCss
+            };
+        };
+
+        this.go(elems,playParam,animSetting,buildKeyframe);
+    },
+    /**
+     * [flyOutToCenter description]
+     * @param  {[type]} elems       [description]
+     * @param  {[type]} playParam   [description]
+     * @param  {[type]} animSetting [description]
+     * @return {[type]}
+     */
+    flyOutToCenter : function(elems,playParam,animSetting){
+        var animSetting = animSetting || {};
+
+
+        var buildKeyframe = function(elem,animSetting){
+                var index = animSetting.index,
+                    keyframeName = this.buildUniqueKeyframeName(animSetting.animType),
+                    x1,y1,x2,y2,w,h,stage,stageW,stageH,styleText1,styleText2;
+
+                    x1 = $D.getPosX(elem);
+                    y1 = $D.getPosY(elem);
+                    w = $D.getWidth(elem);
+                    h = $D.getHeight(elem);
+
+                    stage = SlideShow.getStage();
+                    stageW = SlideShow.getStageWidth();
+                    stageH = SlideShow.getStageHeight();
+
+                    x2 = (stageW - w)/2;
+                    y2 = (stageH - h)/2;
+                    x1+= &#x27;px&#x27;;
+                    y1+= &#x27;px&#x27;;
+                    x2+= &#x27;px&#x27;;
+                    y2+= &#x27;px&#x27;;
+
+                animSetting.animType = &#x27;flyOutToCenter2&#x27;;
+                styleText1 = &#x27;top:&#x27;+y1+&#x27;;left:&#x27;+x1+&#x27;;z-index:100&#x27;;
+                styleText2 = &#x27;top:&#x27;+y2+&#x27;;left:&#x27;+x2+&#x27;;z-index:100&#x27;;
+
+                var frames = [
+                        {p:&#x27;0%&#x27;,
+                            opacity:1,
+                            scale:&#x27;1&#x27;,
+                            transformOrigin:&#x27;50% 50%&#x27;,
+                            styleText:styleText1
+                        },
+                        {p:&#x27;100%&#x27;,
+                            opacity:0,
+                            scale:&#x27;1.5&#x27;,
+                            transformOrigin:&#x27;50% 50%&#x27;,
+                            styleText:styleText2
+                        }
+                    ];
+
+
+
+                return {
+                    name:keyframeName,
+                    css: this.buildframes(keyframeName,frames)
+                };
+            };
+        
+        this.go(elems,playParam,animSetting,buildKeyframe);
+
+    },
+    /**
+     * [flyOutToOutside description]
+     * @param  {[type]} elems       [description]
+     * @param  {[type]} playParam   [description]
+     * @param  {[type]} animSetting [description]
+     * @return {[type]}
+     */
+    flyOutToOutside : function(elems,playParam,animSetting){
+        var animSetting = animSetting || {};
+        animSetting.animType = &#x27;flyOutToOutside&#x27;;
+
+
+        var buildKeyframe = function(elem,animSetting){
+                var index = animSetting.index,
+                    keyframeName = this.buildUniqueKeyframeName(animSetting.animType),
+                    x1,y1,x2,y2,w,h,stage,stageW,stageH,styleText1,styleText2,
+                    xC,yC,r;
+
+                    x1 = $D.getPosX(elem);
+                    y1 = $D.getPosY(elem);
+                    w = $D.getWidth(elem);
+                    h = $D.getHeight(elem);
+
+                    stage = SlideShow.getStage();
+                    stageW = SlideShow.getStageWidth();
+                    stageH = SlideShow.getStageHeight();
+
+                    r = 4;
+
+                    xC = (stageW - w)/2;
+                    yC = (stageH - h)/2;
+                    x2 = ((r+1)*x1-xC)/r;
+                    y2 = ((r+1)*y1-yC)/r;
+                    x1+= &#x27;px&#x27;;
+                    y1+= &#x27;px&#x27;;
+                    x2+= &#x27;px&#x27;;
+                    y2+= &#x27;px&#x27;;
+
+                styleText1 = &#x27;top:&#x27;+y1+&#x27;;left:&#x27;+x1+&#x27;;z-index:100&#x27;;
+                styleText2 = &#x27;top:&#x27;+y2+&#x27;;left:&#x27;+x2+&#x27;;z-index:100&#x27;;
+
+                var frames = [
+                        {p:&#x27;0%&#x27;,
+                            opacity:1,
+                            scale:&#x27;1&#x27;,
+                            transformOrigin:&#x27;50% 50%&#x27;,
+                            styleText:styleText1
+                        },
+                        {p:&#x27;100%&#x27;,
+                            opacity:0,
+                            scale:&#x27;1.5&#x27;,
+                            transformOrigin:&#x27;50% 50%&#x27;,
+                            styleText:styleText2
+                        }
+                    ];
+
+
+
+                return {
+                    name:keyframeName,
+                    css: this.buildframes(keyframeName,frames)
+                };
+            };
+        
+        this.go(elems,playParam,animSetting,buildKeyframe);
+
+    },
+    raceFlag : function(elems,playParam,animSetting){
+        var animSetting = animSetting || {};
+
+        animSetting.animType = &#x27;raceFlag&#x27;;
+
+        var    frames = [
+                {p:&#x27;0%&#x27;,rotateX:&#x27;0deg&#x27;,rotate:&#x27;-720deg&#x27;,transformOrigin:&#x27;100% 0%&#x27;},
+                {p:&#x27;100%&#x27;,rotateX:&#x27;-360deg&#x27;,rotate:&#x27;0&#x27;,transformOrigin:&#x27;100% 0%&#x27;}
+            ];
+
+        this.goWithFixFrames(elems,playParam,animSetting,frames);
+
+    },
+    raceFlag1 : function(elems,playParam,animSetting){
+        var animSetting = animSetting || {};
+
+        animSetting.animType = &#x27;raceFlag2&#x27;;
+
+        var    frames = [
+                {p:&#x27;0%&#x27;,rotateX:&#x27;0deg&#x27;,rotate:&#x27;-720deg&#x27;,transformOrigin:&#x27;100% 0%&#x27;},
+                {p:&#x27;100%&#x27;,rotateX:&#x27;-360deg&#x27;,rotate:&#x27;0&#x27;,transformOrigin:&#x27;100% 0%&#x27;}
+            ];
+
+        var animSetting = animSetting||{};
+
+        animSetting.animType = &#x27;flash&#x27;;
+
+        var buildKeyframe = function(){
+            var keyframeName = this.buildUniqueKeyframeName(animSetting.animType);
+       
+                keyframeCss = &#x27;@&#x27;+this.prefix+&#x27;keyframes &#x27;+  keyframeName +&#x27;{\n&#x27;+
+                	&#x27;0% {-webkit-transform: rotateX(0deg) rotate(-720deg);-webkit-transform-origin:100% 0%;}100% {-webkit-transform: rotateX(-360deg) rotate(0deg) ;-webkit-transform-origin:100% 0%;}\n&#x27;+
+            &#x27;}&#x27;;
+
+            return {
+                name:keyframeName,
+                css:keyframeCss
+            };
+        };
+
+        this.go(elems,playParam,animSetting,buildKeyframe);
+    }
+});
+
+}); //end of package
+//----------------------------------------------------------------------------
+
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

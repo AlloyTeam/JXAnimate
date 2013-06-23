@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>jx/jx.ui.richeditor.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/JXAnimation.Audio.html">JXAnimation.Audio</a></li>
+            
+                <li><a href="../classes/Log.html">Log</a></li>
+            
+                <li><a href="../classes/Tab.html">Tab</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/JXAnimate.Audio.html">JXAnimate.Audio</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: jx/jx.ui.richeditor.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ * 富文本模块
+ * @author azrael
+ * 2011-5-16
+ */
+;Jx().$package(function (J) {
+    var packageContext=this,
+    $E = J.event, $D = J.dom, $B = J.browser;
+/**
+ * 处理基本逻辑的文本编辑器
+ * @class 
+ * @name BaseEditor
+ * @memberOf ui
+ * @constructor
+ * @param {Object} option
+ * option = {&lt;br/&gt;
+ *  appendTo: {HTMLElement} //富文本的容器&lt;br/&gt;
+ *  className: {String},&lt;br/&gt;
+ *  richClassName: {String},&lt;br/&gt;
+ *  textClassName: {String},&lt;br/&gt;
+ *  keepCursor: {Boolean} default: false //是否保存光标位置, 因为要进行保存选区和还原, 如果不关心光标位置, 则设置为false&lt;br/&gt;
+ *  brNewline: {Boolean} default: false //使用统一使用br标签进行换行 &lt;br/&gt;
+ *  clearNode: {Boolean} default: false //是否要对粘贴或拖拽进输入框的内容进行过滤, NOTE: opera只支持 ctrl+v 粘贴进来的内容&lt;br/&gt;
+ *  nodeFilter: {Function} default: null //clearNode时过滤节点的函数, return true则不过滤该节点, 参数为 HTMLElement&lt;br/&gt;
+ * }
+ * @description
+ * BaseEditor只处理编辑器自身的逻辑
+ * 保存当前光标位置, 防止插入到页面其他地方
+ * 
+ * 富文本的扩展功能如设置字体样式/工具条等在RichEditor实现
+ * @see ui.RichEditor
+ * @example 
+ * 
+ * new J.ui.BaseEditor({
+ *       appendTo: el,
+ *       className: &#x27;rich_editor&#x27;,
+ *       keepCursor: true,
+ *       brNewline: true,
+ *       clearNode: true 
+ *   });
+ * 
+ */
+var BaseEditor = new J.Class(
+/**
+ * @lends ui.BaseEditor.prototype
+ */
+{
+    /**
+     * @ignore
+     */
+    init: function(option){
+        if(!option.appendTo){
+            throw new Error(&#x27;BaseEditor: appendTo is undefined.&#x27;);
+        }
+        this.option = {
+            keepCursor: option.keepCursor || false,
+            brNewline: option.brNewline || false,
+            clearNode: option.clearNode || false,
+            nodeFilter: option.nodeFilter || null
+        }
+        var className = option.className || &#x27;rich_editor&#x27;
+        var container = this._container = $D.node(&#x27;div&#x27;, {
+            &#x27;class&#x27;: className
+        });
+        var divArea = this._divArea = $D.node(&#x27;div&#x27;, {
+            &#x27;class&#x27;: option.richClassName || (className + &#x27;_div&#x27;)
+        });
+        var textArea = this._textArea = $D.node(&#x27;textarea&#x27;, {
+            &#x27;class&#x27;: option.textClassName || (className + &#x27;_text&#x27;)
+        });
+        container.appendChild(divArea);
+        container.appendChild(textArea);
+        option.appendTo.appendChild(container);
+        
+        this.setState(true);
+        this.clear();
+        
+        var context = this;
+        
+        /** @ignore */
+        this._private = {
+            /** @ignore */
+            startTimeoutSaveRange : function(timeout){
+                this.clearTimeoutSaveRange();
+                this._keyupTimer = window.setTimeout(this.timeoutSaveRange, timeout || 0);
+            },
+            /** @ignore */
+            timeoutSaveRange : function(){
+                context.saveRange(true);
+            },
+            /** @ignore */
+            clearTimeoutSaveRange : function(){
+                if(this._keyupTimer){
+                    window.clearTimeout(this._keyupTimer);
+                    this._keyupTimer = 0;
+                }
+            },
+            /** @ignore */
+            startTimeoutClearNodes : function(timeout){
+                this.clearTimeoutClearNodes();
+                this._clearNodesTimer = window.setTimeout(this.timeoutClearNodes, timeout || 0);
+            },
+            /** @ignore */
+            timeoutClearNodes : function(){
+                context.clearNodes();
+            },
+            /** @ignore */
+            clearTimeoutClearNodes : function(){
+                if(this._clearNodesTimer){
+                    window.clearTimeout(this._clearNodesTimer);
+                    this._clearNodesTimer = 0;
+                }
+            }
+        };
+        
+        $E.on(divArea, &#x27;blur&#x27;, J.bind(BaseEditor.observer.onBlur, context));
+        $E.on(divArea, &#x27;mouseup&#x27;, J.bind(BaseEditor.observer.onMouseup, context));
+        $E.on(divArea, &#x27;drop&#x27;, J.bind(BaseEditor.observer.onDrop, context));
+        $E.on(divArea, &#x27;paste&#x27;, J.bind(BaseEditor.observer.onPaste, context));
+        $E.on(divArea, &#x27;keyup&#x27;, J.bind(BaseEditor.observer.onKeyup, context));
+        if($B.ie){
+            $E.on(divArea, &#x27;keydown&#x27;, J.bind(BaseEditor.observer.onBackspaceKeydown, context));
+        }
+        if($B.adobeAir){//air需要用keyup来监听ctrl+v
+            $E.on(divArea, &#x27;keyup&#x27;, J.bind(BaseEditor.observer.onAdobeAirKeyup, context));
+        }
+        if(J.platform.linux &amp;&amp; $B.firefox){
+            //1. keydown事件在ubuntu的firefox用了中文输入法时不会触发
+            $E.on(divArea, &#x27;keypress&#x27;, J.bind(BaseEditor.observer.onLinuxKeypress, context));
+        }else if(J.platform.win &amp;&amp; $B.opera){
+            //1. windows的 opera的keydown事件无法阻止默认行为, 另外window的opera的 ctrl+ v的keyCode 是86
+            //ubuntu的opera的ctrl+v的keyCode是118...
+            $E.on(divArea, &#x27;keypress&#x27;, J.bind(BaseEditor.observer.onKeydown, context));
+        }else {
+            $E.on(divArea, &#x27;keydown&#x27;, J.bind(BaseEditor.observer.onKeydown, context));
+        }
+        $E.addObserver(this, &#x27;Paste&#x27;, J.bind(BaseEditor.observer.onEditorPaste, context));
+        //hacky trick
+        if($B.firefox){
+            $E.on(divArea, &#x27;keypress&#x27;, J.bind(BaseEditor.observer.onKeypress, context));
+        }
+    },
+    /**
+     * 按键抬起操作
+     * @ignore
+     */
+    onKeyUp: function() {
+        
+    },
+    /**
+     * 返回是否启用了富文本
+     */
+    isEnable: function(){
+        return this._isEnable;
+    },
+    /**
+     * 设置是否启用富文本
+     * @param {Boolean} state
+     */
+    setState: function(state){
+        this._isEnable = state;
+        var textArea = this._textArea;
+        var divArea = this._divArea;
+        if(state){
+            $D.show(divArea);
+            $D.hide(textArea);
+            textArea.readonly = true;
+            divArea.setAttribute(&#x27;contentEditable&#x27;, true);
+        }else{
+            $D.hide(divArea);
+            $D.show(textArea);
+            textArea.readonly = false;
+            divArea.setAttribute(&#x27;contentEditable&#x27;, false);
+        }
+    },
+    /**
+     * 指示编辑框是否可编辑
+     * @return {Boolean}
+     */
+    isEditable: function(){
+        return this._isEditable;
+    },
+    /**
+     * 设置是否可编辑, true 可编辑, false 只读
+     * @param {Boolean} isEditable
+     */
+    setEditable: function(isEditable){ 
+        this._isEditable = isEditable;
+        if(this._isEnable){
+            this._divArea.setAttribute(&#x27;contenteditable&#x27;, isEditable);
+        }else{
+            this._textArea.readonly = !isEditable;
+        }
+    },
+    /**
+     * 销毁
+     */
+    destory: function(){
+        $E.off(divArea, &#x27;focus&#x27;);
+        $E.off(divArea, &#x27;blur&#x27;);
+        $E.off(divArea, &#x27;mousedown&#x27;);
+        $E.off(divArea, &#x27;mouseup&#x27;);
+        $E.off(divArea, &#x27;keyup&#x27;);
+        $E.off(divArea, &#x27;paste&#x27;);
+        $E.off(divArea, &#x27;drop&#x27;);
+        $E.off(divArea, &#x27;keypress&#x27;);
+        $E.off(divArea, &#x27;keydown&#x27;);
+            
+        this.setState(false);
+        this._container.parentNode.removeChild(this._container);
+        for (var p in this) {
+            if (this.hasOwnProperty(p)) {
+                delete this[p];
+            }
+        }
+    },
+    /**
+     * 返回编辑区的html
+     * @return {String}
+     */
+    getHtml: function(){
+        return this._divArea.innerHTML;
+    },
+    /**
+     * 设置编辑区的内容
+     * @param {String} html
+     */
+    setHtml: function(html){
+        this._divArea.innerHTML = html;
+    },
+    /**
+     * 清空编辑器 
+     */
+    clear: function(){
+        if(this._isEnable){
+            if(this.option.keepCursor){
+                this.saveRange(true);
+            }
+            if($B.ie){
+                this.setHtml(&#x27;&#x27;);
+            }else{
+                this.setHtml(&#x27;&lt;br/&gt;&#x27;);
+            }
+        }else{
+            this.setText(&#x27;&#x27;);
+        }
+    },
+    /**
+     * 设置纯文本输入框的内容
+     * @param {String} text
+     */
+    setText: function(text){
+        this._textArea.value = text;
+    },
+    /**
+     * 获取纯文本框的内容
+     * NOTE: 如果要取得富文本里的纯文本内容, 请先调用save方法
+     * @see save
+     * @return {String}
+     */
+    getText: function(){
+        return this._textArea.value;
+    },
+    /**
+     * 判断输入框内容是否是空的
+     * @param {Boolean} 
+     */
+    isEmpty: function(){
+        if(this._isEnable){
+            var html = this.getHtml();
+            if(html === &#x27;&#x27;){
+                return true;
+            }else if(!$B.ie &amp;&amp; html.toLowerCase() === &#x27;&lt;br&gt;&#x27;){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            var text = this.getText();
+            if(text === &#x27;&#x27;){
+                return true;
+            }else{
+                return false;
+            }
+        }
+    },
+    /**
+     * 让编辑区获得输入焦点
+     */
+    focus: function(){
+        if(this._isEnable){
+            this._divArea.focus();
+            if(this.option.keepCursor){
+                this.restoreRange();
+            }
+        }else{
+            this._textArea.focus();
+        }
+    },
+    /**
+     * 移除输入焦点
+     */
+    blur: function(){
+        if(this._isEnable){
+            this._divArea.blur();
+        }else{
+            this._textArea.blur();
+        }
+    },
+    /**
+     * 把编辑区的内容保存到文本框
+     * NOTE: 这里只是简单的转换, 子类最好根据需要重写该方法
+     */
+    save: function(){
+        this.setText(this.getHtml());
+    },
+    /**
+     * 把纯文本框里的文本还原到富文本输入框
+     * NOTE: 这里只是简单的转换, 子类最好根据需要重写该方法
+     */
+    restore: function(){
+        this.setHtml(this.getText());
+    },
+    /**
+     * 获取输入框中的选中区
+     * @return {Range}, null
+     */
+    getRange: function(){
+        return BaseEditor.getRange(this._divArea);
+    },
+    /**
+     * 保存当前光标位置
+     * 如果调用时确认当前光标是在输入框中, 不执行检测会节约些许性能
+     * @param {Boolean} checkRange 指示是否检查range是否在文本框中
+     * 
+     */
+    saveRange: function(checkRange){
+        var lastRange = checkRange ? this.getRange() : BaseEditor.getRange();
+        if(!lastRange){
+            return;
+        }
+        this._lastRange = lastRange;
+//        if(lastRange.getBookmark){// for ie
+//            this._lastBookmark = lastRange.getBookmark();
+//        }
+    },
+    /**
+     * 还原保存的光标位置
+     * NOTE: 调用时需确保光标是在输入框中
+     */
+    restoreRange: function(){
+        if(this._lastRange){
+            var selection = BaseEditor.getSelection();
+            if(selection.addRange){
+                /*
+                 * 对于高级浏览器, 直接把原来的range添加到selection就可以还原选区了
+                 */
+                selection.removeAllRanges();
+                selection.addRange(this._lastRange);
+            }else{//ie
+                //NOTE: ie还可以使用其专有的bookmark来还原, 
+                //但是如果在输入框以外的地方选中了文字, 偶尔会出现还原失败的情况
+                /*if(this._lastBookmark){ //ie 
+                /*
+                 * 这里的原理是:
+                 * 1. 先把保存lastRange的bookmark
+                 * 2. 把新的range的选中位置移动到上次保存的bookmark
+                 * 3. 选中该range就能把上次保存的选区还原了
+                 *
+                    var range = BaseEditor.getRange();
+                    if(range){
+                        range.moveToBookmark(this._lastBookmark);
+                        range.select();
+                    }
+                }*/
+                /*
+                 * 这里的原理是:
+                 * 1. 先把保存lastRange, 如&quot;ABCDEFG&quot;中的&quot;CDE&quot;
+                 * 2. 把新的range的结尾移动到lastRange的开头(即&quot;C&quot;的左边),
+                 * 3. 然后调用 collapse(false)把光标的插入点移动到range的结尾
+                 * 也就是把range的开头和结尾合并在一起, 因为新的range的开头都是在内容的起点
+                 * 不这样处理的话, 调用select之后会选中&quot;AB&quot;(即选中&quot;C&quot;之前的所有内容)
+                 * 4. 把range的结尾移动到lastRange的结尾(即&quot;E&quot;的右边)
+                 * 5. 选中该range就能把上次保存的选区还原了(即选中&quot;CDE&quot;)
+                 */
+                var range = BaseEditor.getRange();
+                if(range){
+                    //TODO 如果选中的内容是图片, 这里就会出错了
+                    range.setEndPoint(&#x27;EndToStart&#x27;, this._lastRange);
+                    range.collapse(false);
+                    range.setEndPoint(&#x27;EndToEnd&#x27;, this._lastRange);
+                    range.select();
+//                    range.setEndPoint(&#x27;EndToEnd&#x27;, this._lastRange);
+//                    range.setEndPoint(&#x27;StartToStart&#x27;, this._lastRange);
+//                    range.select();
+                }
+//                这个方法说不定可以
+//                this._lastRange.select();
+            }
+        }
+    },
+    /**
+     * 在光标处插入一段html
+     * NOTE:调用时需确保光标在输入框中
+     * @param {String} html
+     */
+    insertHtml: function(html){
+        if(html === &#x27;&#x27;){
+            return;
+        }
+        var range = this.getRange();
+        if(!range){//如果拿不到输入框中的range, 就直接添加到最后
+            if(this.isEmpty()){
+                this._divArea.innerHTML = html;
+            }else{
+                this._divArea.innerHTML += html;
+            }
+            range = BaseEditor.getRange();
+            var divLastNode = this._divArea.lastChild;
+            if(range.selectNode){
+                range.setEndAfter(divLastNode);
+                range.setStartAfter(divLastNode);
+                var selection = BaseEditor.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }else if(range.moveToElementText){
+                range.moveToElementText(divLastNode);
+                range.collapse(false);
+                range.select();
+            }
+        }else if(range.pasteHTML){//ie, ie9 也在这里
+//            html += &#x27;&lt;img style=&quot;display:inline;width:1px;height:1px;&quot;&gt;&#x27;;
+            range.pasteHTML(html);
+            range.collapse(false);
+            range.select();
+        }else if(range.createContextualFragment){//ie9竟然不支持这个方法
+            // 使用img标签是因为img是行内元素的同时, 又能设置宽高占位
+            html += &#x27;&lt;img style=&quot;display:inline;width:1px;height:1px;&quot;&gt;&#x27;;
+            var fragment = range.createContextualFragment(html);
+            var lastNode = fragment.lastChild;
+            //如果已经选中了内容, 先把选中的删除
+            range.deleteContents();
+            range.insertNode(fragment);
+            //插入后把开始和结束位置都放到lastNode后面, 然后添加到selection
+            range.setEndAfter(lastNode);
+            range.setStartAfter(lastNode);
+            var selection = BaseEditor.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            //把光标滚动到可视区
+//            if(lastNode.nodeType === 1){
+//                ff开了firbug的时候, 会导致样式错乱, 换用scrollTop的方式
+//                lastNode.scrollIntoView();
+//            }
+            var divArea = this._divArea;
+            var pos = $D.getRelativeXY(lastNode, divArea);
+            divArea.scrollTop = pos[1] &lt; divArea.scrollHeight ? divArea.scrollHeight : pos[1];
+            // 删除附加的节点, 这里只能这样删, chrome直接remove节点会导致光标消失掉
+            if(!$B.opera){//TODO opera的光标还原有问题, 要想办法解决
+                document.execCommand(&#x27;Delete&#x27;, false, null);
+            }
+            if(BaseEditor.contains(divArea, lastNode)){//for opera
+                divArea.removeChild(lastNode);
+            }
+        }
+        if(this.option.keepCursor){
+            //插入后把最后的range设置为刚刚的插入点
+            this.saveRange();
+        }
+    },
+    /**
+     * 往纯文本框插入一段文本
+     * @param {String} text
+     */
+    insertText: function(text){
+        if(text === &#x27;&#x27;){
+            return;
+        }
+        var textArea = this._textArea;
+        if($B.ie){
+            var range = BaseEditor.getRange();
+            if(range){
+                range.text = text;
+            }else{
+                textArea.value += text;
+            }
+        }else{
+            if(J.isUndefined(textArea.selectionStart)){
+                textArea.value += text;
+            }else{
+                var value = textArea.value,
+                    start = textArea.selectionStart, 
+                    end = textArea.selectionEnd,
+                    cursorPoint = start + text.length;
+                textArea.value = value.substring(0, start) + text + value.substring(end);
+                textArea.setSelectionRange(cursorPoint, cursorPoint);
+            };
+            
+        }
+    },
+    /**
+     * 将输入框里的内容在光标处换行
+     * NOTE: 执行该方法前, 需保证光标已经在输入框
+     */
+    newline: function(){
+        if(this._isEnable){
+            this.insertHtml(&#x27;&lt;br/&gt;&#x27;);
+        }else{
+            this.insertText(&#x27;\n&#x27;);
+        }
+    },
+    /**
+     * 清理节点, 把除了br,img之外的节点都清理掉
+     */
+    clearNodes: function(){
+        /* 
+         * 这里的原理是:
+         * 倒序遍历输入框的直接子节点
+         * 1. 如果是文本节点则跳过
+         * 2. 如果是element,且不是br,则用其包含的文本保存替换该节点
+         * 3. 如果是其他, 如comment,则移除
+         * 最后把光标位置还原
+         */
+        var divArea = this._divArea;
+        var text, textNode, cursorNode;
+        var childNodes = divArea.childNodes;
+
+        for(var c = childNodes.length - 1, node; c &gt;= 0; c--){
+            node = childNodes[c];
+            if(node.nodeType === 3){//text
+                
+            }else if(node.nodeType === 1){//element
+                if(node.nodeName !== &#x27;BR&#x27;){
+                    if(this.option.nodeFilter &amp;&amp; this.option.nodeFilter(node)){
+                        //nodeFilter返回true则不过滤
+                    }else{
+                        text = node.textContent || node.innerText || &#x27;&#x27;;//innerText for ie
+                        if(text !== &#x27;&#x27;){
+                            textNode = document.createTextNode(text);
+                            if(!cursorNode){
+                                cursorNode = textNode;
+                            }
+                            divArea.replaceChild(textNode, node);
+                        }else{
+                            divArea.removeChild(node);
+                        }
+                    }
+                    
+                }
+            }else{//comment etc.
+                divArea.removeChild(node);
+            }
+        }
+        if(cursorNode){//清除多余标签后还原光标位置
+            var selection = BaseEditor.getSelection();
+            if(selection.extend){//ff, chrome 要先扩展选区, 然后把选区开头合并到结尾
+                //NOTE: chrome 拷贝某些html会有问题
+                selection.extend(cursorNode, cursorNode.length);
+                selection.collapseToEnd();
+            }
+        }
+    }
+});
+/** @ignore */
+BaseEditor.observer = /** @ignore */{
+    onBlur: function(e){
+        //本来想在blur的时候保存range, 但是执行这个事件的时候,
+        //光标已经不在输入框了, 也许ie可以用onfocusout事件来做
+//        this.saveRange();
+        this._private.clearTimeoutSaveRange();
+    },
+    onMouseup: function(e){
+        if(this.option.keepCursor){
+            this.saveRange();
+        }
+    },
+    onLinuxKeypress: function(e){//only for linux firefox
+        var keyCode = Number(e.keyCode), charCode = Number(e.charCode);
+        var altKey = e.altKey, ctrlKey = e.ctrlKey, shiftKey = e.shiftKey;
+        if(charCode === 118 &amp;&amp; (ctrlKey &amp;&amp; !altKey &amp;&amp; !shiftKey)){// ctrl + v
+            $E.notifyObservers(this, &#x27;Paste&#x27;, e);
+        }else if(keyCode === 13 &amp;&amp; this.option.brNewline){//enter no matter ctrl or not
+            e.preventDefault();
+            this.newline();
+        }
+    },
+    onAdobeAirKeyup: function(e){//only for air ctrl+v
+        var keyCode = Number(e.keyCode);
+        var altKey = e.altKey, ctrlKey = e.ctrlKey, shiftKey = e.shiftKey;
+        if(keyCode === 86 &amp;&amp; (ctrlKey &amp;&amp; !altKey &amp;&amp; !shiftKey)){// ctrl + v
+            $E.notifyObservers(this, &#x27;Paste&#x27;, e);
+        }
+    },
+    onBackspaceKeydown: function(e){//for ie
+        var keyCode = Number(e.keyCode);
+        var altKey = e.altKey, ctrlKey = e.ctrlKey, shiftKey = e.shiftKey;
+        if(keyCode === 8 &amp;&amp; (!ctrlKey &amp;&amp; !altKey &amp;&amp; !shiftKey)){//BackSpace
+            //ie 在输入框中选中了图片后按回退键, 跟点浏览器的后退按钮一个效果 &gt;_&lt;
+            var selection = BaseEditor.getSelection();
+            if (selection.type.toLowerCase() === &#x27;control&#x27;) {
+                e.preventDefault();
+                selection.clear();
+            }
+        }
+    },
+    onKeydown: function(e){//normal browser
+        var keyCode = Number(e.keyCode);
+        var altKey = e.altKey, ctrlKey = e.ctrlKey, shiftKey = e.shiftKey;
+        if(keyCode === 86 &amp;&amp; (ctrlKey &amp;&amp; !altKey &amp;&amp; !shiftKey)){// ctrl + v
+            //1. opera没有onpaste事件, 因此只能监控ctrl+v的粘贴
+            //2. ie剪贴板里有图片时, 监听不到onpaste事件
+            $E.notifyObservers(this, &#x27;Paste&#x27;, e);
+        }else if(keyCode === 13 &amp;&amp; this.option.brNewline){//enter no matter ctrl or not
+            e.preventDefault();
+            this.newline();
+        }
+    },
+    onKeyup: function(e){
+        //TODO 判断如果是某些按键(如空格)就立即保存
+        var keyCode = Number(e.keyCode);
+        if(keyCode === 16 || keyCode === 17 || keyCode === 18){
+            //排除掉单纯的shift,ctrl,alt键
+        }else if(this.option.keepCursor){
+            //延时进行保存, 避免连续输入文字的时候做了太多次操作
+            this._private.startTimeoutSaveRange(100);
+        }
+        this.onKeyUp(e);
+    },
+    onKeypress: function(e) {
+        this.onKeyUp(e);
+    },
+    onPaste: function(e){
+        if(this.option.clearNode){
+            //这里延时200毫秒, 如果onEditorPaste执行的时候也过滤的话,就可以取消这次了
+            this._private.startTimeoutClearNodes(200);
+        }
+    },
+    onDrop: function(e){
+        if(this.option.clearNode){
+            //因为发出这个事件的时候, 内容还没有粘贴到输入框, 所以要延时
+            this._private.startTimeoutClearNodes();
+        }
+    },
+    onEditorPaste: function(e){
+        if($E.notifyObservers(this, &#x27;EditorPaste&#x27;, e)){//如果EditorPaste的监听者返回了false, 则不进行过滤处理
+            if(this.option.clearNode){
+                //因为发出这个事件的时候, 内容还没有粘贴到输入框, 所以要延时
+                this._private.startTimeoutClearNodes();
+            }
+        }
+    }
+    
+};
+
+/**
+ * 获取当前页面的selection对象
+ * @memberOf ui.BaseEditor
+ * @name getSelection
+ * @function
+ * @return {Selection}
+ */
+BaseEditor.getSelection = function() {
+    //先判断ie专有的, 因为ie9对range的支持不完全啊&gt;_&lt;
+    return (document.selection) ? document.selection : window.getSelection();
+};
+
+/**
+ * 获取选中区, 如果传入了container, 则返回container的range
+ * @memberOf ui.BaseEditor
+ * @function
+ * @name getRange
+ * @param {HTMLElement} container  目标range的容器, 可选
+ * @return {Range}, null
+ */
+BaseEditor.getRange = function(container) {
+    var selection = BaseEditor.getSelection();
+    if (!selection) {
+        return null;
+    }
+    var range = selection.getRangeAt ? (selection.rangeCount ? selection
+                .getRangeAt(0) : null) : selection.createRange();
+    if(!range){
+        return null;
+    }
+    if(container){
+        if(BaseEditor.containsRange(container, range)){
+            return range;
+        }else{
+            return null;
+        }
+    }else{
+        return range;
+    }
+    
+};
+
+/**
+ * 判断一个节点是否是某个父节点的子节点, 
+ * 默认不包含parent === child的情况
+ * @memberOf ui.BaseEditor
+ * @function
+ * @name contains
+ * @param {HTMLElement} parent
+ * @param {HTMLElement} child
+ * @param {Boolean} containSelf 指示是否可包含parent等于child的情况
+ * @return {Boolean} 包含则返回true
+ */
+BaseEditor.contains = function(parent, child, containSelf){
+    if(!containSelf &amp;&amp; parent === child){
+        return false;
+    }
+    if(parent.compareDocumentPosition){//w3c
+        var res = parent.compareDocumentPosition(child);
+        if(res == 20 || res == 0){
+            return true;
+        }
+    }else{
+        if(parent.contains(child)){//ie
+            return true;
+        }
+    }
+    return false;
+};
+/**
+ * 判断一个range是否被包含在container中
+ * @memberOf ui.BaseEditor
+ * @function
+ * @name containsRange
+ * @param {HTMLElement} container
+ * @param {Range} range
+ * @return {Boolean}
+ */
+BaseEditor.containsRange = function(container, range){
+    var rangeParent = range.commonAncestorContainer || (range.parentElement &amp;&amp; range.parentElement()) || null;
+    if(rangeParent){
+        return BaseEditor.contains(container, rangeParent, true);
+    }
+    return false;
+};
+
+/**
+ * 富文本编辑器
+ * @class 
+ * @name RichEditor
+ * @memberOf ui
+ * @extends ui.BaseEditor
+ * @constructor
+ * @param {Object} option
+ * option = {&lt;br/&gt;
+ *  appendTo: {HTMLElement} //富文本的容器&lt;br/&gt;
+ *  keepCursor: {Boolean} default: false //是否保存光标位置, 因为要进行保存选区和还原, 如果不关心光标位置, 则设置为false&lt;br/&gt;
+ *  brNewline: {Boolean} default: false //使用统一使用br标签进行换行 &lt;br/&gt;
+ *  clearNode: {Boolean} default: false //是否要对粘贴或拖拽进输入框的内容进行过滤, NOTE: opera只支持 ctrl+v 粘贴进来的内容&lt;br/&gt;
+ * }
+ * @description
+ * RichEditor实现了富文本的扩展功能如设置字体样式/工具条等
+ * 包装了BaseEditor
+ * 注意: 该类尚未完成
+ * @see ui.BaseEditor
+ * @example 
+ * option = {
+ *  appendTo: {HTMLElement} //富文本的容器
+ *  keepCursor: {Boolean} default: false //是否保存光标位置, 因为要进行保存选区和还原, 如果不关心光标位置, 则设置为false
+ *  brNewline: {Boolean} default: false //使用统一使用br标签进行换行 
+ *  clearNode: {Boolean} default: false //是否要对粘贴或拖拽进输入框的内容进行过滤, NOTE: opera只支持 ctrl+v 粘贴进来的内容
+ * }
+ */
+var RichEditor = new J.Class({ extend: BaseEditor}, 
+/**
+ * @lends ui.RichEditor.prototype
+ */
+{
+    /**
+     * @ignore
+     */
+    init: function(option){
+  
+        //调用父层初始化方法
+        BaseEditor.callSuper(this, &quot;init&quot;,option);
+    }
+    //TODO 未完成
+});
+
+J.ui = J.ui || {};
+J.ui.BaseEditor = BaseEditor;
+J.ui.RichEditor = RichEditor;
+
+// end
+});
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

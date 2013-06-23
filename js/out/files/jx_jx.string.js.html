@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>jx/jx.string.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/JXAnimation.Audio.html">JXAnimation.Audio</a></li>
+            
+                <li><a href="../classes/Log.html">Log</a></li>
+            
+                <li><a href="../classes/Tab.html">Tab</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/JXAnimate.Audio.html">JXAnimate.Audio</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: jx/jx.string.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/** 
+ * JET (Javascript Extension Tools) 
+ * Copyright (c) 2009, KDV.cn, All rights reserved.
+ * Code licensed under the BSD License:
+ * http://developer.kdv.cn/jet/license.txt
+ *
+ * @fileOverview Jx!
+ * @version 1.0
+ * @author  Kinvix(&lt;a href=&quot;mailto:Kinvix@gmail.com&quot;&gt;Kinvix@gmail.com&lt;/a&gt;)
+ * @description 
+ * 
+ */
+
+/** 
+ * @description
+ * Package: Jx.string
+ * 
+ * Need package:
+ * Jx.core.js
+ * 
+ */
+
+
+/**
+ * 3.[Javascript core]: String 字符串处理
+ */
+Jx().$package(function(J){
+    
+    /**
+     * string 名字空间
+     * 
+     * @namespace
+     * @name string
+     */
+    J.string = J.string || {};
+    var $S = J.string,
+        toString,
+        template,
+        isURL,
+        parseURL,
+        buildURL,
+        mapQuery,
+        test,
+        contains,
+        trim,
+        clean,
+        camelCase,
+        hyphenate,
+        capitalize,
+        escapeRegExp,
+        toInt,
+        toFloat,
+        toSingleLine,
+        toHtml,
+        toTitle,
+        toQueryPair,
+        toQueryString,
+        
+        hexToRgb,
+        rgbToHex,
+        stripScripts,
+        substitute,
+        replaceAll,
+        
+        byteLength,
+        cutRight,
+        cutByBytes,
+        isNumber,
+        isEmail,
+        
+        encodeHtmlSimple,
+        decodeHtmlSimple,
+        decodeHtmlSimple2,
+        encodeHtmlAttributeSimple,
+        encodeHtmlAttribute,
+        encodeHtml,
+        encodeScript,
+        encodeHrefScript,
+        encodeRegExp,
+        encodeUrl,
+        encodeUriComponent,
+        vaildTencentUrl,
+        vaildUrl,
+        getCharWidth;
+        
+    
+    /**
+     * 将任意变量转换为字符串的方法
+     * 
+     * @method toString
+     * @memberOf string
+     * 
+     * @param {Mixed} o 任意变量
+     * @return {String} 返回转换后的字符串
+     */
+    toString = function(o){
+        return (o + &quot;&quot;);
+    };
+    
+    /**
+     * 多行或单行字符串模板处理
+     * 
+     * @method template
+     * @memberOf string
+     * 
+     * @param {String} str 模板字符串
+     * @param {Object} obj 要套入的数据对象
+     * @return {String} 返回与数据对象合成后的字符串
+     * 
+     * @example
+     * &lt;script type=&quot;text/html&quot; id=&quot;user_tmpl&quot;&gt;
+     *   &lt;% for ( var i = 0; i &lt; users.length; i++ ) { %&gt;
+     *     &lt;li&gt;&lt;a href=&quot;&lt;%=users[i].url%&gt;&quot;&gt;&lt;%=users[i].name%&gt;&lt;/a&gt;&lt;/li&gt;
+     *   &lt;% } %&gt;
+     * &lt;/script&gt;
+     * 
+     * Jx().$package(function(J){
+     *  // 用 obj 对象的数据合并到字符串模板中
+     *  J.template(&quot;Hello, {name}!&quot;, {
+     *      name:&quot;Kinvix&quot;
+     *  });
+     * };
+     */
+    template = function(str, data){
+        /*!
+          * jstemplate: a light &amp; fast js tamplate engine
+          * License MIT (c) 岑安
+          * 
+          * Modify by azrael @ 2012/9/28
+          */
+        var //global = typeof window != &#x27;undefined&#x27; ? window : {},
+            openTag = &#x27;&lt;%&#x27;,
+            closeTag = &#x27;%&gt;&#x27;,
+            retTag = &#x27;$return&#x27;,
+            vars = &#x27;var &#x27;,
+            varsInTpl,
+            codeArr = &#x27;&#x27;.trim ?
+                [retTag + &#x27; = &quot;&quot;;&#x27;, retTag + &#x27; +=&#x27;, &#x27;;&#x27;, retTag + &#x27;;&#x27;, &#x27;print=function(){&#x27; + retTag + &#x27;+=[].join.call(arguments,&quot;&quot;)},&#x27;] :
+                [retTag + &#x27; = [];&#x27;, retTag + &#x27;.push(&#x27;, &#x27;)&#x27;, retTag + &#x27;.join(&quot;&quot;);&#x27;, &#x27;print=function(){&#x27; + retTag + &#x27;.push.apply(arguments)},&#x27;],
+            keys = (&#x27;break,case,catch,continue,debugger,default,delete,do,else,false,finally,for,function,if&#x27;
+                + &#x27;,in,instanceof,new,null,return,switch,this,throw,true,try,typeof,var,void,while,with&#x27;
+                // Reserved words
+                + &#x27;,abstract,boolean,byte,char,class,const,double,enum,export,extends,final,float,goto&#x27;
+                + &#x27;,implements,import,int,interface,long,native,package,private,protected,public,short&#x27;
+                + &#x27;,static,super,synchronized,throws,transient,volatile&#x27;
+                
+                // ECMA 5 - use strict
+                + &#x27;,arguments,let,yield&#x27;).split(&#x27;,&#x27;),
+            keyMap = {};
+            
+        for (var i = 0, len = keys.length; i &lt; len; i ++) {
+            keyMap[keys[i]] = 1;
+        }
+            
+        function _getCompileFn (source) {
+            vars = &#x27;var &#x27;;
+            varsInTpl = {};
+            varsInTpl[retTag] = 1; 
+            var openArr = source.split(openTag),
+                tmpCode = &#x27;&#x27;;
+                
+            for (var i = 0, len = openArr.length; i &lt; len; i ++) {
+                var c = openArr[i],
+                    cArr = c.split(closeTag);
+                if (cArr.length == 1) {
+                    tmpCode += _html(cArr[0]);
+                } else {
+                    tmpCode += _js(cArr[0]);
+                    tmpCode += cArr[1] ? _html(cArr[1]) : &#x27;&#x27;;
+                }
+            }
+        
+            var code = vars + codeArr[0] + tmpCode + &#x27;return &#x27; + codeArr[3];
+            var fn = new Function(&#x27;$data&#x27;, code);
+            
+            return fn;
+        }
+        
+        function _html (s) {
+            s = s
+            .replace(/(&#x27;|&quot;|\\)/g, &#x27;\\$1&#x27;)
+            .replace(/\r/g, &#x27;\\r&#x27;)
+            .replace(/\n/g, &#x27;\\n&#x27;);
+            
+            s = codeArr[1] + &#x27;&quot;&#x27; + s + &#x27;&quot;&#x27; + codeArr[2];
+            
+            return s + &#x27;\n&#x27;;
+        }
+        
+        function _js (s) {
+            if (/^=/.test(s)) {
+                s = codeArr[1] + s.substring(1).replace(/[\s;]*$/, &#x27;&#x27;) + codeArr[2];
+            }
+            dealWithVars(s);
+            
+            return s + &#x27;\n&#x27;;
+        }
+        
+        function dealWithVars (s) {
+            s = s.replace(/\/\*.*?\*\/|&#x27;[^&#x27;]*&#x27;|&quot;[^&quot;]*&quot;|\.[\$\w]+/g, &#x27;&#x27;);
+            var sarr = s.split(/[^\$\w\d]+/);
+            for (var i = 0, len = sarr.length; i &lt; len; i ++) {
+                var c = sarr[i];
+                if (!c || keyMap[c] || /^\d/.test(c)) {
+                    continue;
+                }
+                if (!varsInTpl[c]) {
+                    if (c === &#x27;print&#x27;) {
+                        vars += codeArr[4];
+                    } else {
+                        vars += (c + &#x27;=$data.hasOwnProperty(&quot;&#x27;+c+&#x27;&quot;)?$data.&#x27; + c + &#x27;:window.&#x27; + c + &#x27;,&#x27;);
+                    }
+                    varsInTpl[c] = 1;
+                }
+            }
+        }
+        
+        // function getValue (v, $data){
+        //     return $data.hasOwnProperty(v) ? $data[v] : global[v];
+        // }
+
+        // function jstemplate (id, source, data) {
+        //     if (typeof arguments[1] == &#x27;object&#x27; &amp;&amp; arguments[2] == undefined) {
+        //         data = source;
+        //         source = id;
+        //         id = null;
+        //     }
+        //     return (id &amp;&amp; _cache[id]) ? _cache[id](data, getValue) : jstemplate.compile(id, source, data);
+        // }
+        
+        // jstemplate.compile = function (id, source, data) {
+        //     vars = &#x27;var &#x27;;
+        //     varsInTpl = {};
+            
+        //     var compileFn = _getCompileFn(source);
+        //     if (id) { 
+        //         _cache[id] = compileFn;
+        //     }
+        //     //console.log(compileFn)
+        //     return compileFn(data, getValue);
+        // }
+        
+        // jstemplate.openTag = &#x27;&lt;%&#x27;;
+        // jstemplate.closeTag = &#x27;%&gt;&#x27;;
+        
+        var cache = {};
+        return function(str, data){
+            // Figure out if we&#x27;re getting a template, or if we need to
+            // load the template - and be sure to cache the result.
+            var fn = !/\W/.test(str) ?
+                cache[str] || (cache[str] = _getCompileFn(document.getElementById(str).innerHTML)) :
+                _getCompileFn(str);
+            
+            // Provide some basic currying to the user
+            return data ? fn(data) : fn;
+        };
+    }();
+
+    /**
+     * 判断是否是一个可接受的 url 串
+     * 
+     * @method isURL
+     * @memberOf string
+     * 
+     * @param {String} str 要检测的字符串
+     * @return {Boolean} 如果是可接受的 url 则返回 true
+     */
+    isURL = function(str) {
+        return isURL.RE.test(str);
+    };
+        
+    /**
+     * @ignore
+     */
+    isURL.RE = /^(?:ht|f)tp(?:s)?\:\/\/(?:[\w\-\.]+)\.\w+/i;
+
+
+    /**
+     * 分解 URL 为一个对象，成员为：scheme, user, pass, host, port, path, query, fragment
+     * 
+     * @method parseURL
+     * @memberOf string
+     * 
+     * @param {String} str URL 地址
+     * @return {Object} 如果解析失败则返回 null
+     */
+    parseURL = function(str) {
+        var ret = null;
+
+        if (null !== (ret = parseURL.RE.exec(str))) {
+            var specObj = {};
+            for (var i = 0, j = parseURL.SPEC.length; i &lt; j ; i ++) {
+                var curSpec = parseURL.SPEC[i];
+                specObj[curSpec] = ret[i + 1];
+            }
+            ret = specObj;
+            specObj = null;
+        }
+
+        return ret;
+    };
+
+
+    /**
+     * 将一个对象（成员为：scheme, user, pass, host, port, path, query, fragment）重新组成为一个字符串
+     * 
+     * @method buildURL
+     * @memberOf string
+     * 
+     * @param {Object} obj URl 对象
+     * @return {String} 如果是可接受的 url 则返回 true
+     */
+    buildURL = function(obj) {
+        var ret = &#x27;&#x27;;
+
+        // prefix &amp; surffix
+        var prefix = {},
+            surffix = {};
+
+        for (var i = 0, j = parseURL.SPEC.length; i &lt; j ; i ++) {
+            var curSpec = parseURL.SPEC[i];
+            if (!obj[curSpec]) {
+                continue;
+            }
+            switch (curSpec) {
+            case &#x27;scheme&#x27;:
+                surffix[curSpec] = &#x27;://&#x27;;
+                break;
+            case &#x27;pass&#x27;:
+                prefix[curSpec] = &#x27;:&#x27;;
+            case &#x27;user&#x27;:
+                prefix[&#x27;host&#x27;] = &#x27;@&#x27;;
+                break;
+            //case &#x27;host&#x27;:
+            case &#x27;port&#x27;:
+                prefix[curSpec] = &#x27;:&#x27;;
+                break;
+            //case &#x27;path&#x27;:
+            case &#x27;query&#x27;:
+                prefix[curSpec] = &#x27;?&#x27;;
+                break;
+            case &#x27;fragment&#x27;:
+                prefix[curSpec] = &#x27;#&#x27;;
+                break;
+            }
+
+            // rebuild
+            if (curSpec in prefix) {
+                ret += prefix[curSpec];
+            }
+            if (curSpec in obj) {
+                ret += obj[curSpec];
+            }
+            if (curSpec in surffix) {
+                ret += surffix[curSpec];
+            }
+        }
+
+        prefix = null;
+        surffix = null;
+        obj = null;
+
+        return ret;
+    };
+    
+    /**
+     * @ignore
+     */
+    parseURL.SPEC = [&#x27;scheme&#x27;, &#x27;user&#x27;, &#x27;pass&#x27;, &#x27;host&#x27;, &#x27;port&#x27;, &#x27;path&#x27;, &#x27;query&#x27;, &#x27;fragment&#x27;];
+    parseURL.RE = /^([^:]+):\/\/(?:([^:@]+):?([^@]*)@)?(?:([^/?#:]+):?(\d*))([^?#]*)(?:\?([^#]+))?(?:#(.+))?$/;
+    
+    /**
+     * 将 uri 的查询字符串参数映射成对象
+     * 
+     * @method mapQuery
+     * @memberOf string
+     * 
+     * @param {String} uri 要映射的 uri
+     * @return {Object} 按照 uri 映射成的对象
+     * 
+     * @example
+     * Jx().$package(function(J){
+     *  var url = &quot;http://web.qq.com/?qq=4765078&amp;style=blue&quot;;
+     *  // queryObj 则得到一个{qq:&quot;4765078&quot;, style:&quot;blue&quot;}的对象。
+     *  var queryObj = J.mapQuery(url);
+     * };
+     */
+    mapQuery = function(uri){
+        //window.location.search
+        var i,
+            key,
+            value,
+            uri = uri &amp;&amp; uri.split(&#x27;#&#x27;)[0] || window.location.search, //remove hash
+            index = uri.indexOf(&quot;?&quot;),
+            pieces = uri.substring(index + 1).split(&quot;&amp;&quot;),
+            params = {};
+        if(index === -1){//如果连?号都没有,直接返回,不再进行处理. az 2011/5/11
+            return params;
+        }
+        for(i=0; i&lt;pieces.length; i++){
+            try{
+                index = pieces[i].indexOf(&quot;=&quot;);
+                key = pieces[i].substring(0,index);
+                value = pieces[i].substring(index+1);
+                if(!(params[key] = unescape(value))){
+                    throw new Error(&quot;uri has wrong query string when run mapQuery.&quot;);
+                }
+            }
+            catch(e){
+                //J.out(&quot;错误：[&quot; + e.name + &quot;] &quot;+e.message+&quot;, &quot; + e.fileName+&quot;, 行号:&quot;+e.lineNumber+&quot;; stack:&quot;+typeof e.stack, 2);
+            }
+        }
+        return params;
+    };
+    
+    /**
+     * 
+     * test的方法
+     * 
+     * @memberOf string
+     * 
+     * @param {String, RegExp} regex 正则表达式，或者正则表达式的字符串
+     * @param {String} params 正则的参数
+     * @return {Boolean} 返回结果
+     */
+    test = function(string, regex, params){
+        return ((typeof regex == &#x27;string&#x27;) ? new RegExp(regex, params) : regex).test(string);
+    };
+
+    /**
+     * 判断是否含有指定的字符串
+     * 
+     * @memberOf string
+     * @name contains
+     * @function
+     * @param {String} string 是否含有的字符串
+     * @param {String} separator 分隔符，可选
+     * @return {Boolean} 如果含有，返回 true，否则返回 false
+     */
+    contains = function(string1, string2, separator){
+        return (separator) ? (separator + string1 + separator).indexOf(separator + string2 + separator) &gt; -1 : string1.indexOf(string2) &gt; -1;
+    };
+
+    /**
+     * 清除字符串开头和结尾的空格
+     * 
+     * @memberOf string
+     * 
+     * @return {String} 返回清除后的字符串
+     */
+    trim = function(string){
+        return String(string).replace(/^\s+|\s+$/g, &#x27;&#x27;);
+    };
+
+    /**
+     * 清除字符串开头和结尾的空格，并把字符串之间的多个空格转换为一个空格
+     * 
+     * @memberOf string
+     * 
+     * @return {String} 返回清除后的字符串
+     */
+    clean = function(string){
+        return trim(string.replace(/\s+/g, &#x27; &#x27;));
+    };
+
+    /**
+     * 将“-”连接的字符串转换成驼峰式写法
+     * 
+     * @memberOf string
+     * 
+     * @return {String} 返回转换后的字符串
+     */
+    camelCase = function(string){
+        return string.replace(/-\D/g, function(match){
+            return match.charAt(1).toUpperCase();
+        });
+    };
+    
+    /**
+     * 将驼峰式写法字符串转换成“-”连接的
+     * 
+     * @memberOf string
+     * 
+     * @return {String} 返回转换后的字符串
+     */
+    hyphenate = function(string){
+        return string.replace(/[A-Z]/g, function(match){
+            return (&#x27;-&#x27; + match.charAt(0).toLowerCase());
+        });
+    };
+
+    /**
+     * 将字符串转换成全大写字母
+     * 
+     * @memberOf string
+     * 
+     * @return {String} 返回转换后的字符串
+     */
+    capitalize = function(string){
+        return string.replace(/\b[a-z]/g, function(match){
+            return match.toUpperCase();
+        });
+    };
+
+    /**
+     * 转换 RegExp 正则表达式
+     * 
+     * @memberOf string
+     * 
+     * @return {String} 返回转换后的字符串
+     */
+    escapeRegExp = function(string){
+        return string.replace(/([-.*+?^${}()|[\]\/\\])/g, &#x27;\\$1&#x27;);
+    };
+
+    /**
+     * 将字符串转换成整数
+     * 
+     * @memberOf string
+     * 
+     * @return {Number} 返回转换后的整数
+     */
+    toInt = function(string, base){
+        return parseInt(string, base || 10);
+    };
+
+    /**
+     * 将字符串转换成浮点数
+     * 
+     * @memberOf string
+     * @param {Sring} string 要转换的字符串
+     * @return {Number} 返回转换后的浮点数
+     */
+    toFloat = function(string){
+        return parseFloat(string);
+    };
+    
+    /**
+     * 将带换行符的字符串转换成无换行符的字符串
+     * 
+     * @memberOf string
+     * @param {Sring} str 要转换的字符串
+     * @return {Sring} 返回转换后的字符串
+     */
+    toSingleLine = function(str){
+        return String(str).replace(/\r/gi,&quot;&quot;)
+                            .replace(/\n/gi,&quot;&quot;);
+    };
+    
+    /**
+     * 将字符串转换成html源码
+     * 
+     * @memberOf string
+     * @param {Sring} str 要转换的字符串
+     * @return {Sring} 返回转换后的html代码字符串
+     */
+    toHtml = function(str){
+        return String(str).replace(/&amp;/gi,&quot;&amp;amp;&quot;)
+                            .replace(/\\/gi,&quot;&amp;#92;&quot;)
+                            .replace(/\&#x27;/gi,&quot;&amp;#39;&quot;)
+                            .replace(/\&quot;/gi,&quot;&amp;quot;&quot;)
+                            .replace (/&lt;/gi,&quot;&amp;lt;&quot;)
+                            .replace(/&gt;/gi,&quot;&amp;gt;&quot;)
+                            .replace(/ /gi,&quot;&amp;nbsp;&quot;)
+                            .replace(/\r\n/g,&quot;&lt;br /&gt;&quot;)
+                            .replace(/\n\r/g,&quot;&lt;br /&gt;&quot;)
+                            .replace(/\n/g,&quot;&lt;br /&gt;&quot;)
+                            .replace(/\r/g,&quot;&lt;br /&gt;&quot;);
+    };
+    
+    
+    
+    /**
+     * 将字符串转换成用于title的字符串
+     * 
+     * @memberOf string
+     * @param {Sring} str 要转换的字符串
+     * @return {Number} 返回转换后的in title字符串
+     */
+    toTitle = function(str){
+        return String(str).replace(/\\/gi,&quot;\\&quot;)
+                            .replace(/\&#x27;/gi,&quot;\&#x27;&quot;)
+                            .replace(/\&quot;/gi,&quot;\&#x27;&quot;);
+    };
+
+    
+    
+    
+    
+
+    /**
+     * 将颜色 Hex 写法转换成 RGB 写法
+     * 
+     * @memberOf string
+     * @return {String} 返回转换后的字符串
+     */
+    hexToRgb = function(string, array){
+        var hex = string.match(/^#?(\w{1,2})(\w{1,2})(\w{1,2})$/);
+        return (hex) ? hex.slice(1).hexToRgb(array) : null;
+    };
+
+    /**
+     * 将颜色 RGB 写法转换成 Hex 写法
+     * 
+     * @memberOf string
+     * @return {String} 返回转换后的字符串
+     */
+    rgbToHex = function(string, array){
+        var rgb = string.match(/\d{1,3}/g);
+        return (rgb) ? rgb.rgbToHex(array) : null;
+    };
+
+    /**
+     * 脱去script标签
+     * 
+     * @memberOf string
+     * @return {String} 返回转换后的字符串
+     */
+    stripScripts = function(string, option){
+        var scripts = &#x27;&#x27;;
+        var text = string.replace(/&lt;script[^&gt;]*&gt;([\s\S]*?)&lt;\/script&gt;/gi, function(){
+            scripts += arguments[1] + &#x27;\n&#x27;;
+            return &#x27;&#x27;;
+        });
+        if (option === true){
+            $exec(scripts);
+        }else if($type(option) == &#x27;function&#x27;){
+            option(scripts, text);
+        }
+        return text;
+    };
+    
+    /**
+     * 。。。。
+     * 
+     * @memberOf string
+     * @param {Object} obj 要转换成查询字符串的对象
+     * @return {String} 返回转换后的查询字符串
+     */
+    toQueryPair = function(key, value) {
+        return encodeURIComponent(String(key)) + &quot;=&quot; + encodeURIComponent(String(value));
+    };
+    
+    /**
+     * 。。。。
+     * 
+     * @memberOf string
+     * @param {Object} obj 要转换成查询字符串的对象
+     * @return {String} 返回转换后的查询字符串
+     */
+    toQueryString = function(obj){
+        var result=[];
+        for(var key in obj){
+            result.push(toQueryPair(key, obj[key]));
+        }
+        return result.join(&quot;&amp;&quot;);
+    };
+
+
+
+    /**
+     * 。。。。
+     * 
+     * @memberOf string
+     * @return {String} 返回转换后的字符串
+     */
+    substitute = function(string, object, regexp){
+        return string.replace(regexp || (/\\?\{([^{}]+)\}/g), function(match, name){
+            if (match.charAt(0) == &#x27;\\&#x27;) return match.slice(1);
+            return (object[name] != undefined) ? object[name] : &#x27;&#x27;;
+        });
+    };
+    
+    /**
+     * 全局替换指定的字符串
+     * 
+     * @memberOf string
+     * @return {String} 返回替换后的字符串
+     */
+    replaceAll = function(string, reallyDo, replaceWith, ignoreCase) {
+        if (!RegExp.prototype.isPrototypeOf(reallyDo)) {
+            return string.replace(new RegExp(reallyDo, (ignoreCase ? &quot;gi&quot;: &quot;g&quot;)), replaceWith);
+        } else {
+            return string.replace(reallyDo, replaceWith);
+        }
+    };
+    
+    /**
+     * 计算字符串的字节长度
+     * 
+     * @memberOf string
+     * @param {String} string
+     * @param {Number} n 指定一个中文的字节数, 默认为2
+     * @return {Number} 返回自己长度
+     */
+    byteLength = function(string,n){
+        n= n||2;
+        return string.replace(/[^\x00-\xff]/g,({2:&quot;aa&quot;,3:&quot;aaa&quot;})[n]).length;
+    };
+    /**
+     * 按字符按给定长度裁剪给定字符串
+     * @memberOf string
+     * @param {String} string
+     * @param {Number} n 
+     * @return {String} 
+     */
+    cutRight = function(string, n){
+        return string.substring(0, (string.length - n));
+    };
+    /**
+     * 按字节按给定长度裁剪给定字符串
+     * @memberOf string
+     * @param {String} string
+     * @param {Number} n 
+     * @return {String} 
+     */
+    cutByBytes = function(string,n) {
+        var s= string;
+        while(byteLength(s)&gt;n) {
+            s= cutRight(s,1);
+        }
+        return s;
+    };
+    /**
+     * 判断给定字符串是否是数字
+     * @memberOf string
+     * @name isNumber
+     * @function
+     * 
+     * @param {String} string
+     * @param {Number} n 
+     * @return {String} 
+     */
+    isNumber = function(string){
+        if (string.search(/^\d+$/) !== -1){
+            return true;
+        }
+        else{
+            return false;
+        }
+    };
+    /**
+     * 判断一个字符串是否是邮箱格式
+     * @memberOf string
+     * @param {String} emailStr
+     * @return {Boolean}
+     */
+    isEmail = function(emailStr){
+        if (emailStr.search(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/) !== -1){
+            return true;
+        }
+        else{
+            return false;
+        }
+    };
+    
+    
+    
+    
+    /*
+    JS安全API v1.1
+    Created By Web Application Security Group of TSC
+    UpDate: 2007-12-08
+    */
+
+    
+    /**
+     * html正文编码, 对需要出现在HTML正文里(除了HTML属性外)的不信任输入进行编码
+     * @memberOf string
+     * @param {String} sStr
+     * @return {String} 
+     */
+    var encodeHtmlSimple = function(sStr){
+        sStr = sStr.replace(/&amp;/g,&quot;&amp;amp;&quot;);
+        sStr = sStr.replace(/&gt;/g,&quot;&amp;gt;&quot;);
+        sStr = sStr.replace(/&lt;/g,&quot;&amp;lt;&quot;);
+        sStr = sStr.replace(/&quot;/g,&quot;&amp;quot;&quot;);
+        sStr = sStr.replace(/&#x27;/g,&quot;&amp;#39;&quot;);
+        return sStr;
+    };
+    
+    /**
+     * html正文解码, 对HtmlEncode函数的结果进行解码
+     * @memberOf string
+     * @param {String} sStr
+     * @return {String} 
+     */
+    var decodeHtmlSimple = function(sStr){
+        sStr = sStr.replace(/&amp;amp;/g,&quot;&amp;&quot;);
+        sStr = sStr.replace(/&amp;gt;/g,&quot;&gt;&quot;);
+        sStr = sStr.replace(/&amp;lt;/g,&quot;&lt;&quot;);
+        sStr = sStr.replace(/&amp;quot;/g,&#x27;&quot;&#x27;);
+        sStr = sStr.replace(/&amp;#39;/g,&quot;&#x27;&quot;);
+        return sStr;
+    };
+    
+    var decodeHtmlSimple2 = function(sStr){
+        sStr = sStr.replace(/&amp;amp;/g,&quot;&amp;&quot;);
+        sStr = sStr.replace(/&amp;gt;/g,&quot;&gt;&quot;);
+        sStr = sStr.replace(/&amp;lt;/g,&quot;&lt;&quot;);
+        sStr = sStr.replace(/\\\\&quot;/g,&#x27;&quot;&#x27;);
+        sStr = sStr.replace(/\\\\&#x27;/g,&quot;&#x27;&quot;);
+        return sStr;
+    };
+    
+    /**
+     * html属性编码：对需要出现在HTML属性里的不信任输入进行编码
+        注意:
+        (1)该函数不适用于属性为一个URL地址的编码.这些标记包括:a/img/frame/iframe/script/xml/embed/object...
+        属性包括:href/src/lowsrc/dynsrc/background/...
+        (2)该函数不适用于属性名为 style=&quot;[Un-trusted input]&quot; 的编码
+     * @memberOf string
+     * @param {String} sStr
+     * @return {String} 
+     */
+    var encodeHtmlAttributeSimple = function(sStr){
+        sStr = sStr.replace(/&amp;/g,&quot;&amp;amp;&quot;);
+        sStr = sStr.replace(/&gt;/g,&quot;&amp;gt;&quot;);
+        sStr = sStr.replace(/&lt;/g,&quot;&amp;lt;&quot;);
+        sStr = sStr.replace(/&quot;/g,&quot;&amp;quot;&quot;);
+        sStr = sStr.replace(/&#x27;/g,&quot;&amp;#39;&quot;);
+        sStr = sStr.replace(/=/g,&quot;&amp;#61;&quot;);
+        sStr = sStr.replace(/&#x60;/g,&quot;&amp;#96;&quot;);
+        return sStr;
+    };
+
+    
+    
+    
+    /**
+     * 用做过滤直接放到HTML里的
+     * @memberOf string
+     * @param {String} sStr
+     * @return {String} 
+     */
+    var encodeHtml = function(sStr) { 
+        return sStr.replace(/[&amp;&#x27;&quot;&lt;&gt;\/\\\-\x00-\x09\x0b-\x0c\x1f\x80-\xff]/g, function(r){ 
+            return &quot;&amp;#&quot;+r.charCodeAt(0)+&quot;;&quot;;
+        }).replace(/ /g, &quot;&amp;nbsp;&quot;).replace(/\r\n/g, &quot;&lt;br /&gt;&quot;).replace(/\n/g, &quot;&lt;br /&gt;&quot;).replace(/\r/g, &quot;&lt;br /&gt;&quot;); 
+    };
+    
+    /**
+     * 用做过滤HTML标签里面的东东 比如这个例子里的&amp;lt;input value=&quot;XXXX&quot;&amp;gt;  XXXX就是要过滤的
+     * @memberOf string
+     * @param {String} sStr
+     * @return {String} 
+     */
+    var encodeHtmlAttribute = function(sStr) { 
+        return sStr.replace(/[&amp;&#x27;&quot;&lt;&gt;\/\\\-\x00-\x1f\x80-\xff]/g, function(r){ 
+            return &quot;&amp;#&quot;+r.charCodeAt(0)+&quot;;&quot;;
+        }); 
+    };
+    
+    /**
+     * 用做过滤直接放到HTML里js中的
+     * @memberOf string
+     * @param {String} sStr
+     * @return {String} 
+     */
+    var encodeScript = function(sStr) {
+        sStr+=&quot;&quot;;//确保为String
+        return sStr.replace(/[\\&quot;&#x27;]/g, function(r){ 
+            return &quot;\\&quot;+r; 
+        }).replace(/%/g, &quot;\\x25&quot;).replace(/\n/g, &quot;\\n&quot;).replace(/\r/g, &quot;\\r&quot;).replace(/\x01/g, &quot;\\x01&quot;);
+    };
+    
+    
+    
+    /**
+     * 用做过滤直接放到&lt;a href=&quot;javascript:XXXX&quot;&gt;中的
+     * @memberOf string
+     * @param {String} sStr
+     * @return {String} 
+     */
+    var encodeHrefScript = function(sStr) {
+        return encodeHtml(encodeUrl(escScript(sStr)));
+    };
+    
+    /**
+     * 用做过滤直接放到正则表达式中的
+     * @memberOf string
+     * @param {String} sStr
+     * @return {String} 
+     */
+    var encodeRegExp = function(sStr) {
+        return sStr.replace(/[\\\^\$\*\+\?\{\}\.\(\)\[\]]/g, function(a,b){
+            return &quot;\\&quot;+a;
+        });
+    };
+    
+    /**
+     * 用做过滤直接URL参数里的  比如 http://show8.qq.com/abc_cgi?a=XXX  XXX就是要过滤的
+     * @memberOf string
+     * @param {String} sStr
+     * @return {String} 
+     */
+    var encodeUrl = function(sStr) {
+        return escape(sStr).replace(/\+/g, &quot;%2B&quot;);
+    };
+    
+    /**
+        对需要出现在一个URI的一部分的不信任输入进行编码 
+        例如:
+        &lt;a href=&quot;http://search.msn.com/results.aspx?q1=[Un-trusted-input]&amp; q2=[Un-trusted-input]&quot;&gt;Click Here!&lt;/a&gt;
+        以下字符将会被编码: 
+        除[a-zA-Z0-9.-_]以外的字符都会被替换成URL编码
+     *
+     * @memberOf string
+     * @param {String} sStr
+     * @return {String} 
+     */
+    var encodeUriComponent = function(sStr){
+        sStr = encodeURIComponent(sStr);
+        sStr = sStr.replace(/~/g,&quot;%7E&quot;);
+        sStr = sStr.replace(/!/g,&quot;%21&quot;);
+        sStr = sStr.replace(/\*/g,&quot;%2A&quot;);
+        sStr = sStr.replace(/\(/g,&quot;%28&quot;);
+        sStr = sStr.replace(/\)/g,&quot;%29&quot;);
+        sStr = sStr.replace(/&#x27;/g,&quot;%27&quot;);
+        sStr = sStr.replace(/\?/g,&quot;%3F&quot;);
+        sStr = sStr.replace(/;/g,&quot;%3B&quot;);
+        return sStr;
+    };
+    
+    /**
+    url转向验证
+    描述：对通过javascript语句载入（或转向）的页面进行验证，防止转到第三方网页和跨站脚本攻击
+    返回值：true -- 合法；false -- 非法
+    例：
+    合法的值
+        http://xxx.qq.com/hi/redirect.html?url=http://www.qq.com
+        http://xxx.qq.com/hi/redirect.html?url=a.html
+        http://xxx.qq.com/hi/redirect.html?url=/a/1.html
+    非法的值
+        http://xxx.qq.com/hi/redirect.html?url=http://www.baidu.com
+        http://xxx.qq.com/hi/redirect.html?url=javascript:codehere
+        http://xxx.qq.com/hi/redirect.html?url=//www.qq.com
+     *
+     * @memberOf string
+     * @param {String} sUrl
+     * @return {String} 
+     */
+    var vaildTencentUrl = function(sUrl){
+        return (/^(https?:\/\/)?[\w\-.]+\.(qq|paipai|soso|taotao)\.com($|\/|\\)/i).test(sUrl)||(/^[\w][\w\/\.\-_%]+$/i).test(sUrl)||(/^[\/\\][^\/\\]/i).test(sUrl) ? true : false;
+    };
+    
+
+    /**
+     * 验证给定字符串是否是url, 如果是url 则返回正常的url
+     * 
+     * @memberOf string
+     * @param {String} sUrl
+     * @return {String} 
+     */
+    var vaildUrl = function(url){ 
+        var url=encodeURI(url).replace(/(^\s*)|(\s*$)/g, &#x27;&#x27;),
+            protocolReg=/(^[a-zA-Z0-9]+[^.]):/,
+            domainReg=/^[\S.]+\.[\S.]+$/,
+            domainendReg=/[\w.]+\/(\S*)/,
+            jsReg=/;$/,
+            jpReg=/^[\s*]*javascript[\s*]*:/;
+            
+        if((!protocolReg.test(url)) &amp;&amp; (!domainReg.test(url))){
+            url=&quot;&quot;;
+        }else{
+            if(!protocolReg.test(url)){
+                url=&quot;http://&quot;+url;
+            }
+            if(!domainendReg.test(url)){
+                url=url+&quot;/&quot;;
+                
+            }
+            //如果是js为协议就清空
+            if(jpReg.test(url)){
+                url=&quot;&quot;;
+            }
+        }
+        
+        return url;
+    };
+    
+    
+    /**
+     * 获取字符实际宽度
+     * @memberOf string
+     * @param {String} str 需要计算的字符串
+     * @param {Number} fontsize 字体大小，可以不填
+     * @return {Number}
+     */
+    var getCharWidth = function(str,fontsize) {
+        var d= document.createElement(&quot;div&quot;);
+        d.style.visibility= &quot;hidden&quot;;
+        d.style.width= &quot;auto&quot;;
+        if(fontsize) {
+            d.style.fontSize= fontsize + &quot;px&quot;;
+        }
+        d.style.position= &quot;absolute&quot;;
+        d.innerHTML= J.string.encodeHtmlSimple(str);
+        document.body.appendChild(d);
+        var width= d.offsetWidth;
+        document.body.removeChild(d);
+        return width;
+    };
+    
+    /**
+     * 按给定宽度裁剪字符串
+     * @memberOf string
+     * @param {String} str 
+     * @param {Number} fontsize 字体大小
+     * @param {Number} width 限定的宽度
+     * @return {Number}
+     */
+    var cutByWidth = function(str,fontsize,width) {
+        for(var i=str.length;i&gt;=0;--i)
+        {
+            str=str.substring(0, i);
+            if(getCharWidth(str, fontsize)&lt;width)
+            {
+                return str;
+            }
+        }
+        return &#x27;&#x27;;
+    };
+    $S.cutByWidth = cutByWidth;
+    $S.toString = toString;
+    $S.template = template;
+    $S.isURL = isURL;
+    $S.parseURL = parseURL;
+    $S.buildURL = buildURL;
+    $S.mapQuery = mapQuery;
+    $S.test = test;
+    $S.contains = contains;
+    $S.trim = trim;
+    $S.clean = clean;
+    $S.camelCase = camelCase;
+    $S.hyphenate = hyphenate;
+    $S.capitalize = capitalize;
+    $S.escapeRegExp = escapeRegExp;
+    $S.toInt = toInt;
+    $S.toFloat = toFloat;
+    $S.toSingleLine = toSingleLine;
+    
+    $S.toHtml = toHtml;
+    $S.toTitle = toTitle;
+    $S.toQueryPair = toQueryPair;
+    $S.toQueryString = toQueryString;
+    
+    $S.hexToRgb = hexToRgb;
+    $S.rgbToHex = rgbToHex;
+    $S.stripScripts = stripScripts;
+    $S.substitute = substitute;
+    $S.replaceAll = replaceAll;
+    
+    $S.byteLength = byteLength;
+    $S.cutRight = cutRight;
+    
+    $S.isNumber = isNumber;
+    $S.isEmail = isEmail;
+    
+    $S.cutByBytes = cutByBytes;
+    
+    //html正文编码：对需要出现在HTML正文里(除了HTML属性外)的不信任输入进行编码
+    $S.encodeHtmlSimple = encodeHtmlSimple;
+    
+    //html正文解码：对HtmlEncode函数的结果进行解码
+    $S.decodeHtmlSimple = decodeHtmlSimple;
+    $S.decodeHtmlSimple2 = decodeHtmlSimple2;
+    
+    
+    /*
+    html属性编码：对需要出现在HTML属性里的不信任输入进行编码
+    注意:
+    (1)该函数不适用于属性为一个URL地址的编码.这些标记包括:a/img/frame/iframe/script/xml/embed/object...
+    属性包括:href/src/lowsrc/dynsrc/background/...
+    (2)该函数不适用于属性名为 style=&quot;[Un-trusted input]&quot; 的编码
+    */
+    $S.encodeHtmlAttributeSimple = encodeHtmlAttributeSimple;
+    
+    //用做过滤HTML标签里面的东东 比如这个例子里的&lt;input value=&quot;XXXX&quot;&gt;  XXXX就是要过滤的
+    $S.encodeHtmlAttribute = encodeHtmlAttribute;
+    
+    //用做过滤直接放到HTML里的
+    $S.encodeHtml = encodeHtml;
+    
+    //用做过滤直接放到HTML里js中的
+    $S.encodeScript = encodeScript;
+    
+    //用做过滤直接放到&lt;a href=&quot;javascript:XXXX&quot;&gt;中的
+    $S.encodeHrefScript = encodeHrefScript;
+    
+    //用做过滤直接放到正则表达式中的
+    $S.encodeRegExp = encodeRegExp;
+    
+    //用做过滤直接URL参数里的  比如 http://show8.qq.com/abc_cgi?a=XXX  XXX就是要过滤的
+    $S.encodeUrl = encodeUrl;
+    
+    /*
+    对需要出现在一个URI的一部分的不信任输入进行编码 
+    例如:
+    &lt;a href=&quot;http://search.msn.com/results.aspx?q1=[Un-trusted-input]&amp; q2=[Un-trusted-input]&quot;&gt;Click Here!&lt;/a&gt;
+    以下字符将会被编码: 
+    除[a-zA-Z0-9.-_]以外的字符都会被替换成URL编码
+    */
+    $S.encodeUriComponent = encodeUriComponent;
+    
+    /*
+    url转向验证
+    描述：对通过javascript语句载入（或转向）的页面进行验证，防止转到第三方网页和跨站脚本攻击
+    返回值：true -- 合法；false -- 非法
+    例：
+    合法的值
+        http://xxx.qq.com/hi/redirect.html?url=http://www.qq.com
+        http://xxx.qq.com/hi/redirect.html?url=a.html
+        http://xxx.qq.com/hi/redirect.html?url=/a/1.html
+    非法的值
+        http://xxx.qq.com/hi/redirect.html?url=http://www.baidu.com
+        http://xxx.qq.com/hi/redirect.html?url=javascript:codehere
+        http://xxx.qq.com/hi/redirect.html?url=//www.qq.com
+    */
+    $S.vaildTencentUrl = vaildTencentUrl;
+    
+    $S.vaildUrl = vaildUrl;
+    
+    $S.getCharWidth = getCharWidth;
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+});
+
+
+
+
+
+
+
+
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

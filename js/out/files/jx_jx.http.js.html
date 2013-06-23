@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>jx/jx.http.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/JXAnimation.Audio.html">JXAnimation.Audio</a></li>
+            
+                <li><a href="../classes/Log.html">Log</a></li>
+            
+                <li><a href="../classes/Tab.html">Tab</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/JXAnimate.Audio.html">JXAnimate.Audio</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: jx/jx.http.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/** 
+ * JET (Javascript Extension Tools) 
+ * Copyright (c) 2009, KDV.cn, All rights reserved.
+ * Code licensed under the BSD License:
+ * http://developer.kdv.cn/jet/license.txt
+ *
+ * @fileOverview Jx!
+ * @version 1.0
+ * @author  Kinvix(&lt;a href=&quot;mailto:Kinvix@gmail.com&quot;&gt;Kinvix@gmail.com&lt;/a&gt;)
+ * @description 
+ * 
+ */
+
+/** 
+ * @description
+ * Package: jet.http
+ *
+ * Need package:
+ * jet.core.js
+ * 
+ */
+
+/**
+ * 1.[Browser part]: http 包,含有ajax,comet,loadScript,loadCss封装
+ */
+Jx().$package(function(J){
+    var $=J.dom.id,
+        $D=J.dom,
+        $E=J.event,
+        ajax,
+        comet,
+        load,
+        loadCss,
+        loadScript,
+        formSend;
+    
+    // 兼容不同浏览器的 Adapter 适配层
+    if(typeof window.XMLHttpRequest === &quot;undefined&quot;){
+        /**
+         * @ignore
+         */
+        window.XMLHttpRequest = function(){
+            return new window.ActiveXObject(navigator.userAgent.indexOf(&quot;MSIE 5&quot;) &gt;=0 ? &quot;Microsoft.XMLHTTP&quot; : &quot;Msxml2.XMLHTTP&quot;);
+        };
+    }
+    
+    /**
+     * http 名字空间
+     * 
+     * @namespace
+     * @name http
+     */
+    J.http = J.http || {};
+
+    /**
+     * 这是Ajax对象名字空间的一个方法
+     * 
+     * @memberOf http
+     * @method  ajax
+     * 
+     * @param {String} uri 要加载的数据的uri
+     * @param {Object} option 配置对象，如：isAsync,data,arguments,onSuccess,onError,onComplete,onTimeout,timeout,contentType,type
+     * @return {Object} ajax 返回一个ajax对象，可以abort掉
+     */
+    ajax = function(uri, option){
+        var httpRequest,
+            httpSuccess,
+            timeout,
+            isTimeout = false,
+            isComplete = false;
+        
+        option = {
+            method: (option.method || &quot;GET&quot;).toUpperCase(),
+            data: option.data || null,
+            arguments: option.arguments || null,
+
+            onSuccess: option.onSuccess || function(){},
+            onError: option.onError || function(){},
+            onComplete: option.onComplete || function(){},
+            //尚未测试
+            onTimeout: option.onTimeout || function(){},
+
+            isAsync: option.isAsync || true,
+            timeout: option.timeout || 30000,
+            contentType: option.contentType,
+            type: option.type || &quot;xml&quot;
+        };
+        if(option.data &amp;&amp; typeof option.data === &quot;object&quot;){
+            option.data = J.string.toQueryString(option.data);
+        }
+
+        uri = uri || &quot;&quot;;
+        timeout = option.timeout;
+        
+        httpRequest = new window.XMLHttpRequest();
+
+        /**
+         * @ignore
+         */
+        httpSuccess = function(r){
+            try{
+                return (!r.status &amp;&amp; location.protocol == &quot;file:&quot;)
+                    || (r.status&gt;=200 &amp;&amp; r.status&lt;300)
+                    || (r.status==304)
+                    || (navigator.userAgent.indexOf(&quot;Safari&quot;)&gt;-1 &amp;&amp; typeof r.status==&quot;undefined&quot;);
+            }catch(e){
+                //J.out(&quot;错误：[&quot; + e.name + &quot;] &quot;+e.message+&quot;, &quot; + e.fileName+&quot;, 行号:&quot;+e.lineNumber+&quot;; stack:&quot;+typeof e.stack, 2);
+            }
+            return false;
+        }
+        
+        /**
+         * @ignore
+         */
+        httpRequest.onreadystatechange=function (){
+            if(httpRequest.readyState==4){
+                if(!isTimeout){
+                    var o={};
+                        o.responseText = httpRequest.responseText;
+                        o.responseXML = httpRequest.responseXML;
+                        o.data= option.data;
+                        o.status= httpRequest.status;
+                        o.uri=uri;
+                        o.arguments=option.arguments;
+                        if(option.type === &#x27;json&#x27;){
+                            try{
+                                o.responseJSON = J.json.parse(httpRequest.responseText);
+                            }catch(e){
+                            }
+                        }
+                    if(httpSuccess(httpRequest)){
+                        option.onSuccess(o);
+                    }else{
+                        option.onError(o);
+                    }
+                    option.onComplete(o);
+                }
+                isComplete = true;
+                //删除对象,防止内存溢出
+                httpRequest=null;
+            }
+        };
+        
+        if(option.method === &quot;GET&quot;){
+            if(option.data){
+                uri += (uri.indexOf(&quot;?&quot;)&gt;-1?&quot;&amp;&quot;:&quot;?&quot;) + option.data;
+                option.data = null;
+            }
+            httpRequest.open(&quot;GET&quot;, uri, option.isAsync);
+            httpRequest.setRequestHeader(&quot;Content-Type&quot;,option.contentType || &quot;text/plain;charset=UTF-8&quot;);
+            httpRequest.send();
+        }else if(option.method === &quot;POST&quot;){
+            httpRequest.open(&quot;POST&quot;, uri, option.isAsync);
+            httpRequest.setRequestHeader(&quot;Content-Type&quot;,option.contentType || &quot;application/x-www-form-urlencoded;charset=UTF-8&quot;);
+            httpRequest.send(option.data);
+        }else{
+            httpRequest.open(option.method, uri, option.isAsync);
+            httpRequest.send();
+        }
+        
+        window.setTimeout(function(){
+            var o;
+            if(!isComplete){
+                isTimeout = true;
+                o={};
+                o.uri=uri;
+                o.arguments=option.arguments;
+                option.onTimeout(o);
+                option.onComplete(o);
+            }
+        }, timeout);    
+        
+        return httpRequest;
+    };
+
+    
+    /**
+     * comet方法
+     * 
+     * @memberOf http
+     * @method  comet
+     * @param {String} uri uri地址
+     * @param {Object} option 配置对象
+     * @return {Object} 返回一个comet dom对象
+     */
+    comet = function(uri, option){
+
+        uri = uri || &quot;&quot;;
+        option = {
+            method : option.method || &quot;GET&quot;,
+            data : option.data || null,
+            arguments : option.arguments || null,
+            callback : option.callback || function(){},
+            onLoad : option.onLoad || function(){},
+
+            contentType: option.contentType ? option.contentType : &quot;utf-8&quot;
+        };
+
+        var connection;
+        if(J.browser.ie){
+            var htmlfile = new ActiveXObject(&quot;htmlfile&quot;);
+            htmlfile.open();
+            htmlfile.close();
+            var iframediv = htmlfile.createElement(&quot;div&quot;);
+            htmlfile.appendChild(iframediv);
+            htmlfile.parentWindow._parent = self;
+            iframediv.innerHTML = &#x27;&lt;iframe id=&quot;_cometIframe&quot; src=&quot;&#x27;+uri+&#x27;?callback=window.parent._parent.&#x27;+option.callback+&#x27;&quot;&gt;&lt;/iframe&gt;&#x27;;
+            
+            connection = htmlfile.getElementById(&quot;_cometIframe&quot;);
+        
+        }
+        else{
+            connection = $D.node(&quot;iframe&quot;);
+            connection.setAttribute(&quot;id&quot;, &quot;_cometIframe&quot;);
+            connection.setAttribute(&quot;src&quot;, uri+&#x27;?callback=window.parent._parent.&#x27;+option.callback);
+            connection.style.position = &quot;absolute&quot;;
+            connection.style.visibility = &quot;hidden&quot;;
+            connection.style.left = connection.style.top = &quot;-999px&quot;;
+            connection.style.width = connection.style.height = &quot;1px&quot;;
+            document.body.appendChild(connection);
+            self._parent = self;
+        };
+
+        $E.on(connection,&quot;load&quot;, option.onLoad);
+
+        return connection;
+        
+    };
+    
+
+    
+    
+    
+    
+    /**
+     * 这是load方法
+     * 
+     * @memberOf http
+     * @method load
+     * 
+     * @param {String} type 一个配置对象
+     * @param {Object} option 一个配置对象
+     * @return {Object} ajax 返回一个ajax对象
+     */
+    load = function(type, uri, option){
+        var node,
+            linkNode,
+            scriptNode,
+            id,
+            head = document.getElementsByTagName(&quot;head&quot;) ? document.getElementsByTagName(&quot;head&quot;)[0] : document.documentElement,
+            timer,
+            isTimeout = false,
+            isComplete = false,
+            option = option || {},
+            isDefer = option.isDefer || false,
+            query = option.query || null,
+            arguments = option.arguments || null,
+            
+            onSuccess = option.onSuccess || function(){},
+            onError = option.onError || function(){},
+            onComplete = option.onComplete || function(){},
+            purge,
+            //尚未测试
+            onTimeout = option.onTimeout || function(){},
+
+//          timeout = option.timeout ? option.timeout : 10000,
+            timeout = option.timeout, //az 2011-2-21 修改为默认不需要超时
+            charset = option.charset ? option.charset : &quot;utf-8&quot;,
+            win = option.win || window,
+            o,
+            
+            getId;
+
+        uri = uri || &quot;&quot;;
+        if(query !== null){
+            uri = uri + &quot;?&quot; + query;
+        }
+        /**
+         * @ignore
+         */
+        getId = function(){
+            return load.Id++;
+        };
+        id = getId();
+        
+        /**
+         * @ignore
+         */
+        purge = function(id){
+            var el=$(&quot;jet_load_&quot; + id)
+            if(el){
+                head.removeChild(el);
+            }
+        };
+
+        /**
+         * Generates a link node
+         * @method _linkNode
+         * @param uri {string} the uri for the css file
+         * @param win {Window} optional window to create the node in
+         * @return {HTMLElement} the generated node
+         * @private
+         */
+        linkNode = function(uri, win, charset) {
+            var c = charset || &quot;utf-8&quot;;
+            return $D.node(&quot;link&quot;, {
+                        &quot;id&quot;:       &quot;jet_load_&quot; + id,
+                        &quot;type&quot;:     &quot;text/css&quot;,
+                        &quot;charset&quot;:  c,
+                        &quot;rel&quot;:      &quot;stylesheet&quot;,
+                        &quot;href&quot;:     uri
+                    }, win);
+        };
+        
+        /**
+         * Generates a script node
+         * @method _scriptNode
+         * @param uri {string} the uri for the script file
+         * @param win {Window} optional window to create the node in
+         * @return {HTMLElement} the generated node
+         * @private
+         */
+        scriptNode = function(uri, win, charset, isDefer) {
+            var c = charset || &quot;utf-8&quot;;
+            var node = $D.node(&quot;script&quot;, {
+                        &quot;id&quot;:       &quot;jet_load_&quot; + id,
+                        &quot;type&quot;:     &quot;text/javascript&quot;,
+                        &quot;charset&quot;:  c,
+                        &quot;src&quot;:      uri
+                    }, win);
+            if(isDefer){
+                node.setAttribute(&quot;defer&quot;, &quot;defer&quot;);
+            }
+            
+            return node;
+        };
+        
+        
+        
+        if(type === &quot;script&quot;){
+            node = option.node || scriptNode(uri, win, charset, isDefer);
+        }else if(type === &quot;css&quot;){
+            node = option.node || linkNode(uri, win, charset);
+        }
+        
+
+        if(J.browser.engine.trident &amp;&amp; parseInt(J.browser.ie)&lt;9){
+            /**
+             * @ignore
+             */
+            node.onreadystatechange = function() {
+                var rs = this.readyState;
+                if (rs === &quot;loaded&quot; || rs === &quot;complete&quot;) {
+                    /**
+                     * @ignore
+                     */
+                    node.onreadystatechange = null;
+
+                    if(!isTimeout){
+                        isComplete = true;
+                        window.clearTimeout(timer);
+                        timer = null;
+                        o={};
+                        o.id = id;
+                        o.uri = uri;
+                        o.arguments = arguments;
+                        onSuccess(o);
+                        onComplete(o);
+                        //if(type === &quot;script&quot;){
+                            //purge(id);
+                        //}
+                    }
+                }
+            };
+
+        // webkit prior to 3.x is no longer supported
+        }else if(J.browser.engine.webkit){
+            // Safari 3.x supports the load event for script nodes (DOM2)
+            $E.on(node, &quot;load&quot;, function(){
+                var o;
+                if(!isTimeout){
+                    isComplete = true;
+                    window.clearTimeout(timer);
+                    timer = null;
+                    o={};
+                    o.id = id;
+                    o.uri = uri;
+                    o.arguments = arguments;
+                    onSuccess(o);
+                    onComplete(o);
+                    if(type === &quot;script&quot;){
+                        purge(id);
+                    }
+                }
+            });
+
+
+        // FireFox and Opera support onload (but not DOM2 in FF) handlers for
+        // script nodes.  Opera, but not FF, supports the onload event for link
+        // nodes.
+        }else{ 
+            /**
+             * @ignore
+             */
+            node.onload = function(){
+                var o;
+                //J.out(&quot;else:&quot;+J.browser.engine.name);
+                if(!isTimeout){
+                    isComplete = true;
+                    window.clearTimeout(timer);
+                    timer = null;
+                    o={};
+                    o.id = id;
+                    o.uri = uri;
+                    o.arguments = option.arguments;
+                    onSuccess(o);
+                    onComplete(o);
+                    
+                    if(type === &quot;script&quot;){
+                        purge(id);
+                    }
+                }
+            };
+            /**
+             * @ignore
+             */
+            node.onerror = function(e){
+                var o;
+                //J.out(&quot;else:&quot;+J.browser.engine.name);
+                if(!isTimeout){
+                    isComplete = true;
+                    window.clearTimeout(timer);
+                    timer = null;
+                    o={};
+                    o.id = id;
+                    o.uri = uri;
+                    o.arguments = arguments;
+                    o.error = e;
+                    onError(o);
+                    onComplete(o);
+                    //if(type === &quot;script&quot;){
+                        purge(id);
+                    //}
+                }
+            };
+        }
+        
+        
+        if(option.node){
+            if(type === &quot;script&quot;){
+                node.src = uri;
+            }else if(type === &quot;css&quot;){
+                node.href = uri;
+            }
+        }else{
+            head.appendChild(node);
+        }
+       
+        
+        if(type === &quot;script&quot;){
+            if(timeout){
+                timer = window.setTimeout(function(){
+                    var o;
+                    if(!isComplete){
+                        isTimeout = true;
+                        o = {};
+                        o.uri = uri;
+                        o.arguments = arguments;
+                        onTimeout(o);
+                        onComplete(o);
+                        purge(id);
+                    }
+                }, timeout);
+            }
+        }
+        /**
+         * @ignore
+         */
+        var func = function(node){
+            this._node = node;
+            this._head = head;
+        };
+        func.prototype={
+            /**
+             * @ignore
+             */
+            abort:function(){
+                this._node.src=&quot;&quot;;
+                this._head.removeChild(this._node);
+                delete this._node;
+            }
+            
+        };
+        return new func(node);
+    };
+    load.Id=0;
+    
+    /**
+     * 加载CSS
+     * 
+     * @memberOf http
+     * @method loadCss
+     * 
+     * @param {String} uri 要加载的css的uri
+     * @param {Object} option 配置对象，如：isDefer,query,arguments,onSuccess,onError,onComplete,onTimeout,timeout,charset
+     * @return {Object} ajax 返回一个ajax对象
+     */
+    loadCss = function(uri, option){
+        return load(&quot;css&quot;, uri, option);
+    };
+    
+    /**
+     * 加载Javascript
+     * 
+     * @memberOf http
+     * @method loadScript
+     * 
+     * @param {String} uri 要加载的js脚本的uri
+     * @param {Object} option 配置对象，如：isDefer,query,arguments,onSuccess,onError,onComplete,onTimeout,timeout,charset
+     * @return {Element} 返回控制对象，可以abort掉
+     */
+    loadScript = function(uri, option){
+        return load(&quot;script&quot;, uri, option);
+    };
+    
+    
+    
+    /**
+     * TODO 这里的form send需要改造，建立一个iframe池，来处理并发问题
+     */
+    /**
+     * @description formSend的iframe池，目前定为长度为2
+     * @type {Object}
+     */
+    var divEl;
+    var formSendIframePool = {
+        /**
+         * @example
+         * [[divElement,formElement,iframeElement],[divElement,formElement,iframeElement],,,]
+         */
+        _iframes: [],
+        _tick: 0,
+        /**
+         * 顺序返回一个iframe
+         */
+        _select: function() {
+            this._tick++;
+            return  this._iframes[(this._tick-1)%this._len];
+        },
+        /**
+         * @description 初始化
+         * @argument {Number} len the number of iframes in poll
+         */
+        init: function(len) {
+            if(this._isInit==true) {
+                return;
+            }
+            this._len= len;
+            var bodyEl=document.body;
+            for(var i=0;i&lt;len;i++) {
+                divEl = $D.node(&quot;div&quot;,{
+                    &quot;class&quot;: &quot;RPCService_hDiv&quot;
+                });
+                $D.hide(divEl);
+                divEl.innerHTML = &#x27;&lt;iframe id=&quot;RPCService_hIframe_&#x27;+i+&#x27;&quot; name=&quot;RPCService_hIframe_&#x27;+i+&#x27;&quot; src=&quot;&#x27;+alloy.CONST.MAIN_URL+&#x27;domain.html&quot;&gt;&lt;/iframe&gt;&#x27;;  
+                bodyEl.appendChild(divEl);
+                //not have a iframe yet
+                this._iframes[i]=[divEl,null,&quot;RPCService_hIframe_&quot;+i];
+            }
+            this._isInit= true;
+        },
+        /**
+         * @description 使用的入口
+         * @argument {Element} iframeEL
+         */
+        take: function(formEl) {
+            var doms= this._select();
+            //if iframe exist
+            if(doms[1]) {
+                doms[0].removeChild(doms[1]);
+            }
+            formEl.setAttribute(&quot;target&quot;,doms[2]);
+            doms[1]= formEl;
+            doms[0].appendChild(formEl);
+        }
+    };
+    /**
+     * 使用form请求数据
+     * @memberOf http
+     * @param {String} url 
+     * @param {Object} option 请求参数
+     */
+    formSend = function(url, option){
+        formSendIframePool.init(2);
+        var opt = {
+            method: option.method || &quot;GET&quot;,
+            enctype: option.enctype || &quot;&quot;,  //&quot;multipart/form-data&quot;,
+            data: option.data || {},  //表单项 
+            //尚未测试
+            onSuccess: option.onSuccess || function(){},   //iframe 载入成功回调,区别与获取数据成功
+            onError: option.onError || function(){},      //iframe 载入失败回调
+            onComplete: option.onComplete || function(){},
+            
+            onTimeout: option.onTimeout || function(){},
+            timeout: option.timeout ? option.timeout : 10000
+        };
+        var formEl = $D.node(&quot;form&quot;,{
+                    &quot;class&quot;: &quot;RPCService_form&quot;,
+                    method: opt.method,
+                    action: url+&quot;?t=&quot; + (new Date().getTime()),
+                    enctype: opt.enctype
+                })
+         
+        if(Object.prototype.toString.call(opt.data).indexOf(&quot;String&quot;)&gt;-1) {
+            var inputEl=$D.node(&quot;input&quot;);
+            inputEl.type=&quot;text&quot;;
+            inputEl.name=opt.data;
+            formEl.appendChild(inputEl);            
+        }else {
+            for(var p in opt.data){
+                var inputEl=$D.node(&quot;input&quot;);
+                inputEl.type=&quot;text&quot;;
+                inputEl.name=p;
+                inputEl.setAttribute(&quot;value&quot;,opt.data[p]);
+                formEl.appendChild(inputEl);
+            }
+        }
+        formSendIframePool.take(formEl);            
+        formEl.submit();
+        
+        /* 
+          iframe事件未处理，当载入成功会自动调用回调函数     
+          var iframeEl = $D.id(&quot;RPCService_hIframe&quot;);
+          $E.on(iframeEl, &quot;load&quot;, opt.onSuccess); 
+          oFrm.onload = oFrm.onreadystatechange = function() {   
+             if (this.readyState &amp;amp;&amp;amp; this.readyState != &#x27;complete&#x27;) return;   
+             else {   
+                 onComplete();   
+             }  
+        */
+    };
+    
+    
+    
+    J.http.ajax = ajax;
+    J.http.comet = comet;
+    J.http.load = load;
+    J.http.loadCss = loadCss;
+    J.http.loadScript = loadScript;
+    J.http.formSend = formSend;
+});
+
+
+
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

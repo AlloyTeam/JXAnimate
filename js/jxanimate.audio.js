@@ -1,6 +1,5 @@
-/* ===========================================================================
- * etamina == animate
- *
+/** ===========================================================================
+ * @module JXAnimate.Audio
  * @description
  * Etamina Audio Library. It can preload and play audio.
  * load this file before etamina.js
@@ -11,6 +10,7 @@
  */
 
 /**
+ * @class JXAnimation.Audio
  * @description
  *
  */
@@ -28,6 +28,21 @@ Jx().$package("JXAnimate.Audio", function(J){
 		soundPool = new Array();
 
 	var onLoadProgressUpdated;
+
+
+	var supportedAudioFormat = function(audio) {
+		var returnExtension = "";
+		if (audio.canPlayType("audio/ogg") =="probably" || audio.canPlayType("audio/ogg") == "maybe") {
+			returnExtension = "ogg";
+		} else if(audio.canPlayType("audio/wav") =="probably" || audio.canPlayType("audio/wav") == "maybe") {
+			returnExtension = "wav";
+		} else if(audio.canPlayType("audio/mp3") == "probably" || audio.canPlayType("audio/mp3") == "maybe") {
+			returnExtension = "mp3";
+		}
+		
+		return returnExtension;
+		
+	};
 
 	var onItemLoaded = function(event){
 		if(J.isFunction(onLoadProgressUpdated)){
@@ -58,32 +73,30 @@ Jx().$package("JXAnimate.Audio", function(J){
 	this.addListenerForLoadProgressUpdated = function(func){
 		onLoadProgressUpdated = func;
 	};
-
+	/**
+	 * 获取当前浏览器所支持的音频文件格式
+	 * @method getAudioType
+	 * @param  {AudioElement} audio [HTML5中的audio元素]
+	 * @return {string}       [所支持音频格式的扩展名，不包括"."]
+	 *
+	 */
 	this.getAudioType = function(audio){
 		if(!audioType){
 			if(audio==null){
 				return false;
 			}
-			audioType = this.supportedAudioFormat(audio);
+			audioType = supportedAudioFormat(audio);
 			return audioType;
 		}
 		return audioType;
 	};
 
-	this.supportedAudioFormat = function(audio) {
-		var returnExtension = "";
-		if (audio.canPlayType("audio/ogg") =="probably" || audio.canPlayType("audio/ogg") == "maybe") {
-			returnExtension = "ogg";
-		} else if(audio.canPlayType("audio/wav") =="probably" || audio.canPlayType("audio/wav") == "maybe") {
-			returnExtension = "wav";
-		} else if(audio.canPlayType("audio/mp3") == "probably" || audio.canPlayType("audio/mp3") == "maybe") {
-			returnExtension = "mp3";
-		}
-		
-		return returnExtension;
-		
-	};
-
+	/**
+	 * 初始化音频引擎
+	 * @method init
+	 * @param  {object} params 初始化参数（path：声音文件的默认路径）
+	 * @return {void}        
+	 */
 	this.init=function(params){
 		params = params||{};
 		if(J.isObject(params) && 'path' in params){
@@ -92,10 +105,11 @@ Jx().$package("JXAnimate.Audio", function(J){
 	};
 	/**
 	 * 预加载一个或多个声音
-	 * @param  {[type]} sounds     [声音URL的字符串或字符串数组]
-	 * @param  {[type]} redundancy [每个声音的冗余数]
-	 * @param  {[type]} path       [默认路径]
-	 * @return {[type]}
+	 * @method preload
+	 * @param  {Array} sounds     声音URL的字符串或字符串数组
+	 * @param  {int} redundancy 每个声音的冗余数
+	 * @param  {string} path       相对路径
+	 * @return {void}
 	 */
 	this.preload=function(sounds,redundancy,path){
 		if(itemsToLoadCount>0){
@@ -128,6 +142,15 @@ Jx().$package("JXAnimate.Audio", function(J){
 			};
 		}
 	};
+
+	/**
+	 * 预加载一个声音文件
+	 * @method preloadSound
+	 * @param  {string} sound      声音文件URL
+	 * @param  {int} redundancy 每个声音的冗余数
+	 * @param  {string} path       相对路径
+	 * @return {void}            
+	 */
 	this.preloadSound=function(sound,redundancy,path){
 		if(J.isString(sound)){
 			this.preload([sound],redundancy,path);
@@ -135,6 +158,13 @@ Jx().$package("JXAnimate.Audio", function(J){
 		}
 	};
 
+	/**
+	 * 播放声音
+	 * @method playSound
+	 * @param  {string} sound  声音的文件名
+	 * @param  {float} volume 音量,0到1之间
+	 * @return {void}        
+	 */
 	this.playSound= function(sound,volume){
 		volume = volume||1;
 

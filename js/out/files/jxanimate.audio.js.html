@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>jxanimate.audio.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/JXAnimation.Audio.html">JXAnimation.Audio</a></li>
+            
+                <li><a href="../classes/Log.html">Log</a></li>
+            
+                <li><a href="../classes/Tab.html">Tab</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/JXAnimate.Audio.html">JXAnimate.Audio</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: jxanimate.audio.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/** ===========================================================================
+ * @module JXAnimate.Audio
+ * @description
+ * Etamina Audio Library. It can preload and play audio.
+ * load this file before etamina.js
+ *
+ * @author minren 
+ * ===========================================================================
+ * 
+ */
+
+/**
+ * @class JXAnimation.Audio
+ * @description
+ *
+ */
+Jx().$package(&quot;JXAnimate.Audio&quot;, function(J){
+
+	var 
+		MAX_SOUNDS=10,
+		soundRedundancy = 2,//每个声音重复加载的次数。频繁重复同一个声音时，增加冗余可以保持播放流畅。
+		path = &#x27;&#x27;,
+		audioType = false;
+
+	var	loadCount = 0;
+	var	itemsToLoadCount = 0,
+		itemsToLoad = new Array(),
+		soundPool = new Array();
+
+	var onLoadProgressUpdated;
+
+	var onItemLoaded = function(event){
+		if(J.isFunction(onLoadProgressUpdated)){
+			onLoadProgressUpdated(event);
+		}
+	}
+	var itemLoaded =  function (event) {
+		//TODO：还要考虑加载失败的情况。
+		//var _audio = etamina.audio;
+		loadCount++;
+		//raise 
+		onItemLoaded(J.extend(event,{&#x27;loadCount&#x27;:loadCount,&#x27;itemsToLoadCount&#x27;:itemsToLoadCount}));
+		var item;
+		if (loadCount &gt;= itemsToLoadCount) {
+			console.log(&#x27;itemLoaded: total item is &#x27;+loadCount);
+			for (var i = itemsToLoadCount - 1; i &gt;= 0; i--) {
+				item = itemsToLoad[i];
+				item.element.removeEventListener(&quot;canplaythrough&quot;,itemLoaded,false);
+				soundPool.push(item);
+				itemsToLoad.splice(i,1);
+			};
+			itemsToLoadCount=0;
+			loadCount = 0;
+		}
+	}
+
+	//添加一个事件，当声音加载进度更新时触发。
+	this.addListenerForLoadProgressUpdated = function(func){
+		onLoadProgressUpdated = func;
+	};
+	/**
+	 * 获取当前浏览器所支持的音频文件格式
+	 * @method getAudioType
+	 * @param  {AudioElement} audio [HTML5中的audio元素]
+	 * @return {string}       [所支持音频格式的扩展名，不包括&quot;.&quot;]
+	 *
+	 */
+	this.getAudioType = function(audio){
+		if(!audioType){
+			if(audio==null){
+				return false;
+			}
+			audioType = supportedAudioFormat(audio);
+			return audioType;
+		}
+		return audioType;
+	};
+
+	var supportedAudioFormat = function(audio) {
+		var returnExtension = &quot;&quot;;
+		if (audio.canPlayType(&quot;audio/ogg&quot;) ==&quot;probably&quot; || audio.canPlayType(&quot;audio/ogg&quot;) == &quot;maybe&quot;) {
+			returnExtension = &quot;ogg&quot;;
+		} else if(audio.canPlayType(&quot;audio/wav&quot;) ==&quot;probably&quot; || audio.canPlayType(&quot;audio/wav&quot;) == &quot;maybe&quot;) {
+			returnExtension = &quot;wav&quot;;
+		} else if(audio.canPlayType(&quot;audio/mp3&quot;) == &quot;probably&quot; || audio.canPlayType(&quot;audio/mp3&quot;) == &quot;maybe&quot;) {
+			returnExtension = &quot;mp3&quot;;
+		}
+		
+		return returnExtension;
+		
+	};
+
+	this.init=function(params){
+		params = params||{};
+		if(J.isObject(params) &amp;&amp; &#x27;path&#x27; in params){
+			this.path = params.path;
+		}
+	};
+	/**
+	 * 预加载一个或多个声音
+	 * @method preload
+	 * @param  {Array} sounds     [声音URL的字符串或字符串数组]
+	 * @param  {int} redundancy [每个声音的冗余数]
+	 * @param  {string} path       [默认路径]
+	 * @return {void}
+	 */
+	this.preload=function(sounds,redundancy,path){
+		if(itemsToLoadCount&gt;0){
+			return;
+		}
+
+		if(J.isString(sounds)){
+			this.preloadSound(sounds,redundancy,path);
+			return;
+		}
+		else if(J.isArray(sounds) &amp;&amp; sounds.length&gt;0){
+			var fullname;
+			for (var i = sounds.length - 1; i &gt;= 0; i--) {
+
+				var sound = sounds[i];
+				
+				redundancy = redundancy || soundRedundancy;
+				path = path|| this.path;
+				fullname = path+sound;
+				var tempSound;
+				for (var j = 0; j &lt;redundancy; j++) {
+					itemsToLoadCount++;
+					tempSound = document.createElement(&quot;audio&quot;);
+
+					tempSound.setAttribute(&quot;src&quot;, fullname + &quot;.&quot; + this.getAudioType(tempSound));
+					tempSound.addEventListener(&quot;canplaythrough&quot;,itemLoaded,false);
+					document.body.appendChild(tempSound)
+					itemsToLoad.push({name:sound, element:tempSound, type:this.getAudioType(), played:false});
+				};					
+			};
+		}
+	};
+
+	/**
+	 * 预加载一个声音文件
+	 * @method preloadSound
+	 * @param  {string} sound      声音文件URL
+	 * @param  {int} redundancy [每个声音的冗余数]
+	 * @param  {string} path       [相对路径]
+	 * @return {void}            [description]
+	 */
+	this.preloadSound=function(sound,redundancy,path){
+		if(J.isString(sound)){
+			this.preload([sound],redundancy,path);
+			return;
+		}
+	};
+
+	this.playSound= function(sound,volume){
+		volume = volume||1;
+
+		var soundFound = false;
+		var soundIndex = 0;
+		var tempSound;
+		//var soundPool = this.soundPool;
+		
+		if (soundPool.length &gt; 0) {
+			console.log(&#x27;play:&#x27;+sound+&#x27;,pool length=&#x27;+soundPool.length)
+			while (!soundFound &amp;&amp; soundIndex &lt; soundPool.length) {
+			
+				var tSound = soundPool[soundIndex];
+				if ((tSound.element.ended || !tSound.played) &amp;&amp; tSound.name == sound) {
+					soundFound = true;
+					tSound.played = true;
+				} else {
+					soundIndex++;
+				}
+		
+			}
+		}
+		if (soundFound) {
+			tempSound = soundPool[soundIndex].element;
+			tempSound.volume = volume;
+			tempSound.play();
+			
+		} else if (soundPool.length &lt; this.MAX_SOUNDS){  //在运行时加载声音，可能会导致停顿。
+			/*
+			tempSound = document.createElement(&quot;audio&quot;);
+			tempSound.setAttribute(&quot;src&quot;, sound + &quot;.&quot; + this.audioType);
+			tempSound.volume = volume;
+			tempSound.play();
+			soundPool.push({name:sound, element:tempSound, type:this.audioType, played:true});
+			*/
+		}
+	}
+
+});
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

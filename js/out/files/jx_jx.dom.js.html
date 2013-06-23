@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>jx/jx.dom.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/JXAnimation.Audio.html">JXAnimation.Audio</a></li>
+            
+                <li><a href="../classes/Log.html">Log</a></li>
+            
+                <li><a href="../classes/Tab.html">Tab</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/JXAnimate.Audio.html">JXAnimate.Audio</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: jx/jx.dom.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ * 4.[Browser part]: dom 扩展包
+ */
+Jx().$package(function(J){
+    var $D,
+        $B,
+        id,
+        name,
+        tagName,
+        getText,
+        getAttributeByParent,
+        node,
+        setClass,
+        getClass,
+        hasClass,
+        addClass,
+        removeClass,
+        toggleClass,
+        replaceClass,
+        createStyleNode,
+        setStyle,
+        getStyle,
+        setCssText,
+        getCssText,
+        addCssText,
+        show,
+        isShow,
+        recover,
+        hide,
+        
+        
+        
+        getScrollHeight,
+        getScrollWidth,
+        getClientHeight,
+        getClientWidth,
+        getOffsetHeight,
+        getOffsetWidth,
+        
+        getScrollLeft,
+        getScrollTop,
+        getClientXY,
+        setClientXY,
+        getXY,
+        setXY,
+        getRelativeXY,
+        getPosX,
+        getPosY,
+        getWidth,
+        getHeight,
+        
+        getSelection,
+        getSelectionText,
+        getTextFieldSelection,
+        
+        contains,
+        getHref,
+    
+        getDoc,
+        _getDoc=null,
+        getWin,
+        w,
+        getDocumentElement,
+        DocumentElement,
+        getDocHead,
+        HeadElement;
+    /**
+     * dom 名字空间
+     * 
+     * @namespace
+     * @name dom
+     * @type Object
+     */
+    J.dom = J.dom || {};
+    $D = J.dom;
+    $B = J.browser;
+    
+        
+
+    // find targeted window and @TODO create facades
+    w = ($D.win) ? ($D.win.contentWindow) : $D.win  || window;
+    $D.win = w;
+    $D.doc = w.document;
+    
+    // feature detection 必须对已创建的对象检测
+    var hasClassListProperty = document &amp;&amp; Object.prototype.hasOwnProperty.call(document.documentElement,&#x27;classList&#x27;);
+
+    /**
+     * 获取DocumentElement
+     * 
+     * @memberOf dom
+     * 
+     * @return {HTMLElement} documentElement
+     * 
+     */
+    getDocumentElement = function(){
+        if(DocumentElement) {
+            return DocumentElement;
+        }
+        if(document.compatMode === &#x27;CSS1Compat&#x27;){
+            DocumentElement= document.documentElement;
+        }else{
+            DocumentElement= document.body;
+        }
+        return DocumentElement;
+        
+    };
+    
+    /**
+     * 获取元素所属的根文档
+     * 
+     * @memberOf dom
+     * @return {HTMLElement} document
+     * 
+     */
+    getDoc = function(element) {
+        if(element) {
+            element = element || window.document;
+            _getDoc= (element[&quot;nodeType&quot;] === 9) ? element : element[&quot;ownerDocument&quot;]
+                || $D.doc;
+            return _getDoc;        
+        }else {
+            if(_getDoc) {
+                return _getDoc;
+            }
+            else {
+                element = element || window.document;
+                _getDoc= (element[&quot;nodeType&quot;] === 9) ? element : element[&quot;ownerDocument&quot;]
+                    || $D.doc;
+                return _getDoc;
+            }            
+        }
+
+    };
+    
+    /**
+     * 获取元素所属的 window 对象
+     * returns the appropriate window.
+     * 
+     * @memberOf dom
+     * @private
+     * @param {HTMLElement} element optional Target element.
+     * @return {Object} The window for the given element or the default window. 
+     */
+    getWin = function(element) {
+        var doc = getDoc(element);
+        return (element.document) ? element : doc[&quot;defaultView&quot;] ||
+            doc[&quot;parentWindow&quot;] || $D.win;
+    };
+    
+    /**
+     * 获取文档的头节点
+     * returns the head of the doc
+     * 
+     * @memberOf dom
+     * @private
+     * @param {HTMLElement} element optional Target element.
+     * @return {Object} The window for the given element or the default window. 
+     */
+    getDocHead = function() {
+        if(!HeadElement){        
+           var doc = getDoc();
+           HeadElement = doc.getElementsByTagName(&#x27;head&#x27;) ? doc.getElementsByTagName(&#x27;head&#x27;)[0] : doc.documentElement;
+        }
+        return HeadElement;
+    };
+    
+    /**
+     * 
+     * 根据 id 获取元素
+     * 
+     * @method id
+     * @memberOf dom
+     * 
+     * @param {String} id 元素的 id 名称
+     * @param {Element} doc 元素所属的文档对象，默认为当前文档
+     * @return {Element} 返回元素
+     * 
+     * @example
+     * 
+     * 
+     */
+    id = function(id, doc) {
+        return getDoc(doc).getElementById(id);
+    };
+    
+    /**
+     * 
+     * 根据 name 属性获取元素
+     * 
+     * @memberOf dom
+     * 
+     * @param {String} name 元素的 name 属性
+     * @param {Element} doc 元素所属的文档对象，默认为当前文档
+     * @return {Element} 返回元素
+     */
+    name = function(name, doc) {
+        var el = doc;
+        return getDoc(doc).getElementsByName(name);
+    };
+    
+    /**
+     * 
+     * 根据 tagName 获取元素
+     * 
+     * @memberOf dom
+     * 
+     * @param {String} tagName 元素的 tagName 标签名
+     * @param {Element} doc 元素所属的文档对象，默认为当前文档
+     * @return {Element} 返回元素
+     */
+    tagName = function(tagName, el) {
+        var el = el || getDoc();
+        return el.getElementsByTagName(tagName);
+    };
+    
+    /**
+     * 获取元素中的文本内容
+     * Returns the text content of the HTMLElement. 
+     * 
+     * @memberOf dom
+     * @param {HTMLElement} element The html element. 
+     * @return {String} The text content of the element (includes text of any descending elements).
+     */
+    getText = function(element) {
+        var text = element ? element[TEXT_CONTENT] : &#x27;&#x27;;
+        if (text === UNDEFINED &amp;&amp; INNER_TEXT in element) {
+            text = element[INNER_TEXT];
+        } 
+        return text || &#x27;&#x27;;
+    };
+    
+    
+    /**
+     * 从起始元素查找某个属性，直到找到，或者到达顶层元素位置
+     * Returns the text content of the HTMLElement. 
+     * 
+     * @memberOf dom
+     * @param {HTMLElement} element The html element. 
+     * @return {String} The text content of the element (includes text of any descending elements).
+     */
+    getAttributeByParent = function(attribute, startNode,  topNode){
+        var jumpOut = false;
+        var el = startNode;
+        var result;
+        do{
+            result = el.getAttribute(attribute);
+            // 如果本次循环未找到result
+            if(J.isUndefined(result) || J.isNull(result)){
+                // 如果本次循环已经到了监听的dom
+                if(el === topNode){
+                    jumpOut = true;
+                }
+                // 如果本次循环还未到监听的dom，则继续向上查找
+                else {
+                    el = el.parentNode;
+                }
+            }
+            // 如果找到了result
+            else{
+                jumpOut = true;
+            }
+        }
+        while(!jumpOut);
+        
+        return result;
+    };
+    
+    
+    /** 
+     * 生成一个 DOM 节点
+     * Generates an HTML element, this is not appended to a document
+     * 
+     * @memberOf dom
+     * 
+     * @param type {string} the type of element
+     * @param attr {string} the attributes
+     * @param win {Window} optional window to create the element in
+     * @return {HTMLElement} the generated node
+     */
+    node = function(type, attrObj, win){
+        var p,
+            w = win || $D.win,
+            d = document,
+            n = d.createElement(type);
+        var mapObj = {
+            &quot;class&quot;:function(){
+                n.className = attrObj[&quot;class&quot;];
+            },
+            &quot;style&quot;:function(){
+                setCssText(n, attrObj[&quot;style&quot;]);
+            }
+        }
+        for (p in attrObj) {
+            if(mapObj[p]){
+                mapObj[p]();
+            }else{
+                n.setAttribute(p, attrObj[p]);
+            }
+        }
+
+        return n;
+    };
+    
+    
+
+
+    /**
+     * 获取文档的 scroll 高度，即文档的实际高度
+     * Returns the height of the document.
+     * 
+     * @method getDocumentHeight
+     * @memberOf dom
+     * 
+     * @param {HTMLElement} element The html element. 
+     * @return {Number} The height of the actual document (which includes the body and its margin).
+     */
+    getScrollHeight = function(el) {
+        var scrollHeight;
+        if(el){
+            scrollHeight = el.scrollHeight;
+        }else{
+            scrollHeight = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
+        }
+        return scrollHeight || 0;
+    };
+    
+    /**
+     * 获取文档的 scroll 宽度，即文档的实际宽度
+     * Returns the width of the document.
+     * 
+     * @method getDocumentWidth
+     * @memberOf dom
+     * 
+     * @param {HTMLElement} element The html element. 
+     * @return {Number} The width of the actual document (which includes the body and its margin).
+     */
+    getScrollWidth = function(el) {
+        var scrollWidth;
+        if(el){
+            scrollWidth = el.scrollWidth;
+        }else{
+            scrollWidth = Math.max(document.documentElement.scrollWidth, document.body.scrollWidth);
+        }
+        return scrollWidth || 0;
+    };
+
+    /**
+     * 获取当前视窗的高度
+     * Returns the current height of the viewport.
+     * 
+     * @method getClientHeight
+     * @memberOf dom
+     * @return {Number} The height of the viewable area of the page (excludes scrollbars).
+     */
+    getClientHeight = function(el) {
+        //var name = J.browser.engine.name;
+        el = el || getDocumentElement();
+        return el.clientHeight; // IE, Gecko
+    };
+    
+    /**
+     * 获取元素的client宽度
+     * Returns the current width of the viewport.
+     * @method getClientWidth
+     * @memberOf dom
+     * @param {Element} el 要获取client宽度的元素
+     * @return {Number} 宽度值.
+     */
+    
+    getClientWidth = function(el) {
+        //var name = J.browser.engine.name;
+        el = el || getDocumentElement();
+        return el.clientWidth; // IE, Gecko
+    };
+    
+    
+    /**
+     * 获取当前视窗的高度
+     * Returns the current height of the viewport.
+     * 
+     * @method getOffsetHeight
+     * @memberOf dom
+     * @return {Number} The height of the viewable area of the page (excludes scrollbars).
+     */
+    getOffsetHeight = function(el) {
+        var name = J.browser.engine.name;
+        el = el || getDocumentElement();
+        return el.offsetHeight; 
+    };
+    
+    /**
+     * 获取元素的client宽度
+     * Returns the current width of the viewport.
+     * @method getOffsetWidth
+     * @memberOf dom
+     * @param {Element} el 要获取client宽度的元素
+     * @return {Number} 宽度值.
+     */
+    getOffsetWidth = function(el) {
+        var name = J.browser.engine.name;
+        el = el || getDocumentElement();
+        return el.offsetWidth;
+    };
+    
+    /**
+     * 获取当前文档的左边已卷动的宽度
+     * Returns the left scroll value of the document 
+     * @method getDocumentScrollLeft
+     * @memberOf dom
+     * @param {HTMLDocument} document (optional) The document to get the scroll value of
+     * @return {Number}  The amount that the document is scrolled to the left
+     */
+    getScrollLeft = function(el) {
+        var scrollLeft;
+        if(el){
+            scrollLeft = el.scrollLeft;
+        }else{
+            scrollLeft = Math.max(document.documentElement.scrollLeft, document.body.scrollLeft);
+        }
+        return scrollLeft || 0;
+    };
+
+    /**
+     * 获取当前文档的上边已卷动的宽度
+     * Returns the top scroll value of the document 
+     * @method getDocumentScrollTop
+     * @memberOf dom
+     * @param {HTMLDocument} document (optional) The document to get the scroll value of
+     * @return {Number}  The amount that the document is scrolled to the top
+     */
+    getScrollTop = function(el) {
+        var scrollTop;
+        if(el){
+            scrollTop = el.scrollTop;
+        }else{
+            scrollTop = Math.max(document.documentElement.scrollTop, document.body.scrollTop);
+        }
+        return scrollTop || 0;
+    };
+
+    
+    /**
+     * 
+     * 设置元素的class属性
+     * 
+     * @method setClass
+     * @memberOf dom
+     * 
+     * @param {Element} el 元素
+     * @param {String} className class 名称
+     */
+    setClass = function(el, className){
+        el.className = className;
+    };
+    
+    /**
+     * 
+     * 获取元素的class属性
+     * 
+     * @method getClass
+     * @memberOf dom
+     * 
+     * @param {Element} el 元素
+     * @param {String} className class 名称
+     */
+    getClass = function(el){
+        return el.className;
+    };
+
+    /**
+     * 
+     * 判断元素是否含有 class
+     * @function
+     * @method hasClass
+     * @memberOf dom
+     * 
+     * @param {Element} el 元素
+     * @param {String} className class 名称
+     */
+    hasClass = function(){
+        if (hasClassListProperty) {
+            return function (el, className) {
+                if (!el || !className) {
+                    return false;
+                }
+                return el.classList.contains(className);
+            };
+        } else {
+            return function (el, className) {
+                if (!el || !className) {
+                    return false;
+                }
+                return -1 &lt; (&#x27; &#x27; + el.className + &#x27; &#x27;).indexOf(&#x27; &#x27; + className + &#x27; &#x27;);
+            };
+        }
+    }();
+
+    /**
+     * 
+     * 给元素添加 class
+     * @function
+     * @method addClass
+     * @memberOf dom
+     * 
+     * @param {Element} el 元素
+     * @param {String} className class 名称
+     */
+    addClass = function(){
+        if (hasClassListProperty) {
+            return function (el, className) {
+                if (!el || !className || hasClass(el, className)) {
+                    return;
+                }
+                el.classList.add(className);
+            };
+        } else {
+            return function (el, className) {
+                if (!el || !className || hasClass(el, className)) {
+                    return;
+                }
+                el.className += &#x27; &#x27; + className;
+            };
+        }
+    }();
+
+    /**
+     * 
+     * 给元素移除 class
+     * @function
+     * @method addClass
+     * @memberOf dom
+     * 
+     * @param {Element} el 元素
+     * @param {String} className class 名称
+     */
+    removeClass = function(){
+        if (hasClassListProperty) {
+            return function (el, className) {
+                if (!el || !className || !hasClass(el, className)) {
+                    return;
+                }
+                el.classList.remove(className);
+            };
+        } else {
+            return function (el, className) {
+                if (!el || !className || !hasClass(el, className)) {
+                    return;
+                }
+                el.className = el.className.replace(new RegExp(&#x27;(?:^|\\s)&#x27; + className + &#x27;(?:\\s|$)&#x27;), &#x27; &#x27;);
+            };
+        }
+    }();
+    
+    /*
+    removeClass2 = function(el, className){
+        replaceClass(el, className, &quot;&quot;);
+    };
+    */
+    
+    
+    /**
+     * 
+     * 对元素 class 的切换方法，即：如果元素用此class则移除此class，如果没有此class则添加此class
+     * 
+     * @function
+     * @method toggleClass
+     * @memberOf dom
+     * 
+     * @param {Element} el 元素
+     * @param {String} className class 名称
+     */
+    toggleClass = function(){
+        if (hasClassListProperty) {
+            return function (el, className) {
+                if (!el || !className) {
+                    return;
+                }
+                el.classList.toggle(className);
+            };
+        } else {
+            return function (el, className) {
+                if (!el || !className) {
+                    return;
+                }
+                hasClass(el, className) ? removeClass(el, className) : addClass(el, className);
+            };
+        }
+    }();
+
+    /**
+     * 
+     * 替换元素 oldClassName 为 newClassName
+     * 
+     * @method toggleClass
+     * @memberOf dom
+     * 
+     * @param {Element} el 元素
+     * @param {String} oldClassName 被替换的 class 名称
+     * @param {String} newClassName 要替换成的 class 名称
+     */
+    replaceClass = function(el, oldClassName, newClassName){
+        removeClass(el, oldClassName);
+        addClass(el, newClassName);
+        //el.className = (&quot; &quot;+el.className+&quot; &quot;).replace(&quot; &quot;+oldClassName+&quot; &quot;,&quot; &quot;+newClassName+&quot; &quot;);
+    };
+    /*
+    replaceClass2 = function(el, oldClassName, newClassName){
+        var i,
+            tempClassNames = el.className.split(&quot; &quot;);
+            
+        for(i=0; i&lt;tempClassNames.length; i++){
+            if(tempClassNames[i] === oldClassName){
+                tempClassNames[i] = newClassName;
+            }
+        }
+        //J.out(tempClassNames);
+
+        el.className = tempClassNames.join(&quot; &quot;);
+    };
+    */
+    
+    /**
+     * 
+     * 创建 style 标签
+     * 
+     * @method setStyle
+     * @memberOf dom
+     * 
+     * @param 样式内容，支持string和object
+     * @param {String} id 样式标签的 id
+     */
+    createStyleNode = function(styles, id){
+        var styleNode = $D.node(&#x27;style&#x27;, {
+            &#x27;id&#x27;: id || &#x27;&#x27;,
+            &#x27;type&#x27;: &#x27;text/css&#x27;
+        });
+
+        $D.getDocHead().appendChild(styleNode);
+
+        var stylesType = typeof(styles);
+        if(stylesType == &quot;string&quot;){     //参数是文本
+            if(styleNode.styleSheet){    //IE
+                styleNode.styleSheet.cssText = styles;
+            }else{
+                var tn = document.createTextNode(styles);
+                styleNode.appendChild(tn);
+            }
+        }else if(stylesType == &quot;object&quot;){   //参数是对象
+            var i = 0,
+                styleSheet = document.styleSheets[document.styleSheets.length-1];
+            for(selector in styles){
+                if(styleSheet.insertRule){
+                    var rule = selector + &quot;{&quot; + styles[selector] + &quot;}&quot;;
+                    styleSheet.insertRule(rule, i++);
+                }else {                  //IE
+                    styleSheet.addRule(selector, styles[selector], i++);
+                }
+            }
+        }
+
+        return styleNode;
+    };
+    
+    /**
+     * 
+     * 设置元素的样式，css 属性需要用驼峰式写法，如：fontFamily
+     * 
+     * @method setStyle
+     * @memberOf dom
+     * 
+     * @param {Element} el 元素
+     * @param {String} styleName css 属性名称
+     * @param {String} value css 属性值
+     */
+    setStyle = function(el, styleName, value){
+        if(!el){
+            return;
+        }
+        
+        var name = J.browser.name;
+        if(styleName === &quot;float&quot; || styleName === &quot;cssFloat&quot;){
+            if(name === &quot;ie&quot;){
+                styleName = &quot;styleFloat&quot;;
+            }else{
+                styleName = &quot;cssFloat&quot;;
+            }
+        }
+        
+        //J.out(styleName);
+        
+        if(styleName === &quot;opacity&quot; &amp;&amp; name === &quot;ie&quot; &amp;&amp; J.browser.ie&lt;9){
+            var opacity = value*100;
+            
+            /*
+            if(el.style.filter.alpha){
+                
+                el.style.filter.alpha.opacity = opacity;
+                J.debug(&quot;filter alpha!&quot;)
+            }else{
+                addCssText(el,&#x27;filter:alpha(opacity=&quot;&#x27; + opacity + &#x27;&quot;)&#x27;);
+            }*/
+            //addCssText(el,&#x27;filter:alpha(opacity=&quot;&#x27; + opacity + &#x27;&quot;)&#x27;);
+            //J.out(&quot;&gt;&gt;&gt;el.style.filter.alpha.opacity: &quot;+el.style.filter.alpha.opacity);
+            el.style.filter = &#x27;alpha(opacity=&quot;&#x27; + opacity + &#x27;&quot;)&#x27;;
+
+            if(!el.style.zoom){
+                el.style.zoom = 1;
+            }
+
+            return;
+        }
+        el.style[styleName] = value;
+    };
+    
+    
+
+    
+    /**
+     * 
+     * 获取元素的当前实际样式，css 属性需要用驼峰式写法，如：fontFamily
+     * 
+     * @method getStyle
+     * @memberOf dom
+     * 
+     * @param {Element} el 元素
+     * @param {String} styleName css 属性名称
+     * @return {String} 返回元素样式
+     */
+    getStyle = function(el, styleName){
+        if(!el){
+            return;
+        }
+        
+        var win = getWin(el);
+        var name = J.browser.name;
+        //J.out(name);
+        if(styleName === &quot;float&quot; || styleName === &quot;cssFloat&quot;){
+            if(name === &quot;ie&quot;){
+                styleName = &quot;styleFloat&quot;;
+            }else{
+                styleName = &quot;cssFloat&quot;;
+            }
+        }
+        if(styleName === &quot;opacity&quot; &amp;&amp; name === &quot;ie&quot; &amp;&amp; J.browser.ie&lt;9){
+            var opacity = 1,
+                result = el.style.filter.match(/opacity=(\d+)/);
+            if(result &amp;&amp; result[1]){
+                opacity = result[1]/100;
+            }
+            return opacity;
+        }
+        
+        if(el.style[styleName]){
+            return el.style[styleName];
+        }else if(el.currentStyle){
+            //alert(el.currentStyle[styleName]);
+            return el.currentStyle[styleName];
+        }else if(win.getComputedStyle){
+            //J.out(win.getComputedStyle(el, null));
+            return win.getComputedStyle(el, null)[styleName];
+        }else if(document.defaultView &amp;&amp; document.defaultView.getComputedStyle){
+            styleName = styleName.replace(/([/A-Z])/g, &quot;-$1&quot;);
+            styleName = styleName.toLowerCase();
+            var style = document.defaultView.getComputedStyle(el, &quot;&quot;);
+            return style &amp;&amp; style.getPropertyValue(styleName);
+        }
+
+    };
+
+    /**
+     * 
+     * 给元素添加cssText
+     *  
+     * @method addCssText
+     * @memberOf dom
+     * 
+     * @param {Element} el 元素
+     * @param {String} cssText css 属性
+     */
+    addCssText = function(el, cssText){
+        el.style.cssText += &#x27;;&#x27; + cssText;
+    };
+    
+    /**
+     * 
+     * 给元素设置cssText
+     *  
+     * @method setCssText
+     * @memberOf dom
+     * 
+     * @param {Element} el 元素
+     * @param {String} cssText css 属性
+     */
+    setCssText = function(el, cssText){
+        el.style.cssText = cssText;
+    };
+    /**
+     * 
+     * 获取元素的cssText
+     *  
+     * @method getCssText
+     * @memberOf dom
+     * 
+     * @param {Element} el 元素
+     */
+    getCssText = function(el){
+        return el.style.cssText;
+    };
+    
+    /**
+     * 
+     * 显示元素
+     * 
+     * @method show
+     * @memberOf dom
+     * 
+     * @param {Element} el 元素
+     * @param {String} displayStyle 强制指定以何种方式显示，如：block，inline，inline-block等等
+     */
+    show = function(el, displayStyle){
+        var display;
+        var _oldDisplay = el.getAttribute(&quot;_oldDisplay&quot;);
+        
+        if(_oldDisplay){
+            display = _oldDisplay;
+        }else{
+            display = getStyle(el, &quot;display&quot;);
+        }
+
+        if(displayStyle){
+            setStyle(el, &quot;display&quot;, displayStyle);
+        }else{
+            if(display === &quot;none&quot;){
+                setStyle(el, &quot;display&quot;, &quot;block&quot;);
+            }else{
+                setStyle(el, &quot;display&quot;, display);
+            }
+        }
+    };
+    
+    /**
+     * 
+     * 判断元素是否是显示状态
+     * 
+     * @method isShow
+     * @memberOf dom
+     * 
+     * @param {Element} el 元素
+     */
+    isShow = function(el){
+        var display = getStyle(el, &quot;display&quot;);
+        if(display === &quot;none&quot;){
+            return false;
+        }else{
+            return true;
+        }
+    };
+    
+    /**
+     * 
+     * 还原元素原来的display属性
+     * 
+     * @method recover
+     * @memberOf dom
+     * 
+     * @param {Element} el 元素
+     */
+    recover = function(el){
+        var display;
+        var _oldDisplay = el.getAttribute(&quot;_oldDisplay&quot;);
+        
+        if(_oldDisplay){
+            display = _oldDisplay;
+        }else{
+            display = getStyle(el, &quot;display&quot;);
+        }
+        if(display === &quot;none&quot;){
+            setStyle(el, &quot;display&quot;, &quot;&quot;);
+        }else{
+            setStyle(el, &quot;display&quot;, display);
+        }
+    };
+    
+    /**
+     * 
+     * 隐藏元素
+     * 
+     * @method hide
+     * @memberOf dom
+     * 
+     * @param {Element} el 元素
+     */
+    hide = function(el){
+        var display = getStyle(el, &quot;display&quot;);
+        var _oldDisplay = el.getAttribute(&quot;_oldDisplay&quot;);
+        
+        if(!_oldDisplay){
+            if(display === &quot;none&quot;){
+                el.setAttribute(&quot;_oldDisplay&quot;, &quot;&quot;);
+            }else{
+                el.setAttribute(&quot;_oldDisplay&quot;, display);
+            }
+        }
+        setStyle(el, &quot;display&quot;, &quot;none&quot;);
+    };
+    
+    
+    
+    /**
+     * 获取对象坐标
+     *
+     * @method getClientXY
+     * @memberOf dom
+     * 
+     * @param {HTMLElement} el
+     * @return Array [left,top]
+     * @type Array
+     */
+    getClientXY = function(el) {
+        var _t = 0,
+            _l = 0;
+
+        if (el) {
+            //这里只检查document不够严谨, 在el被侵染置换(jQuery做了这么恶心的事情)
+            //的情况下, el.getBoundingClientRect() 调用回挂掉
+            if (document.documentElement.getBoundingClientRect &amp;&amp; el.getBoundingClientRect) { // 顶IE的这个属性，获取对象到可视范围的距离。
+                //现在firefox3，chrome2，opera9.63都支持这个属性。
+                var box = {left:0,top:0,right:0,bottom:0};//
+                try{
+                    box=el.getBoundingClientRect();
+                }catch(ex){
+                    return [0,0];
+                }
+                var oDoc = el.ownerDocument;
+                
+                var _fix = J.browser.ie ? 2 : 0; //修正ie和firefox之间的2像素差异
+                
+                _t = box.top - _fix + getScrollTop(oDoc);
+                _l = box.left - _fix + getScrollLeft(oDoc);
+            } else {//这里只有safari执行。
+                while (el.offsetParent) {
+                    _t += el.offsetTop;
+                    _l += el.offsetLeft;
+                    el = el.offsetParent;
+                }
+            }
+        }
+        return [_l, _t];
+    };
+    
+    /**
+     * 设置dom坐标
+     * 
+     * @method setClientXY
+     * @memberOf dom
+     
+     * @param {HTMLElement} el
+     * @param {string|number} x 横坐标
+     * @param {string|number} y 纵坐标
+     */
+    setClientXY = function(el, x, y) {
+        x = parseInt(x) + getScrollLeft();
+        y = parseInt(y) + getScrollTop();
+        setXY(el, x, y);
+    };
+
+    /**
+     * 获取对象坐标
+     * 
+     * @method getXY
+     * @memberOf dom
+     *
+     * @param {HTMLElement} el
+     * @return Array [top,left]
+     */
+    getXY = function(el) {
+        var xy = getClientXY(el);
+
+        xy[0] = xy[0] + getScrollLeft();
+        xy[1] = xy[1] + getScrollTop();
+        return xy;
+    }
+
+    /**
+     * 设置dom坐标
+     * @method setXY
+     * @memberOf dom
+     * 
+     * @param {HTMLElement} el
+     * @param {string|number} x 横坐标
+     * @param {string|number} y 纵坐标
+     */
+    setXY = function(el, x, y) {
+        var _ml = parseInt(getStyle(el, &quot;marginLeft&quot;)) || 0;
+        var _mt = parseInt(getStyle(el, &quot;marginTop&quot;)) || 0;
+
+        setStyle(el, &quot;left&quot;, parseInt(x) - _ml + &quot;px&quot;);
+        setStyle(el, &quot;top&quot;, parseInt(y) - _mt + &quot;px&quot;);
+    };
+    
+    /**
+     * 获取对象相对一个节点的坐标
+     *
+     * @method getRelativeXY
+     * @memberOf dom
+     * 
+     * @param {HTMLElement} el
+     * @param {HTMLElement} relativeEl 
+     * @return Array [top,left]
+     * 
+     */
+    getRelativeXY = function(el, relativeEl) {
+        var xyEl = getXY(el);
+        var xyRelativeEl = getXY(relativeEl);
+        var xy=[];
+        
+        xy[0] = xyEl[0] - xyRelativeEl[0];
+        xy[1] = xyEl[1] - xyRelativeEl[1];
+        return xy;
+    }
+    
+    var parseCssPx = function(value){
+        if(!value || value == &#x27;auto&#x27;) return 0;
+        else return parseInt(value.substr(0, value.length-2));
+    }
+    /**
+     * 获取x坐标的简便方法
+     *
+     * @method getPosX
+     * @memberOf dom
+     * 
+     * @param {HTMLElement} el
+     * @return {String}
+     * 
+     */
+    getPosX = function(el){
+        return parseCssPx($D.getStyle(el, &#x27;left&#x27;));
+    }
+    /**
+     * 获取y坐标的简便方法
+     *
+     * @method getPosY
+     * @memberOf dom
+     * 
+     * @param {HTMLElement} el
+     * @return {String}
+     * 
+     */
+    getPosY = function(el){
+        return parseCssPx($D.getStyle(el, &#x27;top&#x27;));
+    }
+    /**
+     * 获取宽度的简便方法
+     *
+     * @method getWidth
+     * @memberOf dom
+     * 
+     * @param {HTMLElement} el
+     * @return {String}
+     * 
+     */
+    getWidth = function(el){
+        return parseCssPx($D.getStyle(el, &#x27;width&#x27;));
+    }
+    /**
+     * 获取高度的简便方法
+     *
+     * @method getHeight
+     * @memberOf dom
+     * 
+     * @param {HTMLElement} el
+     * @return {String}
+     * 
+     */
+    getHeight = function(el){
+        return parseCssPx($D.getStyle(el, &#x27;height&#x27;));
+    }
+    
+    /**
+     * 获取选择的文本
+     *
+     * @method getSelectionText
+     * @memberOf dom
+     * 
+     * @param {Window} win
+     * @return {String} 返回选择的文本
+     */
+    getSelectionText = function(win) {
+        win = win || window;
+        var doc = win.document;
+        if (win.getSelection) {
+            // This technique is the most likely to be standardized.
+            // getSelection() returns a Selection object, which we do not document.
+            return win.getSelection().toString();
+        }else if (doc.getSelection) {
+            // This is an older, simpler technique that returns a string
+            return doc.getSelection();
+        }else if (doc.selection) {
+            // This is the IE-specific technique.
+            // We do not document the IE selection property or TextRange objects.
+            return doc.selection.createRange().text;
+        }
+    
+    };
+
+
+    /**
+     * FireFox 下获取 input 或者 textarea 中选中的文字
+     *
+     * @method getTextFieldSelection
+     * @memberOf dom
+     * 
+     * @param {HTMLElement} el
+     * @return {String} 返回选择的文本
+     */
+    getTextFieldSelection = function(el) {
+        if (el.selectionStart != undefined &amp;&amp; el.selectionEnd != undefined) {
+            var start = el.selectionStart;
+            var end = el.selectionEnd;
+            return el.value.substring(start, end);
+        }else{
+            return &quot;&quot;; // Not supported on this browser
+        }
+    
+    };
+    
+    /**
+     * 判断一个节点是否是某个父节点的子节点, 
+     * 默认不包含parent === child的情况
+     * @memberOf dom
+     * @name contains
+     * @function
+     * @param {HTMLElement} parent
+     * @param {HTMLElement} child
+     * @param {Boolean} containSelf 指示是否包括parent等于child的情况
+     * @return {Boolean} 包含则返回true
+     */
+    contains = function(parent, child, containSelf){
+        if(!containSelf &amp;&amp; parent === child){
+            return false;
+        }
+        if(parent.compareDocumentPosition){//w3c
+            var res = parent.compareDocumentPosition(child);
+            if(res == 20 || res == 0){
+                return true;
+            }
+        }else{
+            if(parent.contains(child)){//ie
+                return true;
+            }
+        }
+        return false;
+    };
+    
+    /**
+     * 取一个a标签的href的绝对路径
+     * @method getFullHref
+     * @memberOf dom
+     * 
+     * @param {HTMLElement} el
+     * @return {String} 返回一个完整的url
+     */
+    getHref = function(el){
+        var result;
+        if($B.ie &amp;&amp; $B.ie&lt;=7){
+            result=el.getAttribute(&#x27;href&#x27;,4);
+        }else{
+            result=el.href;
+        }
+        return result || null;
+    };
+    
+    
+    
+    var scripts = tagName(&quot;script&quot;);
+    for(var i=0; i&lt;scripts.length; i++){
+        
+        if(scripts[i].getAttribute(&quot;hasJx&quot;)==&quot;true&quot;){
+            //J.out(&quot;hasJx: &quot;+(scripts[i].getAttribute(&quot;hasJx&quot;)==&quot;true&quot;));
+            J.src = scripts[i].src;
+        }
+    }
+    if(!J.src){
+        J.src = scripts[scripts.length-1].src;
+    }
+    
+    J.filename = J.src.replace(/(.*\/){0,}([^\\]+).*/ig,&quot;$2&quot;);
+    //J.out(J.src+&quot; _ &quot;+J.filename)
+    J.path = J.src.split(J.filename)[0];
+    
+    
+    $D.getDoc = getDoc;
+    
+    $D.id = id;
+    $D.name = name;
+    $D.tagName = tagName;
+    $D.getText = getText;
+    $D.getAttributeByParent = getAttributeByParent;
+    $D.node = node;
+    $D.setClass = setClass;
+    $D.getClass = getClass;
+    $D.hasClass = hasClass;
+    
+    $D.addClass = addClass;
+    $D.removeClass = removeClass;
+    $D.toggleClass = toggleClass;
+    $D.replaceClass = replaceClass;
+    
+    $D.createStyleNode = createStyleNode;
+    $D.setStyle = setStyle;
+    $D.getStyle = getStyle;
+    
+    $D.setCssText = setCssText;
+    $D.getCssText = getCssText;
+    $D.addCssText = addCssText;
+    
+    $D.show = show;
+    $D.isShow = isShow;
+    $D.recover = recover;
+    $D.hide = hide;
+    
+    
+    $D.getScrollLeft = getScrollLeft;
+    $D.getScrollTop = getScrollTop;
+    $D.getScrollHeight = getScrollHeight;
+    $D.getScrollWidth = getScrollWidth;
+    
+    $D.getClientHeight = getClientHeight;
+    $D.getClientWidth = getClientWidth;
+    
+    $D.getOffsetHeight = getOffsetHeight;
+    $D.getOffsetWidth = getOffsetWidth;
+    
+    $D.getClientXY = getClientXY;
+    $D.setClientXY = setClientXY;
+    
+    $D.getXY = getXY;
+    $D.setXY = setXY;
+    $D.getRelativeXY = getRelativeXY;
+    $D.getPosX = getPosX;
+    $D.getPosY = getPosY;
+    $D.getWidth = getWidth;
+    $D.getHeight = getHeight;
+    $D.getSelection = getSelection;
+    $D.getSelectionText = getSelectionText;
+    
+    $D.getTextFieldSelection = getTextFieldSelection;
+    
+    $D.getDocumentElement = getDocumentElement;
+    $D.getDocHead = getDocHead;
+    
+    $D.contains = contains;
+    $D.getHref = getHref;
+    
+});
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

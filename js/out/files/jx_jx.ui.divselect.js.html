@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>jx/jx.ui.divselect.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/JXAnimation.Audio.html">JXAnimation.Audio</a></li>
+            
+                <li><a href="../classes/Log.html">Log</a></li>
+            
+                <li><a href="../classes/Tab.html">Tab</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/JXAnimate.Audio.html">JXAnimate.Audio</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: jx/jx.ui.divselect.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/* == J.ui.DivSelect =============================================
+ * Copyright (c) 2010, Tencent.com All rights reserved.
+ * version: 1.0
+ * rehorn
+ * -------------------------------------------- 2011-3-14 ----- */
+ 
+Jet().$package(function (J) {
+    var packageContext = this,
+        $D = J.dom,
+        $S = J.string,
+        $E = J.event;
+    J.ui = J.ui || {};
+    /*
+       * div模式select相关，可以移植到其他地方 示例： html:&lt;div id=&quot;testdiv&quot;&gt;&lt;/div&gt; js:
+       * divSelect.show(&quot;testdiv&quot;,&quot;test&quot;,selOptions,&quot;&quot;,160,&quot;test()&quot;);
+       * 
+       */
+    /**
+     * 
+     * div模拟的下拉框, 直接 new一个实例即可
+     * 
+     * @memberOf ui
+     * @name DivSelect
+     * @class
+     * @constructor
+     * @param {String} objId 容器
+     * @param {String} selectName 名称
+     * @param {Object} dataObj 数据[数组]
+     * @param {Object} selOption 默认项
+     * @param {Number} width 宽度
+     * @param {Boolean} isUpper
+     * 
+     * @example
+     * html: &amp;lt;div id=&quot;testdiv&quot;&amp;gt;&amp;lt/div&amp;gt; 
+     * js: new DivSelect(&quot;testdiv&quot;,&quot;test&quot;,selOptions,&quot;&quot;,160);
+     * 
+     */
+     var DivSelect = J.ui.DivSelect = new J.Class(
+
+     {
+        /*
+         * 主调函数 参数含义：容器，名称，数据[数组]，默认项，宽度 注意：数据格式
+         */
+        /** @ignore */
+        init : function(objId, selectName, dataObj, selOption, width, isUpper) {
+
+          this._selectName = selectName;
+          this._dataObj = dataObj;
+          this._selOption = selOption;
+          this._isUpper = isUpper || false;
+
+          // _divSelect = divSelect; ;
+          var data = dataObj.data;
+          var _Obj = document.getElementById(objId);
+          if (!_Obj || typeof(_Obj) === &quot;undefined&quot;) {
+            return false;
+          }
+          var s1 = document.createElement(&quot;div&quot;);
+          if (isNaN(width) || width == &quot;&quot;) {
+            width = 150;
+          } else if (width &lt; 26) {
+            width = 26;
+          }
+          s1.style.width = width;
+          var top = &quot;&quot;
+          if(this._isUpper){
+              s1.style.position = &quot;relative&quot;;
+              var height = (15*(data.length)); //每个item 15px
+              top = &quot;top:-&quot;+((height&gt;150?150:height)+4)+&quot;px;&quot;;
+          }
+
+          var str = &quot;&quot;;
+          /*
+           * //判断是否有数据
+           */
+          // 判断是否有数据
+          if (data.length &gt; 0) {
+            // 有数据时显示数据选项列表
+            str += &quot;&lt;input type=&#x27;hidden&#x27; name=&#x27;&quot; + selectName
+                + &quot;&#x27; id=&#x27;&quot; + selectName + &quot;&#x27; value=&#x27;&quot;
+                + this.relv(selOption, data) + &quot;&#x27;&gt;&quot;;
+            str += &quot;&lt;div id=&#x27;_a_&quot; + selectName + &quot;&#x27; style=&#x27;width:&quot;
+                + width
+                + &quot;px;height:18px; border:1px #728EA4 solid;&#x27;&gt;&quot;;
+
+            str += &quot;&lt;div id=&#x27;_v_&quot;
+                + selectName
+                + &quot;&#x27; style=&#x27;position:relative;float:left;left:2px;width:&quot;
+                + (width - 22)
+                + &quot;px;height:18px;font-size:12px;overflow:hidden;line-height:18px;&#x27;&gt;&quot;
+                + this.reStr(data, selOption) + &quot;&lt;/div&gt;&quot;;
+            str += &quot;&lt;div id=&#x27;_arr_&quot;
+                + selectName
+                + &quot;&#x27; class=&#x27;divSelect_arr&#x27; style=&#x27;position:relative;float:right;right:0px;width:18px;height:18px;text-align:center;font-family:Webdings;font-size:16px;overflow:hidden;background-color:#FFF;cursor:pointer!important;cursor:hand;&#x27;&gt;&lt;/div&gt;&quot;;
+            str += &quot;&lt;/div&gt;&quot;;
+            str += &quot;&lt;div id=&#x27;_b_&quot;
+                + selectName
+                + &quot;&#x27; style=&#x27;position:absolute; background-color:#FFFFFF; width:&quot;
+                + width
+                + &quot;px; height:&quot;
+                + this.height(data.length)
+                + &quot;px;border:1px #728EA4 solid;overflow-x:hidden;overflow-y:auto;display:none; z-index:99999;&quot; + top + &quot;&#x27;&gt;&quot;;
+            for (var i = 0; i &lt; data.length; i++) {
+              var style = data[i][0] == selOption
+                  ? this.style(2)
+                  : this.style(1);
+              str += &quot;&lt;div id=&#x27;_s_&quot; + selectName + i
+                  + &quot;&#x27; style=&#x27;&quot; + style + &quot;&#x27; &gt;&quot; + data[i][1]
+                  + &quot;&lt;/div&gt;&quot;;
+            }
+            str += &quot;&lt;/div&gt;&quot;;
+          } else {
+            // 没有数据时显示一个空窗体
+            str += &quot;&lt;input type=&#x27;hidden&#x27; name=&#x27;&quot; + selectName
+                + &quot;&#x27; id=&#x27;&quot; + selectName + &quot;&#x27; value=&#x27;&quot;
+                + selOption + &quot;&#x27;&gt;&quot;;
+            str += &quot;&lt;div id=&#x27;_a_&quot; + selectName + &quot;&#x27; style=&#x27;width:&quot;
+                + width
+                + &quot;px;height:18px; border:1px #728EA4 solid;&#x27;&gt;&quot;;
+            str += &quot;&lt;div id=&#x27;_v_&quot;
+                + selectName
+                + &quot;&#x27; style=&#x27;position:relative;float:left;left:2px;width:&quot;
+                + (width - 22)
+                + &quot;px;height:18px;font-size:12px;overflow:hidden;line-height:18px;&#x27;&gt;&lt;/div&gt;&quot;;
+            str += &quot;&lt;div id=&#x27;_arr_&quot;
+                + selectName
+                + &quot;&#x27; class=&#x27;divSelect_arr&#x27; style=&#x27;position:relative;float:right;right:0px;width:18px;height:18px;text-align:center;font-family:Webdings;font-size:16px;overflow:hidden;background-color:#FFF;cursor:pointer!important;cursor:hand;&#x27;&gt;&lt;/div&gt;&quot;;
+            str += &quot;&lt;/div&gt;&quot;;
+            str += &quot;&lt;div id=&#x27;_b_&quot;
+                + selectName
+                + &quot;&#x27; style=&#x27;position:absolute; background-color:#FFFFFF; width:&quot;
+                + width
+                + &quot;px; height:&quot;
+                + this.height(0)
+                + &quot;px;border:1px #728EA4 solid;overflow-x:hidden;overflow-y:auto;display:none; z-index:99999;&#x27;&gt;&lt;/div&gt;&quot;;
+          }
+
+          s1.innerHTML = str;
+          _Obj.appendChild(s1);
+
+          var divSelectObj = this;
+
+          var clickShowOption = function() {
+            divSelectObj.showOptions();
+          }
+
+          $E.on($D.id(&#x27;_v_&#x27; + selectName), &quot;click&quot;, clickShowOption);
+          $E.on($D.id(&#x27;_arr_&#x27; + selectName), &quot;click&quot;,
+                  clickShowOption);
+          if (data.length &gt; 0) {
+            var optionOver = function() {
+              divSelectObj.css(this, 3);
+            };
+            var optionOut = function() {
+              divSelectObj.css(this, 1);
+            };
+            var optionClick = function() {
+              divSelectObj.selected(this);
+            };
+            for (var i = 0; i &lt; data.length; i++) {
+              $E.on($D.id(&#x27;_s_&#x27; + selectName + i), &quot;mouseover&quot;,
+                  optionOver);
+              $E.on($D.id(&#x27;_s_&#x27; + selectName + i), &quot;mouseout&quot;,
+                  optionOut);
+              $E.on($D.id(&#x27;_s_&#x27; + selectName + i), &quot;click&quot;,
+                  optionClick);
+            }
+
+          }
+        },
+        /*
+         * clickShowOption : function(){ divSelectObj.showOptions(); },
+         */
+        /**
+         * 返回选定项的值
+         * @param {String} n id
+         * @return {String}
+         */
+        value : function(n) {
+          n = n || this._selectName;
+          return document.getElementById(n).value;
+        },
+        /**
+         * 返回选定项的文本
+         * @param {String} n id
+         * @return {String}
+         */
+        text : function(n) {
+          n = n || this._selectName;
+          return document.getElementById(&quot;_v_&quot; + n).innerHTML;
+        },
+        /**
+         * 选中给节点
+         * @param {HTMLElement} optionObj 
+         */
+        selected : function(optionObj) {
+          var data = this._dataObj.data;
+          var value = optionObj.innerHTML;
+          for (var i = 0; i &lt; data.length; i++) {
+            if (data[i][1] === value) {
+              $D.id(this._selectName).value = data[i][0];
+            }
+            $D.id(&#x27;_s_&#x27; + this._selectName + i).style.cssText = this.style(1);
+          }
+
+          $D.id(&quot;_v_&quot; + this._selectName).innerHTML = value;
+
+          optionObj.style.cssText = this.style(2);
+          this.hidden();
+          $E.notifyObservers(this, &quot;selectedChanged&quot;);
+        },
+        relv : function(v, d) {
+          for (var i = 0; i &lt; d.length; i++) {
+            if (d[i][0] == v) {
+              return v;
+            }
+          }
+          if (v == null || v == &quot;&quot;) {
+            return d[0][0];
+          }
+        },
+        reStr : function(d, m) {
+          for (var i = 0; i &lt; d.length; i++) {
+            if (d[i][0] == m) {
+              return d[i][1];
+            }
+          }
+          if (m == null || m == &quot;&quot;) {
+            return d[0][1];
+          }
+        },
+        /**
+         * 获取列表的高度
+         * @return {Number}
+         */
+        height : function(l) {
+          var h;
+          if (l &gt; 10 || l &lt; 1)
+            h = 10 * 15;
+          else
+            h = l * 15;
+          h += 2;
+          return h;
+        },
+        showOptions : function(n) {
+          n = n || this._selectName;
+          var o = document.getElementById(&quot;_b_&quot; + n)
+          if (o.style.display == &quot;none&quot;)
+            o.style.display = &quot;&quot;;
+          else
+            o.style.display = &quot;none&quot;;
+
+        },
+        hidden : function() {
+          document.getElementById(&quot;_b_&quot; + this._selectName).style.display = &quot;none&quot;;
+        },
+        style : function(m) {
+          var cs = &quot;&quot;;
+          switch (m) {
+            case 1 :
+              cs = &quot;height:15px; font-size:12px; line-height:15px; overflow:hidden; background-color:#FFFFFF; color:#000000; font-weight:normal;&quot;;
+              break;
+            case 2 :
+              cs = &quot;height:15px; font-size:12px; line-height:15px; overflow:hidden; background-color:#315DAD; color:#FFFFFF; font-weight:bold;&quot;;
+              break;
+            case 3 : //mouseover
+              cs = &quot;height:15px; font-size:12px; line-height:15px; overflow:hidden; background-color:#D8D8D8; color:#000000; font-weight:normal;&quot;;
+              break;
+          }
+          return cs;
+        },
+        css : function(optionObj, type) {
+          if (type === 1) {
+            if ($D.id(&quot;_v_&quot; + this._selectName).innerHTML != optionObj.innerHTML) {
+              optionObj.style.cssText = this.style(type);
+            }
+          } else {
+            if ($D.id(&quot;_v_&quot; + this._selectName).innerHTML != optionObj.innerHTML) {
+              optionObj.style.cssText = this.style(type);
+            }
+          }
+        }
+      });
+      
+});
+    
+    
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

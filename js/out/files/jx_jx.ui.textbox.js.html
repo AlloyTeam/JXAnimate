@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>jx/jx.ui.textbox.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/JXAnimation.Audio.html">JXAnimation.Audio</a></li>
+            
+                <li><a href="../classes/Log.html">Log</a></li>
+            
+                <li><a href="../classes/Tab.html">Tab</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/JXAnimate.Audio.html">JXAnimate.Audio</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: jx/jx.ui.textbox.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/* == J.ui.TextBox =============================================
+ * Copyright (c) 2011, Tencent.com All rights reserved.
+ * version: 1.0
+ * rehorn
+ * -------------------------------------------- 2011-1-22 ----- */
+ 
+ 
+Jet().$package(function (J) {
+    var $D = J.dom,
+        $S = J.string,
+        $E = J.event;
+    
+    J.ui = J.ui || {};
+    
+    /**
+     * 【TextBox】
+     * 
+     * @class 
+     * @name TextBox
+     * @memberOf ui
+     * @constructor
+     * @param {Object} option 构造参数
+     * @example
+     * {
+     * id: &#x27;&#x27;,//random
+     * name: id,
+     * container: document.body,
+     * className: &#x27;&#x27; ,
+     * title: &#x27;&#x27;,
+     * text: &#x27;&#x27;,
+     * height: 200,
+     * width: 200,
+     * limit: 200,
+     * readOnly: false,
+     * hintLink: [{
+     *  text:&#x27;&#x27;,
+     *  click:&#x27;&#x27;
+     *  }]
+     * }
+     * 
+     * var sharebox = new J.ui.TextBox({
+     *      title: &#x27;分享&#x27;,
+     *      text: &#x27;内容&#x27;,
+     *      hint: [{
+     *          text: &#x27;更多&#x27;,
+     *          click: &#x27;&#x27;                   
+     *      }]
+     *  });
+     *  sharebox.show(200, 200);
+     * @since version 1.0
+     * @description
+     */
+    var TextBox = J.ui.TextBox= new J.Class(
+    /**
+     * @lends ui.TextBox.prototype
+     */
+    {
+        /**
+         * @ignore
+         */
+        init: function(option){
+            var id = &#x27;share_box_&#x27; + (option.id || (new Date().getTime()));
+            var name = option.name || id;
+            var parent = option.container || document.body;
+            var className = option.className || &#x27;&#x27;;
+            var content = option.text || &#x27;&#x27;;
+            this._titleHeight = 22;
+            this._footerHeight = 26;
+            this._padding = 4 * 2;
+            this._margin = 4 * 2;
+            option.width = option.width || 200;
+            option.height = option.height || 100;
+            option.limit = option.limit || 0;
+            option.isPopup = option.isPopup || false;
+            option.readOnly = option.readOnly || false;
+            option.maskIframe = option.maskIframe || false;
+            option.hasCloseButton = option.hasCloseButton === false ? false : true;
+            this._isShow = false;
+            
+            var container = this._el = $D.node(&#x27;div&#x27;, {
+                id: id,
+                &#x27;class&#x27;: &#x27;share_box &#x27; + className
+            });
+                
+            var html = &#x27;\
+                &lt;div class=&quot;share_box_title&quot; id=&quot;&#x27;+ id +&#x27;_title&quot;&gt;\
+                    &lt;div class=&quot;share_box_titleTxt&quot; id=&quot;&#x27;+ id +&#x27;_titleTxt&quot;&gt;&lt;/div&gt;\
+                &lt;/div&gt;\
+                &lt;div class=&quot;share_box_body&quot; id=&quot;&#x27;+ id +&#x27;_body&quot;&gt;\
+                    &lt;!--textarea class=&quot;share_box_text&quot; id=&quot;&#x27;+ id +&#x27;_text&quot;&gt;&lt;/textarea--&gt;\
+                &lt;/div&gt;\
+                &lt;div class=&quot;share_box_footer&quot; id=&quot;&#x27;+ id +&#x27;_footer&quot;&gt;\
+                    &lt;div class=&quot;share_box_showthumb&quot; id=&quot;&#x27;+id+&#x27;_showthumb&quot;&gt;&lt;/div&gt;\
+                    &lt;div class=&quot;share_box_hint&quot; id=&quot;&#x27;+ id +&#x27;_hint&quot;&gt;&lt;/div&gt;\
+                    &lt;div class=&quot;share_box_count&quot; id=&quot;&#x27;+ id +&#x27;_count&quot;&gt;&lt;/div&gt;\
+                &lt;/div&gt;\
+                &lt;div&gt;\
+                    &lt;img id=&quot;&#x27;+id+&#x27;_thumb&quot; class=&quot;share_box_thumb&quot; src=&quot;&#x27;+option.thumb+&#x27;&quot; width=211 height=127 /&gt;\
+                &lt;/div&gt;&#x27;;
+            
+            if(option.maskIframe){
+                html += &#x27;&lt;iframe class=&quot;ui_maskBgIframe&quot; src=&quot;&#x27;+alloy.CONST.MAIN_URL+&#x27;domain.html;&quot; border=&quot;0&quot;&gt;&lt;/iframe&gt;&#x27;;
+            }
+            
+            container.innerHTML = html;
+            parent.appendChild(container);
+            if(option.isPopup){
+                this._panel = new J.ui.PopupBox({
+                    id: id,
+                    name: name,
+                    container: container
+                });
+            }else{
+                this._panel = new J.ui.Panel({
+                    id: id,
+                    name: name,
+                    container: container
+                });
+            }
+            
+            
+            this._shareBoxTitleTxt = $D.id(id + &#x27;_titleTxt&#x27;);
+            this._shareBoxTitle = $D.id(id + &#x27;_title&#x27;);
+            this._shareBoxHint = $D.id(id + &#x27;_hint&#x27;);
+            this._shareBoxFooter = $D.id(id + &#x27;_footer&#x27;);
+            this._shareBoxBody = $D.id(id + &#x27;_body&#x27;);
+            this._shareBoxCount = $D.id(id + &#x27;_count&#x27;);
+            this._shareBoxShowthumb=$D.id(id + &#x27;_showthumb&#x27;);
+            this._shareBoxThumb=$D.id(id + &#x27;_thumb&#x27;);
+            
+            var areaHtml = &#x27;&lt;strong class=&quot;share_big_quote share_left_quote&quot;&gt;“&lt;/strong&gt;&lt;textarea class=&quot;share_box_text&quot; id=&quot;&#x27;+ id +&#x27;_text&quot;&gt;&lt;/textarea&gt;&lt;strong class=&quot;share_big_quote share_right_quote&quot;&gt;”&lt;/strong&gt;&#x27;;
+            if(option.readOnly){
+                //this._shareBoxText.readOnly = &#x27;readonly&#x27;;
+                areaHtml = &#x27;&lt;strong class=&quot;share_big_quote share_left_quote&quot;&gt;“&lt;/strong&gt;&lt;textarea class=&quot;share_box_text&quot; id=&quot;&#x27;+ id +&#x27;_text&quot; readOnly=&quot;readonly&quot;&gt;&lt;/textarea&gt;&lt;strong class=&quot;share_big_quote share_right_quote&quot;&gt;”&lt;/strong&gt;&#x27;;
+            }
+            if(!option.thumb){
+                $D.hide(this._shareBoxShowthumb);
+            }
+            this._shareBoxBody.innerHTML = areaHtml;
+            this._shareBoxText = $D.id(id + &#x27;_text&#x27;);
+            
+            var context = this;
+            var observer = {
+                /**
+                 * @ignore
+                 */
+                onSendButtonClick: function(e){
+                    e.preventDefault();
+                    e.stopPropagation();
+                    $E.notifyObservers(context, &#x27;clickSendButton&#x27;);
+                },
+                /**
+                 * @ignore
+                 */
+                onCloseButtonClick: function(e){
+                    e.preventDefault();
+                    e.stopPropagation();
+                    context.hide();
+                    $E.notifyObservers(context, &#x27;clickCloseButton&#x27;);
+                },
+                /**
+                 * @ignore
+                 */
+                onTextAreaKeyUp: function(e){
+                    e.stopPropagation();
+                    e.preventDefault();
+                    alloy.util.subStringByChar(e, option.limit);
+                },
+                /**
+                 * @ignore
+                 */
+                toggleThumb: function(e){
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if($D.isShow(context._shareBoxThumb)){
+                        $D.hide(context._shareBoxThumb);
+                    }
+                    else{
+                        $D.show(context._shareBoxThumb);
+                    }
+                }
+            };
+            
+            this._sendButton = new J.ui.Button({
+                &#x27;appendTo&#x27; : this._shareBoxFooter,
+                &#x27;className&#x27; : &#x27;window_button window_ok&#x27;,
+                &#x27;isStopPropagation&#x27; : true,
+                &#x27;text&#x27; : &#x27;发表&#x27; ,
+                &#x27;event&#x27; : {
+                    &#x27;click&#x27; : observer.onSendButtonClick
+                }
+            });
+            this._sendButton.show();
+            if(option.hasCloseButton){
+                this._closeButton = new J.ui.Button({
+                    &#x27;appendTo&#x27; : this._shareBoxTitle,
+                    &#x27;className&#x27; : &#x27;textbox_button&#x27;,
+                    &#x27;isStopPropagation&#x27; : true,
+                    &#x27;title&#x27; : &#x27;关闭&#x27; ,
+                    &#x27;event&#x27; : {
+                        &#x27;click&#x27; : observer.onCloseButtonClick
+                    }
+                });
+                this._closeButton.show();
+            }
+            
+            this._shareBoxText.innerHTML = content;
+            
+            if(option.title){
+                this._shareBoxTitleTxt.innerHTML = option.title;
+                $D.show(this._shareBoxTitle);
+            }
+            if(option.hint){
+                var spliter = &#x27;&#x27;,
+                    node = null;
+                
+                for(var i=0; i&lt;option.hint.length; i++){
+                    node = $D.node(&#x27;a&#x27;, {
+                        &#x27;href&#x27;: &#x27;###&#x27;,
+                        &#x27;class&#x27;: &#x27;share_box_hintLink&#x27;
+                    });
+                    node.innerHTML = option.hint[i].text;
+                    $E.on(node, &#x27;click&#x27;, option.hint[i].click);
+                    this._shareBoxHint.appendChild(node);
+                }
+            }
+            if(option.limit){
+                //暂时去掉数字提示
+//              this._shareBoxCount.innerHTML = option.maxChar;
+//              $D.show(this._shareBoxCount);
+                $E.on(this._shareBoxText, &#x27;keyup&#x27;, observer.onTextAreaKeyUp);
+            }
+//            if(option.onTextAreaClick){
+//                $E.on(this._shareBoxText, &#x27;keyup&#x27;, option.onTextAreaClick);
+//            }
+            $E.on(this._shareBoxShowthumb, &#x27;click&#x27;, observer.toggleThumb);
+            
+            this.setHeight(option.height);
+            this.setWidth(option.width);
+        },
+        /**
+         * 设置高度
+         * @param {Number} height
+         */
+        setHeight: function(height){
+            var h = height - this._titleHeight - this._footerHeight;
+            $D.setStyle(this._shareBoxText, &#x27;height&#x27;, h + &#x27;px&#x27;);
+        },
+        /**
+         * 设置宽度
+         * @param {Number} width
+         */
+        setWidth: function(width){
+            $D.setStyle(this._el, &#x27;width&#x27;, width + &#x27;px&#x27;);
+            $D.setStyle(this._shareBoxText, &#x27;width&#x27;, (width - this._padding - this._margin) + &#x27;px&#x27;);
+        },
+        /**
+         * @private
+         */
+        addMask: function(el){
+            if(!J.browser.ie) 
+                return;
+            
+            if(J.isString(el)){
+                var iframe = &#x27;&lt;iframe class=&quot;ui_maskBgIframe&quot; src=&quot;&#x27;+alloy.CONST.MAIN_URL+&#x27;domain.html&quot;&gt;&lt;/iframe&gt;&#x27;;
+                return el+iframe;
+            }else{
+                var iframe = $D.node(&#x27;iframe&#x27;,{
+                    &#x27;class&#x27;: &#x27;ui_maskBgIframe&#x27;,
+                    &#x27;src&#x27;: &#x27;about:blank&#x27;
+                }); 
+                el.appendChild(iframe);
+            }
+        },
+        /**
+         * 获取textbox所处节点
+         */
+        getElement: function(){
+            return this._el;
+        },
+        /**
+         * 返回是否显示
+         */
+        isShow: function(){
+            return this._isShow;    
+        },
+        /**
+         * 在指定位置显示textbox
+         * @param {Number} x
+         * @param {Number} y
+         */
+        show: function(x, y){
+            if(x &amp;&amp; y){
+                this._panel.setXY(x, y);
+            }
+            this._panel.show();
+            this._isShow = true;
+        },
+        /**
+         * 隐藏
+         */
+        hide: function(){
+            this._panel.hide();
+            this._isShow = false;
+            $E.notifyObservers(this, &#x27;hide&#x27;);
+        },
+        /**
+         * 获取用户输入的内容
+         */
+        getValue: function(){
+            return this._shareBoxText.value;
+        },
+        /**
+         * 设置输入框的内容
+         */
+        setValue: function(value){
+            this._shareBoxText.value = value;
+        },
+        /**
+         * 给状态栏设置提醒节点
+         * @private
+         */
+        setHint: function(el){
+            this._shareBoxHint.innerHTML = &#x27;&#x27;;
+            this._shareBoxHint.appendChild(el);
+            $D.show(this._shareBoxHint);
+        },
+        /**
+         * @private
+         */
+        setThumb: function(url){
+            this._shareBoxThumb.src=url;
+        }
+    });
+});     
+        
+        
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>jx/jx.console.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/JXAnimation.Audio.html">JXAnimation.Audio</a></li>
+            
+                <li><a href="../classes/Log.html">Log</a></li>
+            
+                <li><a href="../classes/Tab.html">Tab</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/JXAnimate.Audio.html">JXAnimate.Audio</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: jx/jx.console.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/** 
+ * JET (Javascript Extension Tools) 
+ * Copyright (c) 2009, All rights reserved.
+ *
+ * @fileOverview Jx!
+ * @version 1.0
+ * @author  Kinvix(&lt;a href=&quot;mailto:Kinvix@gmail.com&quot;&gt;Kinvix@gmail.com&lt;/a&gt;)
+ * @description 
+ * 
+ */
+
+/** 
+ * @description
+ * Package: jet.console
+ *
+ * Need package:
+ * jet.core.js
+ * jet.base.js
+ * jet.array.js
+ * jet.string.js
+ * jet.dom.js
+ * jet.browser.js
+ * jet.event.js
+ */
+
+
+/**
+ * 10.[Browser part]: console 控制台
+ */
+Jx().$package(function(J){
+    var $ = J.dom.id,
+        $D = J.dom,
+        $E = J.event,
+        $S = J.string/*,
+        $H = J.http*/;
+        
+    
+    var topNamespace = this,
+        query = J.string.mapQuery(window.location.search);
+    var _open=window.open;
+    var open=function(sURL, sName, sFeatures, bReplace){
+        if(sName == undefined){
+            sName=&quot;_blank&quot;;
+        };
+        if(sFeatures == undefined){
+            sFeatures=&quot;&quot;;
+        };
+        if(bReplace == undefined){
+            bReplace=false;
+        };
+        
+        var win=_open(sURL, sName, sFeatures, bReplace);
+        if(!win){
+            J.out(&quot;你的机器上有软件拦截了弹出窗口&quot;);
+            return false;
+        }
+        
+        return true;
+    };
+    window.open = open;
+    /**
+     * 日志对象
+     * @author tealin
+     * @class Log
+     * @ignore
+     * @memberOf console
+     * @name Log
+     */
+    var Log = new J.Class(
+        
+        {
+        _defaultType : 3,
+        _defaultTag : &#x27;information&#x27;,
+        _defaultTemplate : &#x27;&lt;%=msg%&gt;(&lt;%=type%&gt;#&lt;%=tag%&gt;@&lt;%=time%&gt;)&#x27;,
+        /**
+         * 信息类型常量，一共五种类型:&lt;br/&gt;&lt;br/&gt;
+         * PROFILE  : 0 &lt;br/&gt;
+         * WARNING  : 1 &lt;br/&gt;
+         * ERROR    : 2 &lt;br/&gt;
+         * INFO     : 3 &lt;br/&gt;
+         * DEBUG    : 4 &lt;br/&gt;
+         * 
+         * @type Object
+         */
+        TYPE : [&#x27;PROFILE&#x27; ,&#x27;WARNING&#x27;, &#x27;ERROR&#x27;, &#x27;INFO&#x27;,&#x27;DEBUG&#x27;],
+
+        init : function(option){
+            this.msg = option.msg||&#x27;&#x27;;
+            this.tag = option.tag||this._defaultTag;
+            this.type = J.isUndefined(option.type)?this._defaultType:option.type;
+            this.time = new Date().valueOf();
+            this._template = option.template||this._defaultTemplate;
+        },
+//      setTemplate : function(template){
+//          this._template = template;
+//          try{
+//              this.toString();
+//          }catch(e){
+//              alert(&quot;格式错误!输入格式类似为:&lt;%=msg%&gt;(&lt;%=type%&gt;#&lt;%=tag%&gt;@&lt;%=time%&gt;)&quot;);
+//          }
+//      },
+        /**
+         * 格式化输出
+         * @param {Object} data 模版数据
+         * @param {Boolen} isEncode 是否转义
+         * @param {String} template 输出模版
+         * @return {String} 输出字符串
+         */
+        format : function(data,isEncode,template){
+            template = template||this._template;
+            if(isEncode){
+                return $S.encodeHtml($S.template(template,data));
+            }else{
+                return $S.template(template,data);
+            }
+        },
+        /**
+         * 格式化数据对象
+         * @return {Object} 数据对象
+         */
+        parseOption : function(){
+            var context = this;
+            var option = {
+                msg : context.msg,
+                time : context.time,
+                type : context.TYPE[context.type],
+                tag : context.tag       
+            }
+            return option;
+        },
+        /**
+         * 普通输出函数
+         * @param {Boolen} isEncode 是否转义
+         * @param {String} template 输出模版
+         * @return {String} 输出字符串
+         */
+        toString : function(isEncode,template){
+            return this.format(this.parseOption(),isEncode,template||this._template);
+        }
+    });
+    
+    
+    
+    
+    
+    J.config={
+        debugLevel: 1
+    };
+    
+    
+    
+    
+    
+    /**
+     * Jx 控制台，用于显示调试信息以及进行一些简单的脚本调试等操作。可以配合 J.debug J.runtime 来进行数据显示和调试.
+     * 
+     * @type console
+     * @namespace
+     * @name console
+     */
+    J.console = {
+        /**
+         * 在console里显示信息
+         * 
+         * @param {String} msg 信息
+         * @param {Number} type 信息类型
+         * 
+         * @example
+         * J.console.print(&quot;这里是提示信息&quot;,J.console.TYPE.ERROR)
+         */
+//      print : function(msg, type){
+//          if(J.console.log){
+//              J.console.log((type === 4 ? (new Date() + &quot;:&quot;) : &quot;&quot;) + msg);
+//          }
+//      }
+    };
+
+    /**
+     * 数据监控和上报系统
+     * 
+     * @ignore
+     * @type J.Report
+     */
+    J.Report = {
+        /**
+         * 数据分析上报接口
+         * 
+         * @param {string} source 数据来源
+         * @param {number} type 数据返回结果,&lt;br/&gt; &lt;br/&gt;1 加载完成 &lt;br/&gt;2 加载失败 &lt;br/&gt;3 数据异常
+         *            无法解释/截断 &lt;br/&gt;4 速度超时 &lt;br/&gt;5 访问无权限 &lt;br/&gt; 对应的转义符是 %status%
+         * 
+         * @param {string} url 请求的数据路径
+         * @param {number} time 响应时间
+         * @ignore
+         */
+        receive : J.emptyFunc,
+    
+        /**
+         * 添加监控规则,
+         * 
+         * @param {String} url 需要监控的url
+         * @param {String} reportUrl 出现异常后上报的地址 上报地址有几个变量替换 &lt;br/&gt;%status% 数据状态
+         *            &lt;br/&gt;%percent% 统计百分比 &lt;br/&gt;%url% 监听的url地址,自动encode
+         *            &lt;br/&gt;%fullUrl% 监听的完整的url地址，包括这个地址请求时所带 &lt;br/&gt;%source% js处理来源
+         *            &lt;br/&gt;%time% 请求花掉的时间 &lt;br/&gt;%scale% 比例,通常是指 1:n 其中的 n 就是 %scale%
+         * 
+         * &lt;br/&gt;
+         * @example
+         * J.Report.addRule(&quot;http://imgcache.qq.com/data2.js&quot;,&quot;http://imgcache.qq.com/ok?flag1=3234&amp;flag2=%status%&amp;1=%percent%&amp;flag4=123456&quot;);
+         * @ignore
+         */
+        addRule : J.emptyFunc
+    };
+    
+    
+
+    
+    J.extend(J.console,
+    /**
+     * @lends console
+     */
+    {
+        /**
+         * 是否进行了初始化
+         * 
+         * @type Boolean
+         */
+        _isCreated : false,
+        /**
+         * 日志记录最大数目
+         */
+        _maxLength : 1000,
+    
+        /**
+         * console表现模板
+         * 
+         * @type String
+         */
+        _html :    &#x27;&lt;div id=&quot;ConsoleBoxHead&quot; class=&quot;consoleBoxHead&quot;&gt;\
+                        &lt;a href=&quot;###&quot; id=&quot;ConsoleCloseButton&quot; class=&quot;consoleCloseButton&quot; title=&quot;关闭&quot;&gt;X&lt;/a&gt;\
+                        &lt;a href=&quot;###&quot; id=&quot;ConsoleClearButton&quot; class=&quot;consoleCloseButton&quot; title=&quot;清除所有日志&quot;&gt;C&lt;/a&gt;\
+                        &lt;a href=&quot;###&quot; id=&quot;ConsoleRefreshButton&quot; class=&quot;consoleCloseButton&quot; title=&quot;还原所有日志&quot;&gt;R&lt;/a&gt;\
+                        &lt;a href=&quot;###&quot; id=&quot;ConsoleHelpButton&quot; class=&quot;consoleCloseButton&quot; title=&quot;控制台帮助&quot;&gt;H&lt;/a&gt;\
+                        &lt;h5 class=&quot;title&quot; title=&quot;控制台&quot;&gt;Console&lt;/h5&gt;\
+                    &lt;/div&gt;\
+                    &lt;div id=&quot;consoleMain&quot; class=&quot;consoleMain&quot;&gt;\
+                        &lt;ul id=&quot;ConsoleOutput&quot; class=&quot;consoleOutput&quot;&gt;&lt;/ul&gt;\
+                    &lt;/div&gt;\
+                    &lt;div class=&quot;consoleInputBox&quot;&gt;\
+                        &amp;gt;&lt;input id=&quot;ConsoleInput&quot; class=&quot;consoleInput&quot; title=&quot;请输入控制台指令或者Javascript语句...&quot; /&gt;\
+                    &lt;/div&gt;&#x27;,
+
+        /**
+         * console的css文本
+         *
+         * @type String
+         */
+        _cssText :    &#x27;\
+                        html{\
+                            _background:url(about:blank);\
+                        }\
+                        \
+                        .consoleBox{\
+                            display:none;\
+                            position:fixed;\
+                            _position: absolute;\
+                            _top:expression(documentElement.scrollTop+documentElement.clientHeight-this.offsetHeight);\
+                            _left:expression(documentElement.scrollLeft+documentElement.clientWidth-this.offsetWidth-200);\
+                            right: 200px;\
+                            bottom: 30px;\
+                            z-index: 10000000;\
+                            border: 2px solid #bbb;\
+                            padding: 5px;\
+                            width: 300px;\
+                            height:310px;\
+                            background: #000;\
+                            box-shadow: 1px 1px 20px rgba(0, 0, 0, 0.75);\
+                            filter: Alpha(opacity:75);\
+                            font-family: &quot;Courier New&quot;, Consolas, &quot;LucidaConsole&quot;, Monaco, monospace;\
+                            font-size: 12px;\
+                            color: #fff;\
+                        }\
+                        \
+                        html.webkit .consoleBox{\
+                            background: rgba(0,0,0,0.75);\
+                        }\
+                        \
+                        .consoleBoxHead{\
+                            height:20px;\
+                            background: rgba(255,255,255,0.15);\
+                            overflow:hidden;\
+                            cursor:default;\
+                            padding: 2px;\
+                        }\
+                        \
+                        .consoleBoxHead .title{\
+                            margin:0;\
+                            padding: 0 0 0 3px;\
+                            height:20px;\
+                            line-height:20px;\
+                            font-family: Verdana;\
+                        }\
+                        \
+                        .consoleBoxHead .consoleCloseButton{\
+                            float:right;\
+                            border:0px solid #000;\
+                            width:20px;\
+                            height:18px;\
+                            line-height:16px;\
+                            background: white;\
+                            margin:1px 1px;\
+                            padding:0px;\
+                            color:#666;\
+                            font-family: Verdana;\
+                            font-weight:bold;\
+                            cursor:pointer;\
+                            border-radius:3px;\
+                            -moz-border-radius:3px;\
+                            -webkit-border-radius:3px;\
+                            text-align:center;\
+                            text-decoration:none;\
+                        }\
+                        \
+                        .consoleBoxHead .consoleCloseButton:hover{\
+                            background: orange;\
+                            color:white;\
+                            text-decoration:none;\
+                        }\
+                        \
+                        #ConsoleCloseButton:hover{\
+                            background: red;\
+                        }\
+                        \
+                        #ConsoleClearButton:hover{\
+                            background: blue;\
+                        }\
+                        \
+                        #ConsoleRefreshButton:hover{\
+                            background: green;\
+                        }\
+                        \
+                        .consoleMain{\
+                            position:relative;\
+                            top:2px;\
+                            bottom:0px;\
+                            width:100%;\
+                            height:255px;\
+                            overflow:auto;\
+                        }\
+                        html.mobileSafari .consoleMain{\
+                            overflow:hidden;\
+                        }\
+                        \
+                        ul.consoleOutput{\
+                            display:block;\
+                            margin:0;\
+                            padding:0;\
+                            width:100%;\
+                            list-style:none;\
+                        }\
+                        \
+                        ul.consoleOutput li{\
+                            list-style:none;\
+                            padding:3px;\
+                            border-bottom:1px solid #333333;\
+                            word-break: break-all;\
+                            word-wrap: break-word;\
+                            overflow: hidden;\
+                            zoom: 1;\
+                        }\
+                        \
+                        .consoleOutput .log_icon{\
+                            width:13px;\
+                            height:13px;\
+                            background:#fff;\
+                            overflow:hidden;\
+                            float:left;\
+                            margin-top:2px;\
+                            font-weight:bold;\
+                            text-align:center;\
+                            font-size:12px;\
+                            color:#8B8B8B;\
+                            line-height:135%;\
+                            cursor:default;\
+                            border-radius:3px;\
+                            -moz-border-radius:3px;\
+                            -webkit-border-radius:3px;\
+                        }\
+                        \
+                        .consoleOutput .log_text{\
+                            margin: 0px 0px 0px 20px;\
+                            line-height:150%;\
+                            zoom: 1;\
+                        }\
+                        \
+                        .log_error_type{}\
+                        \
+                        .log_error_type .log_icon{\
+                            background:#FF0000;\
+                            color:#660000;\
+                        }\
+                        \
+                        .log_error_type .log_text{\
+                            color:#FF0000;\
+                        }\
+                        \
+                        .log_warning_type{}\
+                        \
+                        .log_warning_type .log_icon{\
+                            background:#FFFF00;\
+                            color:#8C7E00;\
+                        }\
+                        \
+                        .log_warning_type .log_text{\
+                            color:#FFFF00;\
+                        }\
+                        \
+                        .log_debug_type{}\
+                        \
+                        .log_debug_type .log_icon{\
+                            background:#33CC00;\
+                            color:#006600;\
+                        }\
+                        \
+                        .log_debug_type .log_text{\
+                            color:#33cc00;\
+                        }\
+                        \
+                        .log_info_type{}\
+                        \
+                        .log_info_type .log_icon{\
+                            background:#0066FF;\
+                            color:#000066\
+                        }\
+                        \
+                        .log_info_type .log_text{\
+                            color:#0066FF;\
+                        }\
+                        \
+                        .log_profile_type{}\
+                        \
+                        .log_profile_type .log_icon{\
+                        }\
+                        \
+                        .log_profile_type .log_text{\
+                            color:white;\
+                        }\
+                        \
+                        #JxConsole .consoleInputBox{\
+                            font-family: Verdana;\
+                            font-size:12px;\
+                            margin:5px 0;\
+                            padding:2px 0;\
+                            border-top:1px solid #aaa;\
+                            width:100%;\
+                            color:#CCFF00;\
+                        }\
+                        \
+                        #JxConsole  input.consoleInput{\
+                            border:0px solid #666;\
+                            background:transparent;\
+                            color:#CCFF00;\
+                            font-family: &quot;Courier New&quot;, Consolas, &quot;LucidaConsole&quot;, Monaco, monospace;\
+                            font-size:12px;\
+                            width:285px;\
+                            height:25px;\
+                            margin-left:3px;\
+                            outline:none;\
+                        }\
+                         &#x27;,
+
+        /**
+         * 提示框是否打开了
+         * 
+         * @type Boolean
+         */
+        _opened : false,
+        
+        //日志记录对象
+        _log_record: [],
+        
+        _cmd_history:[],
+        _cmd_last_index:0,
+        /**
+         * 是否为自定义的控制台 
+         */
+        isCustomConsole : true,
+        _templateArr : [&#x27;&lt;%=msg%&gt;&#x27;,&#x27;&lt;%=msg%&gt;(&lt;%=type%&gt;#&lt;%=tag%&gt;@&lt;%=time%&gt;)&#x27;],
+        _templateType :0,
+    
+        /**
+         * 样式类
+         * 
+         * @type Array
+         */
+        _typeInfo : [[&quot;log_profile_type&quot;, &quot;└&quot;], [&quot;log_warning_type&quot;, &quot;!&quot;], [&quot;log_error_type&quot;, &quot;x&quot;], [&quot;log_info_type&quot;, &quot;i&quot;],[&quot;log_debug_type&quot;, &quot;√&quot;]],
+        TYPE : {
+            PROFILE : 0,
+            WARNING : 1,
+            ERROR : 2,
+            INFO : 3,
+            DEBUG : 4
+        },
+
+        /**
+         * 显示console
+         */
+        show : function() {
+            if (!this._isCreated) {
+                this._create();
+            }
+            this._opened = true;
+            
+            this._main.style.display = &quot;block&quot;;
+            this.render();
+            
+                
+            //输入焦点过来
+            window.setTimeout(J.bind(this.focusCommandLine, this), 0);
+        },
+    
+        /**
+         * 隐藏console
+         */
+        hide : function(e) {
+            e &amp;&amp; e.preventDefault();
+            this.clear();
+            J.console._main.style.display = &quot;none&quot;;
+            J.console._opened = false;
+            
+        },
+        
+        /**
+         * 开启console
+         */
+        enable : function() {
+            J.option.console = true;
+            this.show();
+            
+        },
+        
+        /**
+         * 关闭console
+         */
+        disable : function() {
+            J.option.console = false;
+            this.hide();
+            
+        },
+    
+        /**
+         * 初始化控制台
+         * 
+         * @ignore
+         */
+        _init : function() {
+            // 快捷键开启
+            $E.on(document, &quot;keydown&quot;, J.bind(this.handleDocumentKeydown, this));
+            if (J.option.console) {
+                this.show();
+            }
+            this.setToDebug();
+            //this.out(&quot;Welcome to JET(Javascript Extension Tools)...&quot;);
+        },
+        /**
+         * 建立控制台面板,初始化DOM事件监听
+         */
+        _create:function(){
+
+            $D.createStyleNode(this._cssText);
+            //$H.loadCss(J.path+&quot;jx.console.css&quot;);
+            this._main = document.createElement(&quot;div&quot;);
+            
+            this._main.id=&quot;JxConsole&quot;;
+            this._main.style.display=&quot;none&quot;;
+            this._main.className = &quot;consoleBox&quot;;
+            this._main.innerHTML = this._html;
+            window.document.body.appendChild(this._main);
+            var w = $D.getClientWidth(),
+                h = $D.getClientHeight(),
+                w1 = 300,
+                h1 = 310,
+                l = w - 210 - w1,
+                t = h - 50 - h1; 
+            $D.setStyle(this._main,&quot;top&quot;,t+&quot;px&quot;);
+            $D.setStyle(this._main,&quot;left&quot;,l+&quot;px&quot;);
+            
+            
+            this._headEl = $(&quot;ConsoleBoxHead&quot;);
+            this._inputEl = $(&quot;ConsoleInput&quot;);
+            this._closeButtonEl = $(&quot;ConsoleCloseButton&quot;);
+            this._clsButtonEl = $(&quot;ConsoleClearButton&quot;);
+            this._refreshButtonEl = $(&quot;ConsoleRefreshButton&quot;);
+            this._helpButtonEl = $(&quot;ConsoleHelpButton&quot;);
+            this._outputEl = $(&quot;ConsoleOutput&quot;);
+            this._consoleMainEl = $(&quot;consoleMain&quot;);
+            if(J.ui &amp;&amp; J.ui.Drag){
+                new J.ui.Drag(this._headEl,this._main);
+            }
+    
+            // 绑定方法
+            $E.on(this._inputEl, &quot;keyup&quot;, J.bind(this.onInputKeyup,this));
+            $E.on(this._clsButtonEl, &quot;click&quot;, J.bind(this.clear,this));
+            $E.on(this._refreshButtonEl, &quot;click&quot;, J.bind(this.refresh,this));
+            $E.on(this._helpButtonEl, &quot;click&quot;, J.bind(this.help,this));
+            $E.on(this._closeButtonEl, &quot;click&quot;, J.bind(this.hide,this));
+            
+            
+            //mobileSafari下控制台滚动条
+            var options = {
+                hScrollbar: true,
+                vScrollbar: true,
+                checkDOMChanges: false,
+                desktopCompatibility: true
+            };
+            
+            if(J.browser.mobileSafari){
+                if(J.ui &amp;&amp; J.ui.iScroll &amp;&amp; !this.consoleScroller){
+                    this.consoleScroller = new J.ui.iScroll(this._outputEl, options);
+                    //$D.setStyle(this._outputEl,&quot;overflow&quot;,&quot;&quot;);
+                    J.debug(&quot;!!!!2&quot;, &quot;console&quot;);
+                }
+            }
+
+            
+            this._isCreated = true;
+            
+            
+            
+            
+        },
+        
+        handleDocumentKeydown: function(e){
+            switch(e.keyCode){
+                case 192:   // &#x60;~键:192
+                    if(e.ctrlKey&amp;&amp;e.shiftKey){
+                        
+                        this.toggleShow();
+                        e.preventDefault();
+                    }
+                    break;
+                default: break;
+            }
+        },
+        
+        focusCommandLine: function(){
+            this._inputEl.focus();
+        },
+        /**
+         * 控制台开关
+         */
+        toggleShow:function(){
+            if(this._opened){
+                this.hide();
+                
+                //J.option.debug = J.DEBUG.NO_DEBUG;
+            }else{
+                this.show();
+                //J.option.debug = J.DEBUG.SHOW_ALL;
+                
+            }
+            
+        },
+        
+        /**
+         * 控制台记录信息
+         * 
+         * @param {String} msg 要输出的信息
+         * @param {Number} type 要输出的信息的类型，可选项
+         * @return {String} 返回要输出的信息
+         */
+        outConsoleShow:function(msg, type){
+            this.outConsole(msg, type);
+            
+            if ((!this._opened) &amp;&amp; J.option.console) {
+                this.show();
+            }
+        },
+        
+        /**
+         * 向控制台输出信息并显示
+         * 
+         * @param {String} msg 要输出的信息
+         * @param {Number} type 要输出的信息的类型，可选项
+         * @return {String} 返回要输出的信息
+         */
+        outConsole: function(log) {
+            if(this._opened){
+                var _item = document.createElement(&quot;li&quot;);
+                this._outputEl.appendChild(_item);
+                
+                var _ti = J.console._typeInfo[log.type] || J.console._typeInfo[0];
+                var template = this._templateArr[this._templateType];
+                _item.className = _ti[0];
+                _item.innerHTML = &#x27;&lt;div class=&quot;log_icon&quot; title=&quot;&#x27;+_ti[0]+&#x27;&quot;&gt;&#x27; + _ti[1] + &#x27;&lt;/div&gt;&lt;div class=&quot;log_text&quot;&gt;&#x27; + log.toString(true,template)+&#x27;&lt;/div&gt;&#x27;;
+                if(this.consoleScroller){
+                    this.consoleScroller.refresh();
+                }
+                this._consoleMainEl.scrollTop = this._consoleMainEl.scrollHeight;
+            }
+        },
+        /**
+         * 往控制台打印
+         * @param {String} html 打印的信息
+         */
+        print : function(html){
+            var _item = document.createElement(&quot;li&quot;);
+            this._outputEl.appendChild(_item);
+            _item.innerHTML = html;
+            this._consoleMainEl.scrollTop = this._consoleMainEl.scrollHeight;
+        },
+        /**
+         * 向控制台输出信息的方法,通过url里面的consolefilter参数可以控制tag输出
+         * 
+         * @param {String} msg 要输出的信息
+         * @param {String} tag 自定义标签
+         * @param {Number} type 要输出的信息的类型，可选项
+         * @return {String} 返回要输出的信息
+         */
+        out:function(msg,tag,type){ 
+            //type = J.isUndefined(type)?0:type;
+            var template = this._templateArr[this._templateType];
+            var log = new Log({
+                        msg : msg,
+                        tag : tag,
+                        type : type
+                    });
+            this.logRecord(log);
+            //如果需要过滤显示的话需要特殊处理
+            if(query&amp;&amp;query.consolefilter){
+                var consolefilter = query.consolefilter;
+                if(log.tag == consolefilter){
+                    if(!this.isCustomConsole){
+                        topNamespace.console.log(log.toString(false,template));
+                    }else{
+                        this.outConsole(log);
+                    }
+                }
+            }else{
+                if(!this.isCustomConsole){
+                    topNamespace.console.log(log.toString(false,template));
+                }else{
+                    this.outConsole(log);
+                }
+            }
+        },
+        /**
+         * 关键日志正常输出
+         * @param {String} msg 输出的日志
+         * @tag {String} tag 日志标志,默认为system
+         */
+
+        profile : function(msg,tag){
+            var type = 0;
+            tag = tag||&quot;system&quot;;
+            this.out(msg,tag,type);
+        },
+        /**
+         * 关键日志警告输出
+         * @param {String} msg 输出的日志
+         * @tag {String} tag 日志标志,默认为system
+         */
+
+        warn : function(msg,tag){
+            var type = 1;
+            this.out(msg,tag,type);
+        },
+        /**
+         * 关键日志错误输出
+         * @param {String} msg 输出的日志
+         * @tag {String} tag 日志标志,默认为system
+         */
+
+        error : function(msg,tag){
+            var type = 2;
+            this.out(msg,tag,type);
+        },
+        /**
+         * 日志灌水输出
+         * @param {String} msg 输出的日志
+         * @tag {String} tag 日志标志,默认为system
+         */
+
+        info : function(msg,tag){
+            var type = 3;
+            this.out(msg,tag,type);
+        },
+        /**
+         * 日志调试输出
+         * @param {String} msg 输出的日志
+         * @tag {String} tag 日志标志,默认为system
+         */
+
+        debug : function(msg,tag){
+            var type = 4;
+            this.out(msg,tag,type);
+        },
+        /**
+         * 设置debug类型,是firebug or custom
+         */
+        setToDebug:function(){
+            if(query.console&amp;&amp;query.console == &quot;firebug&quot;){
+                this.isCustomConsole = false;
+            }else{
+                this.isCustomConsole = true;
+            }
+        },
+        /**
+         * 关闭out输出
+         */
+        setToNoDebug:function(){
+            this.out = J.emptyFunc;
+        },
+        /**
+         * log记录,当有query.console的时候,不限记录数量,没有时限制最大数量
+         * @param {Log} log 日志对象
+         */
+        logRecord: function(log){
+            this._log_record.push(log);
+            if(!query.console){
+                if(this._log_record.length&gt;this._maxLength){
+                    this._log_record.shift();   
+                }
+            }
+        },
+        /**
+         * 设置模版类型
+         * @param {Number} temp 模版类型
+         */
+        setTemplate : function(temp){
+            if(this._templateArr[temp]){
+                this._templateType = temp;
+            }
+        },
+        /**
+         * 过滤输出,支持正则,不区分大小写
+         * @param {RegExp} s 过滤的字符活正则
+         * @return {String} 过滤后的结果
+         */
+        filter : function(s){
+            var reg = new RegExp(s,&quot;i&quot;);
+            var result = [];
+            var logArr = this._log_record;
+            J.array.forEach(logArr,function(log){
+                var logStr = log.toString(true);
+                if(reg.test(logStr)){
+                    result.push(log);
+                }
+            });
+            return result;
+        },
+        /**
+         * 过滤type
+         * @param {Log[]} logArr 日志数组
+         * @param {Number} type 类型
+         * @return {Log[]} logArr 匹配的日志数组
+         */
+        filterByType : function(logArr,type){
+            var result = [];
+            logArr = logArr||[];
+            J.array.forEach(logArr,function(log){
+                var isFound = false;
+                J.array.forEach(type,function(i){
+                    if(log.type == i){
+                        isFound = true;
+                    }
+                });
+                if(isFound){
+                    result.push(log);
+                }
+            });
+            return result;
+        },
+        /**
+         * 过滤tag
+         * @param {Log[]} logArr 日志数组
+         * @param {String} tag 类型
+         * @return {Log[]} logArr 匹配的日志数组
+         */
+        filterByTag : function(logArr,tag){
+            var result = [];
+            logArr = logArr||[];
+            J.array.forEach(logArr,function(log){
+                var isFound = false;
+                J.array.forEach(tag,function(i){
+                    if(log.tag == i){
+                        isFound = true;
+                    }
+                });
+                if(isFound){
+                    result.push(log);
+                }
+            });
+            return result;
+        },
+        /**
+         * 过滤Msg
+         * @param {Log[]} logArr 日志数组
+         * @param {String} msg 类型
+         * @return {Log[]} logArr 匹配的日志数组
+         */
+        filterByMsg : function(logArr,msg){
+            var result = [];
+            logArr = logArr||[];
+            J.array.forEach(logArr,function(log){
+                var isFound = false;
+                J.array.forEach(msg,function(i){
+                    if(log.msg.indexOf(i)&gt;-1){
+                        isFound = true;
+                    }
+                });
+                if(isFound){
+                    result.push(log);
+                }
+            });
+            return result;
+        },
+        /**
+         * 获取日志报告
+         * @author tealin
+         * @param {Int|Array} type 需要报告的类型,多选时用数组表示
+         * @param {String|Array} tag 需要报告的标志,多选时用数组表示
+         * @param {String|Array} msg 需要报告筛选的信息,多选时用数组表示
+         * @return {String} log 日志对象
+         */
+        getReport : function(type,tag,msg){
+            var result = [];
+            var logArr = this._log_record;
+            var context = this;
+            
+            //格式化各个参数
+            if(!type||type == &quot;&quot;){
+                type = false;
+            }else if(!J.isArray(type)){
+                type = [type];
+            }
+            if(!tag||tag == &quot;&quot;){
+                tag = false;
+            }else if(!J.isArray(tag)){
+                tag = [tag];
+            }
+            if(!msg||msg == &quot;&quot;){
+                msg = false;
+            }else if(!J.isArray(msg)){
+                msg = [msg];
+            }
+            if(type){
+                logArr = this.filterByType(logArr,type);
+            }
+            if(tag){
+                logArr = this.filterByTag(logArr,tag);
+            }
+            if(msg){
+                logArr = this.filterByMsg(logArr,msg);
+            }
+            J.array.forEach(logArr,function(log){
+                result.push(log.toString(false,context._templateArr[1]));
+                
+            });
+            return result.join(&quot;,&quot;);
+        },
+        /**
+         * 渲染log列表
+         * @author tealin
+         */
+        render : function(logArr,isShowAll){
+            var num = 15;
+            var logArr = logArr||this._log_record;
+            if(!isShowAll){
+                logArr = logArr.slice(-num);
+            }
+            var context = this;
+            //避免重复
+            context.clear();
+            J.array.forEach(logArr,function(log){
+                context.outConsole(log);
+            });
+        },
+        /**
+         * 清空log
+         */
+        clear : function(e) {
+            e &amp;&amp; e.preventDefault();
+            J.console._outputEl.innerHTML = &quot;&quot;;
+        },
+        /**
+         * 刷新控制台
+         */
+        refresh : function(e){
+            e &amp;&amp; e.preventDefault();
+            this.clear();
+            this.render();
+        },
+        /**
+         * 显示帮助
+         */
+        help : function(e){
+            e &amp;&amp; e.preventDefault();
+            var _rv = &quot;&amp;lt;&amp;lt; Console Help &amp;gt;&amp;gt;&lt;br/&gt;\
+                                help|h  : 控制台帮助&lt;br/&gt;\
+                                clear|cls : 清空控制台输出&lt;br/&gt;\
+                                refresh|r : 刷新控制台输出&lt;br/&gt;\
+                                filter|f : 过滤控制台输出&lt;br/&gt;\
+                                setTemplate|s : 设置输出模版类型&lt;br/&gt;\
+                                hide  : 隐藏控制台，或者使用 Ctrl+Shift+&#x60;[~] 快捷键&quot;;
+            this.print(_rv);
+        },
+        onInputKeyup : function(e){
+            switch(e.keyCode){
+                case 13://执行命令
+                    this._cmd_history.push(J.console._inputEl.value);
+                    this._cmd_last_index=this._cmd_history.length;
+                    this._execCommand(J.console._inputEl.value);
+                    break;
+                case 38://上一命令
+                    if(this._cmd_history.length==0)return;
+                    var s=&quot;&quot;;
+                    if(this._cmd_last_index&gt;0){
+                        this._cmd_last_index--;
+                        s=this._cmd_history[this._cmd_last_index];
+                    }else{
+                        this._cmd_last_index=-1;
+                    }
+                    J.console._inputEl.value=s;
+                    break;
+                case 40://下一命令
+                    if(this._cmd_history.length==0)return;
+                    var s=&quot;&quot;;
+                    if(this._cmd_last_index&lt;this._cmd_history.length-1){
+                        this._cmd_last_index++;
+                        s=this._cmd_history[this._cmd_last_index];
+                    }else{
+                        this._cmd_last_index=this._cmd_history.length;
+                    }
+                    J.console._inputEl.value=s;
+                    break;
+                default:
+                    break;
+            }
+        },
+        /**
+         * 执行命令
+         * @param {String} cmd 命令
+         */
+        _execCommand : function(cmd) {
+            // 控制台命令
+            if(cmd == &quot;help&quot;||cmd == &quot;h&quot;){
+                this.help();
+            }else if(cmd == &quot;clear&quot;||cmd == &quot;cls&quot;){//清除控制台
+                J.console.clear();
+            }else if(cmd == &quot;hide&quot;){//隐藏控制台
+                J.console.hide();
+            }else if(cmd == &quot;refresh&quot;||cmd == &quot;r&quot;){
+                this.refresh();
+            }else if(cmd == &quot;showall&quot;||cmd == &quot;sa&quot;){
+                this.clear();
+                this.render(null,true);
+            }else if(new RegExp(/^(?:filter|f)(?:\(|\s+)(.+)(?:\)|\s*)$/i).test(cmd)){//过滤
+                var filterCmd = RegExp.$1;
+                var result = eval(&quot;this.filter(&#x27;&quot;+filterCmd+&quot;&#x27;)&quot;);
+                if(result.length&gt;0){
+                    this.render(result,true);
+                }else{
+                    this.clear();
+                    this.out(&quot;NO RESULT!&quot;,1);
+                }
+            }else if(new RegExp(/^(?:setTemplate|s)(?:\(|\s+)(\d+)(?:\)|\s*)$/i).test(cmd)){
+                var temp = parseInt(RegExp.$1);
+                this.setTemplate(temp);
+                this.refresh();
+            }else{//执行js脚本
+                this._execScript(cmd);
+            }
+            J.console._inputEl.value = &quot;&quot;;
+        },
+        /**
+         * 执行js代码
+         * @param {String} cmd 代码
+         */
+        _execScript : function(cmd){
+            var _rv = &#x27;&lt;span style=&quot;color:#ccff00&quot;&gt;&#x27; + cmd + &#x27;&lt;/span&gt;&lt;br/&gt;&#x27;;
+            try {
+                _rv += (eval(cmd) || &quot;&quot;).toString().replace(/&lt;/g, &quot;&amp;lt;&quot;).replace(/&gt;/g, &quot;&amp;gt;&quot;)
+                J.console.print(_rv, 0);
+            } catch (e) {
+                _rv += e.description;
+                J.console.print(_rv, 1);
+            }
+        }
+    });
+    
+
+    J.profile = J.console.profile;
+    J.warn = J.console.warn;
+    J.error = J.console.error;
+    J.info = J.console.info;
+    // log === info
+    J.log = J.console.log = J.console.info;
+    J.debug = J.console.debug;
+    
+    
+    
+    
+        $E.onDomReady(function(){
+                J.console._init();
+                if(query.console == &quot;true&quot;){
+                    J.console=J.extend(J.console,{
+                        &#x27;profile&#x27;:J.emptyFunc,
+                        &#x27;warn&#x27;:J.emptyFunc,
+                        &#x27;error&#x27;:J.emptyFunc,
+                        &#x27;info&#x27;:J.emptyFunc,
+                        &#x27;debug&#x27;:J.emptyFunc
+                    });
+                    J.console.show();
+                    
+                }
+        });
+        if(query.console&amp;&amp;query.console == &quot;firebug&quot;){
+            /* not available any longer
+            if(!topNamespace.console){
+                // http://getfirebug.com/releases/lite/1.2/firebug-lite.js
+                $H.loadScript(J.path+&quot;firebug/firebug-lite.js&quot;,{
+                    onSuccess : function(){
+                        if(firebug){
+                            firebug.env.height = 220;
+                            // http://getfirebug.com/releases/lite/1.2/firebug-lite.css
+                            firebug.env.css = &quot;../../source/firebug/firebug-lite.css&quot;;
+                            J.out(&quot;...控制台开启&quot;);
+                            J.out(&quot;...测试成功&quot;);
+                        }
+                        
+                    }
+                });
+            }
+            */
+        }
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * runtime处理工具静态类
+     * @ignore
+     */
+    J.runtime = (function() {
+        /**
+         * 是否debug环境
+         * @ignore
+         * @return {Boolean} 是否呢
+         */
+        function isDebugMode() {
+            return (J.config.debugLevel &gt; 0);
+        }
+    
+        /**
+         * log记录器
+         * 
+         * @ignore
+         * @param {String} msg 信息记录器
+         * @param {String} type log的类型
+         */
+        function log(msg, type) {
+            var info;
+            if (isDebugMode()) {
+                info = msg + &#x27;\n=STACK=\n&#x27; + stack();
+            } else {
+                if (type == &#x27;error&#x27;) {
+                    info = msg;
+                }// else if (type == &#x27;warn&#x27;) {
+                    // TBD
+                //}
+            }
+            J.Debug.errorLogs.push(info);
+        }
+    
+        /**
+         * 警告信息记录
+         * @ignore
+         * @param {String} sf 信息模式
+         * @param {All} args 填充参数
+         */
+        function warn(sf, args) {
+            log(write.apply(null, arguments), &#x27;warn&#x27;);
+        }
+    
+        /**
+         * 错误信息记录
+         * @ignore
+         * @param {String} sf 信息模式
+         * @param {All} args 填充参数
+         */
+        function error(sf, args) {
+            log(write.apply(null, arguments), &#x27;error&#x27;);
+        }
+    
+        /**
+         * 获取当前的运行堆栈信息
+         * @ignore
+         * @param {Error} e 可选，当时的异常对象
+         * @param {Arguments} a 可选，当时的参数表
+         * @return {String} 堆栈信息
+         */
+        function stack(e, a) {
+            /**
+             * @ignore
+             */
+            function genTrace(ee, aa) {
+                if (ee.stack) {
+                    return ee.stack;
+                } else if (ee.message.indexOf(&quot;\nBacktrace:\n&quot;) &gt;= 0) {
+                    var cnt = 0;
+                    return ee.message.split(&quot;\nBacktrace:\n&quot;)[1].replace(/\s*\n\s*/g, function() {
+                        cnt++;
+                        return (cnt % 2 == 0) ? &quot;\n&quot; : &quot; @ &quot;;
+                    });
+                } else {
+                    var entry = (aa.callee == stack) ? aa.callee.caller : aa.callee;
+                    var eas = entry.arguments;
+                    var r = [];
+                    for (var i = 0, len = eas.length; i &lt; len; i++) {
+                        r.push((typeof eas[i] == &#x27;undefined&#x27;) ? (&quot;&lt;u&gt;&quot;) : ((eas[i] === null) ? (&quot;&lt;n&gt;&quot;) : (eas[i])));
+                    }
+                    var fnp = /function\s+([^\s\(]+)\(/;
+                    var fname = fnp.test(entry.toString()) ? (fnp.exec(entry.toString())[1]) : (&quot;&lt;ANON&gt;&quot;);
+                    return (fname + &quot;(&quot; + r.join() + &quot;);&quot;).replace(/\n/g, &quot;&quot;);
+                }
+            }
+    
+            var res;
+    
+            if ((e instanceof Error) &amp;&amp; (typeof arguments == &#x27;object&#x27;) &amp;&amp; (!!arguments.callee)) {
+                res = genTrace(e, a);
+            } else {
+                try {
+                    ({}).sds();
+                } catch (err) {
+                    res = genTrace(err, arguments);
+                }
+            }
+    
+            return res.replace(/\n/g, &quot; &lt;= &quot;);
+        }
+    
+        return {
+            /**
+             * 获取当前的运行堆栈信息
+             * @ignore
+             * @param {Error} e 可选，当时的异常对象
+             * @param {Arguments} a 可选，当时的参数表
+             * @return {String} 堆栈信息
+             */
+            stack : stack,
+            /**
+             * 警告信息记录
+             * @ignore
+             * @param {String} sf 信息模式
+             * @param {All} args 填充参数
+             */
+            warn : warn,
+            /**
+             * 错误信息记录
+             * @ignore
+             * @param {String} sf 信息模式
+             * @param {All} args 填充参数
+             */
+            error : error,
+            
+            /**
+             * 是否调试模式
+             * @ignore
+             */
+            isDebugMode : isDebugMode
+        };
+    
+    })();
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

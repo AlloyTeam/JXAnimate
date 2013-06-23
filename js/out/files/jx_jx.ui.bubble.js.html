@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>jx/jx.ui.bubble.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/JXAnimation.Audio.html">JXAnimation.Audio</a></li>
+            
+                <li><a href="../classes/Log.html">Log</a></li>
+            
+                <li><a href="../classes/Tab.html">Tab</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/JXAnimate.Audio.html">JXAnimate.Audio</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: jx/jx.ui.bubble.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**  J.ui.Bubble
+ * @deprecated QQ Web bubble 模块
+ *  Copyright (c) 2009, Tencent.com All rights reserved.
+ *  -------- 2009.11.17 -----
+ *  
+ *  -------------------------
+ *  melody
+ *  -------------------------
+ * @version 1.0
+ * @author Tencent
+ *  
+ **/
+
+
+Jet().$package(function (J) {
+    var $D = J.dom,
+        $S = J.string,
+        $E = J.event;
+        
+    J.ui = J.ui || {};
+    /**
+     * 带箭头的气泡类
+     * @class
+     * @memberOf ui
+     * @name Bubble
+     * @constructor
+     * @param {Object} option 构造参数
+     * {
+     *   bubbleParent, {HTMLElement} 气泡的dom的父节点
+     * }
+     * @description 
+     * 注意, bubble的自动关闭都是hide调用, 是不会把自己删除的, 要删除bubble, 调用close方法
+     * 
+     */
+    var Bubble = J.ui.Bubble = J.Class(
+    /**
+     * @lends ui.Bubble.prototype
+     */
+    {
+        /**
+         * 初始化气泡
+         * @private
+         * @ignore
+         */
+        init: function(option){
+            option = option || {};
+            var defaultOption = {
+                bubbleParent: document.body,
+                className: &#x27;&#x27;,
+                hasCloseButton: true,
+                closeOnHide: false,
+                zIndex: 1000000
+            };
+            option = this.option = J.extend(defaultOption, option);
+            var id = this._getId();
+            
+            var html = &#x27;&lt;div id=&quot;bubble_tip_pointer_&#x27; + id + &#x27;&quot; class=&quot;bubble_tip_pointer bubble_tip_pointer_left&quot;&gt;&lt;/div&gt;\
+                &lt;div class=&quot;bubble_tip_head&quot;&gt;&lt;/div&gt;\
+                &lt;div class=&quot;bubble_tip_body&quot;&gt;\
+                    &lt;div class=&quot;bubble_tip_title&quot;&gt;&lt;a id=&quot;bubble_tip_close_&#x27; + id + &#x27;&quot; href=&quot;###&quot; class=&quot;bubble_tip_close&quot; title=&quot;关闭&quot;&gt;x&lt;/a&gt;\
+                        &lt;span id=&quot;bubble_tip_title_&#x27; + id + &#x27;&quot;&gt;&lt;/span&gt;&lt;/div&gt;\
+                    &lt;div id=&quot;bubble_tip_content_&#x27; + id + &#x27;&quot; class=&quot;bubble_tip_content&quot;&gt;&lt;/div&gt;\
+                &lt;/div&gt;\
+                &lt;div id=&quot;bubble_tip_foot_&#x27; + id + &#x27;&quot; class=&quot;bubble_tip_foot&quot;&gt;\
+                    &lt;a id=&quot;bubble_tip_btn_next_&#x27; + id + &#x27;&quot; href=&quot;###&quot; class=&quot;bubble_tip_btn&quot;&gt;&lt;/a&gt;\
+                    &lt;a id=&quot;bubble_tip_btn_ok_&#x27; + id + &#x27;&quot; href=&quot;###&quot; class=&quot;bubble_tip_btn&quot;&gt;&lt;/a&gt;\
+                &lt;/div&gt;\
+                &lt;iframe width=&quot;100%&quot; height=&quot;100%&quot; class=&quot;bubble_tip_bg_iframe&quot; src=&quot;about:blank&quot;&gt;&lt;/iframe&gt;&#x27;;
+            var divNode = $D.node(&quot;div&quot;,{
+                &#x27;class&#x27;: &#x27;bubble_tip_container &#x27; + option.className
+            });
+            divNode.innerHTML = html;
+            $D.setCssText(divNode, &#x27;left: -10000px; top: 0px; z-index: &#x27; + option.zIndex + &#x27;;&#x27;);
+            option.bubbleParent.appendChild(divNode);
+            
+            
+            this._container = divNode;
+            this._title = $D.id(&#x27;bubble_tip_title_&#x27; + id);
+            this._content = $D.id(&#x27;bubble_tip_content_&#x27; + id);
+            this._pointer = $D.id(&#x27;bubble_tip_pointer_&#x27; + id);
+            this._okBtn = $D.id(&#x27;bubble_tip_btn_ok_&#x27; + id);
+            this._nextBtn = $D.id(&#x27;bubble_tip_btn_next_&#x27; + id);
+            this._closeBtn = $D.id(&#x27;bubble_tip_close_&#x27; + id);
+            if(!option.hasCloseButton){
+                $D.hide(this._closeBtn);
+            }
+            var context = this;
+            
+            var observer = {
+                /**
+                 * @ignore
+                 */
+                onCloseBtnClick: function(e){
+                    e.preventDefault();
+                    e.stopPropagation();
+                    $E.notifyObservers(context, &#x27;onBubbleClose&#x27;, context);
+                    context.hide();
+                },
+                /**
+                 * @ignore
+                 */
+                onOkButtonClick: function(e){
+                    e.preventDefault();
+                    e.stopPropagation();
+                    $E.notifyObservers(context, &#x27;onBubbleOkBtnClick&#x27;, context);
+                    context.hide();
+                },
+                /**
+                 * @ignore
+                 */
+                onNextButtonClick: function(e){
+                    e.preventDefault();
+                    e.stopPropagation();
+                    $E.notifyObservers(context, &#x27;onBubbleNextBtnClick&#x27;, context);
+                }
+            };
+            
+            $E.on(this._closeBtn, &#x27;click&#x27;, observer.onCloseBtnClick);
+            $E.on(this._okBtn, &#x27;click&#x27;, observer.onOkButtonClick);
+            $E.on(this._nextBtn, &#x27;click&#x27;, observer.onNextButtonClick);
+            
+        },
+        /**
+         * 获取容器的Dom元素
+         * @return {HTMLElement}
+         */
+        getElement: function(){
+            return this._container;
+        },
+        /**
+         * 显示气泡
+         * @param {Object} option
+         * @example
+         * option 的默认参数为:
+         * {
+         *       pointerPosition: &#x27;top right&#x27;,//箭头的位置
+         *       pointerOffset: 20,//箭头在气泡边上的偏移值
+         *       pointerSize: [18, 12],//箭头的高度/宽度
+         *       position: [0,0],//气泡的位置,直接设置position的时候,不要设置target,否则不起作用
+         *       target: null,//{HTMLElement} 气泡所指的dom节点, ps: 如果该属性存在, 则忽略position的设置
+         *       targetOffset: [x, y]//气泡位置的便宜, x/y可正负 
+         *  };
+         *  
+         * pointerPosition的值可为
+         *  &quot;top left&quot;
+         *  &quot;top right&quot;
+         *  &quot;bottom left&quot;
+         *  &quot;bottom right&quot;
+         *  &quot;left top&quot;
+         *  &quot;left bottom&quot;
+         *  &quot;right top&quot;
+         *  &quot;right bottom&quot;
+         *  
+         *  @description
+         *  TODO 后续可添加通过设置targetPosition来直接指定箭头以及气泡的位置
+         */
+        show: function(option){
+            option = option || {};
+            var defaultOption = {
+                pointerPosition: &#x27;top right&#x27;,
+                pointerOffset: 20,
+                pointerSize: [18, 12],
+                position: [0, 0],
+                target: null,
+                targetOffset: [0, 0]
+            };
+            option = J.extend(defaultOption, option);
+            //检查箭头的位置参数是否合法
+            if(!this._checkPointerPosition(option.pointerPosition)){
+                throw new Error(&#x27;Bubble &gt;&gt;&gt;&gt; the pointerPosition\&#x27;s value is not correct&#x27;);
+            }
+            //设置箭头在bubble内的位置
+            this._setPointerPosition(option.pointerPosition, option.pointerOffset);
+            //设置气泡的位置
+            this._setBubblePosition(option);
+            
+            $D.show(this._container);
+        },
+        /**
+         * 设置气泡的z-index
+         * @param {Number} zIndex
+         */
+        setZIndex: function(zIndex){
+            $D.setStyle(this._container, &#x27;zIndex&#x27;, zIndex);  
+        },
+        /**
+         * 设置气泡外框的样式
+         * @param {String} property 属性
+         * @param {String} value 值
+         */
+        setContainerStyle: function(property, value){
+            $D.setStyle(this._container, property, value);
+        },
+        /**
+         * 设置标题文字
+         * @param {String} text 标题文字
+         */
+        setTitle: function(text){
+            this._title.innerHTML = text;
+        },
+        /**
+         * 设置主题内容
+         * @param {String} html 主题内容, 可包含html标签
+         */
+        setContent: function(html){
+            this._content.innerHTML = html;  
+        },
+        /**
+         * 显示一个的按钮
+         * @param {String} type 按钮的类型
+         * @param {String} text 按钮的文字
+         * @param {Boolean} highlight 是否显示高亮的按钮
+         */
+        showButton: function(type, text, highlight){
+            var btn = this[&#x27;_&#x27; + type + &#x27;Btn&#x27;];
+            highlight = J.isUndefined(highlight) ? false : true;
+            if(btn){
+                btn.innerHTML = text;
+                $D.show(btn);
+                if(highlight){
+                    $D.addClass(btn, &#x27;bubble_tip_btn_next&#x27;);
+                }else{
+                    $D.addClass(btn, &#x27;bubble_tip_btn_ok&#x27;);
+                }
+            }
+            return btn;
+        },
+        /**
+         * 隐藏按钮
+         * @param {String} type 按钮类型
+         */
+        hideButton: function(type){
+            var btn = this[&#x27;_&#x27; + type + &#x27;Btn&#x27;];
+            if(btn){
+                $D.hide(btn);
+            }
+        },
+        /**
+         * 隐藏气泡
+         */
+        hide: function(){
+            $D.hide(this._container); 
+            if(this.option.closeOnHide){
+                this.close();
+            }
+        },
+        /**
+         * 关闭并注销气泡
+         */
+        close: function(){
+            if(!this._isClosed){
+                this._isClosed = true;
+                $E.off(this._closeBtn, &#x27;click&#x27;);
+                $E.off(this._okBtn, &#x27;click&#x27;);
+                $E.off(this._nextBtn, &#x27;click&#x27;);
+                if(this._container.parentNode){
+                    this._container.parentNode.removeChild(this._container);
+                }
+                for (var p in this) {
+                    if (this.hasOwnProperty(p)) {
+                        delete this[p];
+                    }
+                }
+            }else{
+                J.warn(&#x27;Trying to close a closed bubbleTip!&#x27;, &#x27;BubbleTip&#x27;);
+            }
+        },
+        /**
+         * 指示是否已关闭气泡
+         */
+        isClose: function(){
+            return this._isClosed;
+        },
+        /**
+         * 返回一个内部使用的id
+         * @private
+         * @return {Number} 
+         */
+        _getId: function(){
+            if(!Bubble.__id){
+                Bubble.__id = 0;
+            }
+            return Bubble.__id++;
+        },
+        /**
+         * 设置箭头的指示方向和位置
+         * @private
+         * @param {String} position 箭头的位置, 由两个单词(top/bottom/left/right中的一个)组成
+         * @param {Number} offset 箭头的偏移位置
+         * @example
+         *  position的值可为
+         *  &quot;top left&quot;
+         *  &quot;top right&quot;
+         *  &quot;bottom left&quot;
+         *  &quot;bottom right&quot;
+         *  &quot;left top&quot;
+         *  &quot;left bottom&quot;
+         *  &quot;right top&quot;
+         *  &quot;right bottom&quot;
+         */
+        _setPointerPosition: function(position, offset){
+            var posArr = position.split(&#x27; &#x27;);
+            var pointer = this._pointer;
+            $D.setClass(pointer, &#x27;bubble_tip_pointer bubble_tip_pointer_&#x27; + posArr[0]);
+            $D.setCssText(pointer, &#x27;&#x27;);
+            $D.setStyle(pointer, posArr[1], offset + &#x27;px&#x27;);
+        },
+        /**
+         * 设置气泡的位置
+         * @private
+         * @param {Object} option show 的参数
+         */
+        _setBubblePosition: function(option){
+            var position = option.position;//直接设置position后就不要设置target
+            
+            if(option.target){
+                var posArr = option.pointerPosition.split(&#x27; &#x27;);
+                var posObj = this._calculateBubblePosition(option.target, option.pointerSize, option.pointerOffset);
+                var sub = 0;
+                if(/top|bottom/.test(posArr[0])){
+                    sub = 1;
+                }
+                position[0] = posObj[posArr[sub] + sub];
+                sub = (sub + 1) % 2;
+                position[1] = posObj[posArr[sub] + sub];
+            }
+            var x = position[0] + option.targetOffset[0];
+            var y = position[1] + option.targetOffset[1];
+            $D.setStyle(this._container, &#x27;left&#x27;, x + &#x27;px&#x27;);
+            $D.setStyle(this._container, &#x27;top&#x27;, y + &#x27;px&#x27;);
+        },
+        /**
+         * 计算气泡的位置
+         * @param {HTMLElement} target 箭头所指的dom
+         * @param {Array} pointerSize 箭头的大小,[width, height]
+         * @param {Number} pointerOffset 箭头的偏移
+         * @private
+         * @return {Object} 计算得到的结果
+         * @example 
+         * 返回的结果格式为
+         * {
+         *       top0: tt + th + ph,
+         *       bottom0: tt - bh - ph,
+         *       left0: tl + tw + ph,
+         *       right0: tl - bw - ph,
+         *       
+         *       top1: tt + th / 2 - pw,
+         *       bottom1: tt + th / 2 - bw + pw,
+         *       left1: tl + tw / 2- pw,
+         *       right1: tl + tw / 2 - bw + pw
+         *   }
+         */
+        _calculateBubblePosition: function(target, pointerSize, pointerOffset){
+            var container = this._container,
+                targetPos = $D.getClientXY(target);
+            var bw = $D.getOffsetWidth(container), bh = $D.getOffsetHeight(container),
+                tw = $D.getWidth(target), th = $D.getHeight(target),
+                tl = targetPos[0], tt = targetPos[1],
+                pw = pointerOffset + (pointerSize[0] / 2), ph = pointerSize[1];
+            return {
+                top0: tt + th + ph,
+                bottom0: tt - bh - ph,
+                left0: tl + tw + ph,
+                right0: tl - bw - ph,
+                
+                top1: tt + th / 2 - pw,
+                bottom1: tt + th / 2 - bh + pw,
+                left1: tl + tw / 2- pw,
+                right1: tl + tw / 2 - bw + pw
+            };
+        },
+        /**
+         * 检查箭头的位置参参数是否合法
+         * @private
+         * @param {String} position 位置参数
+         */
+        _checkPointerPosition: function(position){
+            var posArr = position.split(&#x27; &#x27;);
+            var lrRegex = /left|right/,
+                tbRegex = /top|bottom/;
+            if(tbRegex.test(posArr[0]) &amp;&amp; lrRegex.test(posArr[1])){
+                return true;
+            }else if(lrRegex.test(posArr[0]) &amp;&amp; tbRegex.test(posArr[1])){
+                return true;
+            }
+            return false;
+        }
+        
+    });
+
+});
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>
