@@ -41,15 +41,17 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/animSetting.html">animSetting</a></li>
+            
+                <li><a href="../classes/JX.Animate.html">JX.Animate</a></li>
+            
                 <li><a href="../classes/JXAnimation.Audio.html">JXAnimation.Audio</a></li>
-            
-                <li><a href="../classes/Log.html">Log</a></li>
-            
-                <li><a href="../classes/Tab.html">Tab</a></li>
             
             </ul>
 
             <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/JXAnimate.html">JXAnimate</a></li>
             
                 <li><a href="../modules/JXAnimate.Audio.html">JXAnimate.Audio</a></li>
             
@@ -123,6 +125,21 @@ Jx().$package(&quot;JXAnimate.Audio&quot;, function(J){
 
 	var onLoadProgressUpdated;
 
+
+	var supportedAudioFormat = function(audio) {
+		var returnExtension = &quot;&quot;;
+		if (audio.canPlayType(&quot;audio/ogg&quot;) ==&quot;probably&quot; || audio.canPlayType(&quot;audio/ogg&quot;) == &quot;maybe&quot;) {
+			returnExtension = &quot;ogg&quot;;
+		} else if(audio.canPlayType(&quot;audio/wav&quot;) ==&quot;probably&quot; || audio.canPlayType(&quot;audio/wav&quot;) == &quot;maybe&quot;) {
+			returnExtension = &quot;wav&quot;;
+		} else if(audio.canPlayType(&quot;audio/mp3&quot;) == &quot;probably&quot; || audio.canPlayType(&quot;audio/mp3&quot;) == &quot;maybe&quot;) {
+			returnExtension = &quot;mp3&quot;;
+		}
+		
+		return returnExtension;
+		
+	};
+
 	var onItemLoaded = function(event){
 		if(J.isFunction(onLoadProgressUpdated)){
 			onLoadProgressUpdated(event);
@@ -170,20 +187,12 @@ Jx().$package(&quot;JXAnimate.Audio&quot;, function(J){
 		return audioType;
 	};
 
-	var supportedAudioFormat = function(audio) {
-		var returnExtension = &quot;&quot;;
-		if (audio.canPlayType(&quot;audio/ogg&quot;) ==&quot;probably&quot; || audio.canPlayType(&quot;audio/ogg&quot;) == &quot;maybe&quot;) {
-			returnExtension = &quot;ogg&quot;;
-		} else if(audio.canPlayType(&quot;audio/wav&quot;) ==&quot;probably&quot; || audio.canPlayType(&quot;audio/wav&quot;) == &quot;maybe&quot;) {
-			returnExtension = &quot;wav&quot;;
-		} else if(audio.canPlayType(&quot;audio/mp3&quot;) == &quot;probably&quot; || audio.canPlayType(&quot;audio/mp3&quot;) == &quot;maybe&quot;) {
-			returnExtension = &quot;mp3&quot;;
-		}
-		
-		return returnExtension;
-		
-	};
-
+	/**
+	 * 初始化音频引擎
+	 * @method init
+	 * @param  {object} params 初始化参数（path：声音文件的默认路径）
+	 * @return {void}        
+	 */
 	this.init=function(params){
 		params = params||{};
 		if(J.isObject(params) &amp;&amp; &#x27;path&#x27; in params){
@@ -193,9 +202,9 @@ Jx().$package(&quot;JXAnimate.Audio&quot;, function(J){
 	/**
 	 * 预加载一个或多个声音
 	 * @method preload
-	 * @param  {Array} sounds     [声音URL的字符串或字符串数组]
-	 * @param  {int} redundancy [每个声音的冗余数]
-	 * @param  {string} path       [默认路径]
+	 * @param  {Array} sounds     声音URL的字符串或字符串数组
+	 * @param  {int} redundancy 每个声音的冗余数
+	 * @param  {string} path       相对路径
 	 * @return {void}
 	 */
 	this.preload=function(sounds,redundancy,path){
@@ -234,9 +243,9 @@ Jx().$package(&quot;JXAnimate.Audio&quot;, function(J){
 	 * 预加载一个声音文件
 	 * @method preloadSound
 	 * @param  {string} sound      声音文件URL
-	 * @param  {int} redundancy [每个声音的冗余数]
-	 * @param  {string} path       [相对路径]
-	 * @return {void}            [description]
+	 * @param  {int} redundancy 每个声音的冗余数
+	 * @param  {string} path       相对路径
+	 * @return {void}            
 	 */
 	this.preloadSound=function(sound,redundancy,path){
 		if(J.isString(sound)){
@@ -245,6 +254,13 @@ Jx().$package(&quot;JXAnimate.Audio&quot;, function(J){
 		}
 	};
 
+	/**
+	 * 播放声音
+	 * @method playSound
+	 * @param  {string} sound  声音的文件名
+	 * @param  {float} volume 音量,0到1之间
+	 * @return {void}        
+	 */
 	this.playSound= function(sound,volume){
 		volume = volume||1;
 

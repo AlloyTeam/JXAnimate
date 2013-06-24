@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>jx/jx.event.eventproxy.js</title>
+    <title>JXAnimate</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -41,15 +41,17 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/animSetting.html">animSetting</a></li>
+            
+                <li><a href="../classes/JX.Animate.html">JX.Animate</a></li>
+            
                 <li><a href="../classes/JXAnimation.Audio.html">JXAnimation.Audio</a></li>
-            
-                <li><a href="../classes/Log.html">Log</a></li>
-            
-                <li><a href="../classes/Tab.html">Tab</a></li>
             
             </ul>
 
             <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/JXAnimate.html">JXAnimate</a></li>
             
                 <li><a href="../modules/JXAnimate.Audio.html">JXAnimate.Audio</a></li>
             
@@ -88,81 +90,55 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: jx/jx.event.eventproxy.js</h1>
+                        <h1>JXAnimate Module</h1>
+<div class="box clearfix meta">
+    
 
-<div class="file">
-    <pre class="code prettyprint linenums">
-/**
- * @example
- *     	$E.eventProxy(
-			confirm.container,
-			{
-				&quot;.confirm_select click&quot;: function(e) {
-					var check= J.dom.mini(&quot;.confirm_remove_select&quot;, confirm.container)[0];
-					if(check) {
-		        		if(check.checked) {
-		        			check.checked= false;
-		        		}else {
-		        			check.checked= true;
-		        		}
-	        		}
-				},
-				&quot;.confirm_htmlAllName,.confirm_avatar click&quot;: function(e) {
-					alloy.portal.runApp(&quot;userDetails&quot;, user.uin);
-				}
-			}
-		);
- */
-Jx().$package(function(J){
-    var $E= J.event;
-    var hash= {&quot;#&quot;:&quot;id&quot;, &quot;.&quot;:&quot;className&quot;, &quot;@&quot;:&quot;el&quot;,&quot;!&quot;:&quot;!&quot;};
-    var eventsNotBubble= {
-        &quot;blur&quot;:1,
-        &quot;focus&quot;:1,
-        &quot;change&quot;:1
-        //&quot;mouseenter&quot;:1,//onlyIE
-        //&quot;mouseleave&quot;:1
-    };
-    /**
-     * @private
-     */
-    J.event.eventProxy= function(el, eventsObj){
-        var events= {},k,v;
-        for(k in eventsObj) {
-            v= eventsObj[k];
-            var arg= k.split(&quot; &quot;);
-            var targets= arg[0],event= arg[1];
-            events[event]= events[event]||[];
-            events[event].push([targets,v]);
-        }
-        k=v=null;
-        for(k in events) {
-            v= events[k];
-            if(eventsNotBubble[k]||(k.charAt(0)==&quot;@&quot;)) {
-                for(var len=v.length-1;len&gt;=0;len--) {
-                    var targets= v[len][0].split(&quot;,&quot;);
-                    for(var l=targets.length-1;l&gt;=0;l--) {
-                        var type= hash[targets[l].charAt(0)];
-                        if(type==&quot;id&quot;) {
-                            $E.on($D.id(targets[l].substr(1)),k,v[len][1]);
-                        }else if(type==&quot;el&quot;) {
-                            $E.on(el,k.substr(1),v[len][1]);
-                        }
-                    }
-                }
-            }else {
-                $E.on(el,k,function(e) {
-                    var dom= e.target;
-                    for(var len=v.length-1;len&gt;=0;len--) {
-                        J.event.eventParser.parse(v[len][0],v[len][1],e);
-                    }
-                });
-            }
-        }
-    };
-});
+    
 
-    </pre>
+    
+        <div class="foundat">
+            Defined in: <a href="../files/jxanimate.js.html#l1029"><code>jxanimate.js:1029</code></a>
+        </div>
+    
+
+    
+</div>
+
+
+
+<div class="box intro">
+    <p>JX.Animate主文件</p>
+</div>
+
+
+
+<div class="yui3-g">
+    <div class="yui3-u-1-2">
+        
+            <p>This module provides the following classes:</p>
+
+            <ul class="module-classes">
+            
+                <li class="module-class">
+                    <a href="../classes/animSetting.html">
+                        animSetting
+                    </a>
+                </li>
+            
+                <li class="module-class">
+                    <a href="../classes/JX.Animate.html">
+                        JX.Animate
+                    </a>
+                </li>
+            
+            </ul>
+        
+    </div>
+
+    <div class="yui3-u-1-2">
+        
+    </div>
 </div>
 
                     </div>
