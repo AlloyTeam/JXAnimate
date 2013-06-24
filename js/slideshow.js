@@ -1,16 +1,18 @@
 
-/* ===========================================================================
+/**
+ * JX.Animate Demo库
+ * 幻灯片轮播图片
+ * @module JXAnimate.Demo
+ * @subModule SlideShow
+ * @requires JXAnimate.Animate
+ * @description
  * 幻灯片轮播图片
  *
- * @description
- * A CSS animation Engine and Library
- *
  * @author minren 
- * ===========================================================================
  * 
  */
 
-/**
+/*
  * @幻灯片轮播图片
  *
  */
@@ -90,7 +92,14 @@ Jx().$package("SlideShow", function(J){
         _currentEffect=0;
     }
 
-
+    /**
+     * 幻灯片播放类
+     * @class SlideShow
+     * @constructor
+     * @param  {string} container 包含img元素的容器的id
+     * @param  {object} params    幻灯片参数，imgW,imgH,图片的大小，num卡片的数量。
+     * @return {[type]}           [description]
+     */
     var init = function(container, params){
         reset();
         _container = document.getElementById(container);
@@ -412,6 +421,11 @@ Jx().$package("SlideShow", function(J){
        
     }
 
+    /**
+     * 播放下一张幻灯片
+     * @method next
+     * @return {[type]}          [description]
+     */
     var next = function  (argument) {
         
         _currentEffect = (_currentEffect+1)%_slideEffects.length;
@@ -425,6 +439,10 @@ Jx().$package("SlideShow", function(J){
 
     }
 
+    /**
+     * 播放前一张幻灯片
+     * @return {[type]}          [description]
+     */
     var prev =function (argument){
         _currentEffect = (_currentEffect+_slideEffects.length-1)%_slideEffects.length;
 
@@ -434,18 +452,43 @@ Jx().$package("SlideShow", function(J){
         gotoWithEffect(_prevImage,effect);
     }
 
-    var getContrainer=function(){
+    /**
+     * 获得幻灯片的容器对象
+     * @method getContainer
+     * @return {DOM} 容器对象
+     */
+    var getContainer=function(){
         return _container;
     }
+    /**
+     * 获得幻灯片的舞台对象
+     * @method getStage
+     * @return {DOM} 容器对象
+     */
     var getStage=function(){
         return _stage;
     }
+    /**
+     * 获得幻灯片的舞台宽度
+     * @method getStage
+     * @return {int} 舞台宽度
+     */
     var getStageWidth = function(){
         return _stageWidth;
     }
+    /**
+     * 获得幻灯片的舞台高度
+     * @method getStage
+     * @return {int} 舞台高度
+     */
     var getStageHeight = function(){
         return _stageHeight;
     }
+    /**
+     * 设置幻灯片播放多米诺效果的延时
+     * @method getStage
+     * @param {int} value 多米诺效果的延时时间
+     */
     var setDonimo = function(value){
         _animSettings.domino = value;
     }
@@ -474,4 +517,4 @@ Jx().$package("SlideShow", function(J){
         //依旧有闪烁。调用方法参考playAnimation
         //
         //添加声音。 √
-        //美化翻页按钮的样式。
+        //美化翻页按钮的样式。√

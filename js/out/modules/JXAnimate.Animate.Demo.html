@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>etamina.effects.js</title>
+    <title>JXAnimate.Animate.Demo</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -45,7 +45,9 @@
             
                 <li><a href="../classes/JX.Animate.html">JX.Animate</a></li>
             
-                <li><a href="../classes/JXAnimation.Audio.html">JXAnimation.Audio</a></li>
+                <li><a href="../classes/JXAnimate.Audio.html">JXAnimate.Audio</a></li>
+            
+                <li><a href="../classes/SlideShow.html">SlideShow</a></li>
             
             </ul>
 
@@ -53,7 +55,11 @@
             
                 <li><a href="../modules/JXAnimate.html">JXAnimate</a></li>
             
+                <li><a href="../modules/JXAnimate.Animate.Demo.html">JXAnimate.Animate.Demo</a></li>
+            
                 <li><a href="../modules/JXAnimate.Audio.html">JXAnimate.Audio</a></li>
+            
+                <li><a href="../modules/SlideShow.html">SlideShow</a></li>
             
             </ul>
         </div>
@@ -90,102 +96,65 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: etamina.effects.js</h1>
+                        <h1>JXAnimate.Animate.Demo Module</h1>
+<div class="box clearfix meta">
+    
 
-<div class="file">
-    <pre class="code prettyprint linenums">
+    
 
-/* ===========================================================================
- * etamina Effects Libray
- * etamina == animate
- *
- * @description
- * A CSS animation Engine and Library
- *
- * @author minren 
- * ===========================================================================
- * 
- */
+    
+        <div class="foundat">
+            Defined in: <a href="../files/slideshow.js.html#l96"><code>slideshow.js:96</code></a>
+        </div>
+    
 
-/**
- * @description
- *
- */
+    
+</div>
 
 
-etamina.effects.pageFlipLeft = function(elems,playParam,animSetting){
-    var animSetting = animSetting || {};
 
-    animSetting.animType = &#x27;pageFlipLeft&#x27;;
-
-    var    frames = [
-            {p:&#x27;0%&#x27;,rotateY:&#x27;0deg&#x27;,transformOrigin:&#x27;0% 50%&#x27;},
-            {p:&#x27;100%&#x27;,rotateY:&#x27;-360deg&#x27;,transformOrigin:&#x27;0% 50%&#x27;}
-        ];
-
-    etamina.effects.goWithFixFrames(elems,playParam,animSetting,frames);
-
-};
-etamina.effects.pageFlipRight = function(elems,playParam,animSetting){
-    var animSetting = animSetting || {};
-
-    animSetting.animType = &#x27;pageFlipRight&#x27;;
-
-    var    frames = [
-            {p:&#x27;0%&#x27;,rotateY:&#x27;0deg&#x27;,transformOrigin:&#x27;100% 50%&#x27;},
-            {p:&#x27;100%&#x27;,rotateY:&#x27;360deg&#x27;,transformOrigin:&#x27;100% 50%&#x27;}
-        ];
-
-    etamina.effects.goWithFixFrames(elems,playParam,animSetting,frames);
-
-};
-
-etamina.effects.raceFlag = function(elems,playParam,animSetting){
-    var animSetting = animSetting || {};
-
-    animSetting.animType = &#x27;raceFlag&#x27;;
-
-    var    frames = [
-            {p:&#x27;0%&#x27;,rotateX:&#x27;0deg&#x27;,rotate:&#x27;-720deg&#x27;,transformOrigin:&#x27;100% 0%&#x27;},
-            {p:&#x27;100%&#x27;,rotateX:&#x27;-360deg&#x27;,rotate:&#x27;0&#x27;,transformOrigin:&#x27;100% 0%&#x27;}
-        ];
-
-    etamina.effects.goWithFixFrames(elems,playParam,animSetting,frames);
-
-};
-etamina.effects.raceFlag1 = function(elems,playParam,animSetting){
-    var animSetting = animSetting || {};
-
-    animSetting.animType = &#x27;raceFlag2&#x27;;
-
-    var    frames = [
-            {p:&#x27;0%&#x27;,rotateX:&#x27;0deg&#x27;,rotate:&#x27;-720deg&#x27;,transformOrigin:&#x27;100% 0%&#x27;},
-            {p:&#x27;100%&#x27;,rotateX:&#x27;-360deg&#x27;,rotate:&#x27;0&#x27;,transformOrigin:&#x27;100% 0%&#x27;}
-        ];
-
-    var animSetting = animSetting||{};
-
-    animSetting.animType = &#x27;flash&#x27;;
-
-    var buildKeyframe = function(){
-        var keyframeName = etamina.effects.buildUniqueKeyframeName(animSetting.animType);
-   
-            keyframeCss = &#x27;@&#x27;+etamina.prefix+&#x27;keyframes &#x27;+  keyframeName +&#x27;{\n&#x27;+
-            	&#x27;0% {-webkit-transform: rotateX(0deg) rotate(-720deg);-webkit-transform-origin:100% 0%;}100% {-webkit-transform: rotateX(-360deg) rotate(0deg) ;-webkit-transform-origin:100% 0%;}\n&#x27;+
-        &#x27;}&#x27;;
-
-        return {
-            name:keyframeName,
-            css:keyframeCss
-        };
-    };
-
-    etamina.effects.go(elems,playParam,animSetting,buildKeyframe);
-};
-//----------------------------------------------------------------------------
+<div class="box intro">
+    
+</div>
 
 
-    </pre>
+
+<div class="yui3-g">
+    <div class="yui3-u-1-2">
+        
+            <p>This module provides the following classes:</p>
+
+            <ul class="module-classes">
+            
+                <li class="module-class">
+                    <a href="../classes/SlideShow.html">
+                        SlideShow
+                    </a>
+                </li>
+            
+            </ul>
+        
+    </div>
+
+    <div class="yui3-u-1-2">
+        
+            <p>This module is a rollup of the following modules:</p>
+
+            <ul class="module-submodules">
+            
+                <li class="module-submodule">
+                    <a href="../modules/SlideShow.html">
+                        SlideShow
+                    </a>
+
+                    <div class="module-submodule-description">
+                        幻灯片轮播图片
+                    </div>
+                </li>
+            
+            </ul>
+        
+    </div>
 </div>
 
                     </div>

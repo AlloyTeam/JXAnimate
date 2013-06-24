@@ -45,7 +45,9 @@
             
                 <li><a href="../classes/JX.Animate.html">JX.Animate</a></li>
             
-                <li><a href="../classes/JXAnimation.Audio.html">JXAnimation.Audio</a></li>
+                <li><a href="../classes/JXAnimate.Audio.html">JXAnimate.Audio</a></li>
+            
+                <li><a href="../classes/SlideShow.html">SlideShow</a></li>
             
             </ul>
 
@@ -53,7 +55,11 @@
             
                 <li><a href="../modules/JXAnimate.html">JXAnimate</a></li>
             
+                <li><a href="../modules/JXAnimate.Animate.Demo.html">JXAnimate.Animate.Demo</a></li>
+            
                 <li><a href="../modules/JXAnimate.Audio.html">JXAnimate.Audio</a></li>
+            
+                <li><a href="../modules/SlideShow.html">SlideShow</a></li>
             
             </ul>
         </div>
@@ -95,18 +101,21 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 
-/* ===========================================================================
+/**
+ * JX.Animate Demo库
  * 幻灯片轮播图片
- *
+ * @module JXAnimate.Animate.Demo
+ * @subModule SlideShow
+ * @requires JXAnimate.Animate
  * @description
- * A CSS animation Engine and Library
+ * 幻灯片轮播图片
  *
  * @author minren 
  * ===========================================================================
  * 
  */
 
-/**
+/*
  * @幻灯片轮播图片
  *
  */
@@ -186,7 +195,14 @@ Jx().$package(&quot;SlideShow&quot;, function(J){
         _currentEffect=0;
     }
 
-
+    /**
+     * 幻灯片播放类
+     * @class SlideShow
+     * @constructor
+     * @param  {string} container 包含img元素的容器的id
+     * @param  {object} params    幻灯片参数，imgW,imgH,图片的大小，num卡片的数量。
+     * @return {[type]}           [description]
+     */
     var init = function(container, params){
         reset();
         _container = document.getElementById(container);
@@ -508,6 +524,11 @@ Jx().$package(&quot;SlideShow&quot;, function(J){
        
     }
 
+    /**
+     * 播放下一张幻灯片
+     * @method next
+     * @return {[type]}          [description]
+     */
     var next = function  (argument) {
         
         _currentEffect = (_currentEffect+1)%_slideEffects.length;
@@ -521,6 +542,10 @@ Jx().$package(&quot;SlideShow&quot;, function(J){
 
     }
 
+    /**
+     * 播放前一张幻灯片
+     * @return {[type]}          [description]
+     */
     var prev =function (argument){
         _currentEffect = (_currentEffect+_slideEffects.length-1)%_slideEffects.length;
 
@@ -530,18 +555,43 @@ Jx().$package(&quot;SlideShow&quot;, function(J){
         gotoWithEffect(_prevImage,effect);
     }
 
-    var getContrainer=function(){
+    /**
+     * 获得幻灯片的容器对象
+     * @method getContainer
+     * @return {DOM} 容器对象
+     */
+    var getContainer=function(){
         return _container;
     }
+    /**
+     * 获得幻灯片的舞台对象
+     * @method getStage
+     * @return {DOM} 容器对象
+     */
     var getStage=function(){
         return _stage;
     }
+    /**
+     * 获得幻灯片的舞台宽度
+     * @method getStage
+     * @return {int} 舞台宽度
+     */
     var getStageWidth = function(){
         return _stageWidth;
     }
+    /**
+     * 获得幻灯片的舞台高度
+     * @method getStage
+     * @return {int} 舞台高度
+     */
     var getStageHeight = function(){
         return _stageHeight;
     }
+    /**
+     * 设置幻灯片播放多米诺效果的延时
+     * @method getStage
+     * @param {int} value 多米诺效果的延时时间
+     */
     var setDonimo = function(value){
         _animSettings.domino = value;
     }
@@ -570,7 +620,7 @@ Jx().$package(&quot;SlideShow&quot;, function(J){
         //依旧有闪烁。调用方法参考playAnimation
         //
         //添加声音。 √
-        //美化翻页按钮的样式。
+        //美化翻页按钮的样式。√
 
     </pre>
 </div>

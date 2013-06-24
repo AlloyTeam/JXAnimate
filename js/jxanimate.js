@@ -646,8 +646,9 @@ Jx().$package("JXAnimate", function(J){
 
     /**
      * 返回唯一的关键帧的名称
-     * @param  {[type]} animType [动画类型的名称]
-     * @return {[type]}          [唯一的关键帧名称]
+     * @method buildUniqueKeyframeName
+     * @param  {string} animType 动画类型的名称
+     * @return {void}          唯一的关键帧名称
      */
     etamina.effects.buildUniqueKeyframeName = function(animType){
 

@@ -10,7 +10,7 @@
  */
 
 /**
- * @class JXAnimation.Audio
+ * @class JXAnimate.Audio
  * @description
  *
  */

@@ -1,34 +1,6 @@
 {
     "project": {},
     "files": {
-        "card.effects.js": {
-            "name": "card.effects.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "etamina.audio.js": {
-            "name": "etamina.audio.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "etamina.effects.js": {
-            "name": "etamina.effects.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "etamina.js": {
-            "name": "etamina.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
         "jquery-1.8.2.js": {
             "name": "jquery-1.8.2.js",
             "modules": {},
@@ -49,7 +21,7 @@
                 "JXAnimate.Audio": 1
             },
             "classes": {
-                "JXAnimation.Audio": 1
+                "JXAnimate.Audio": 1
             },
             "fors": {},
             "namespaces": {}
@@ -82,8 +54,12 @@
         },
         "slideshow.js": {
             "name": "slideshow.js",
-            "modules": {},
-            "classes": {},
+            "modules": {
+                "SlideShow": 1
+            },
+            "classes": {
+                "SlideShow": 1
+            },
             "fors": {},
             "namespaces": {}
         }
@@ -93,7 +69,7 @@
             "name": "JXAnimate.Audio",
             "submodules": {},
             "classes": {
-                "JXAnimation.Audio": 1
+                "JXAnimate.Audio": 1
             },
             "fors": {},
             "namespaces": {},
@@ -113,14 +89,46 @@
             "namespaces": {},
             "tag": "module",
             "file": "jxanimate.js",
-            "line": 1029,
+            "line": 1030,
             "description": "JX.Animate主文件"
+        },
+        "JXAnimate.Animate.Demo": {
+            "name": "JXAnimate.Animate.Demo",
+            "submodules": {
+                "SlideShow": 1
+            },
+            "classes": {
+                "SlideShow": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "file": "slideshow.js",
+            "line": 96
+        },
+        "SlideShow": {
+            "name": "SlideShow",
+            "submodules": {},
+            "classes": {
+                "SlideShow": 1
+            },
+            "fors": {},
+            "is_submodule": 1,
+            "namespaces": {},
+            "module": "JXAnimate.Animate.Demo",
+            "namespace": "",
+            "file": "slideshow.js",
+            "line": 96,
+            "description": "幻灯片轮播图片",
+            "requires": [
+                "JXAnimate.Animate"
+            ],
+            "author": "minren \n==========================================================================="
         }
     },
     "classes": {
-        "JXAnimation.Audio": {
-            "name": "JXAnimation.Audio",
-            "shortname": "JXAnimation.Audio",
+        "JXAnimate.Audio": {
+            "name": "JXAnimate.Audio",
+            "shortname": "JXAnimate.Audio",
             "classitems": [],
             "plugins": [],
             "extensions": [],
@@ -165,143 +173,43 @@
             "module": "JXAnimate",
             "namespace": "",
             "file": "jxanimate.js",
-            "line": 1029,
+            "line": 1030,
             "description": "动画设置参数\n   animSetting{\n       domino: 100 , // 设置domino中间的间隔时间。 数字或字符串。100或‘100ms’\n       animType: 'rotateOut', //动画类型，内部用。\n       index: 1,               //序列号，内部用。\n       dominoGroupEventElements: [], //保存用于处理合并事件的元素id\n       callback: method,       //每个元素动画结束后的回调。\n       callbackParam: object,  //回调的参数。\n       doNotDeleteKeyframe: true,  //标识动画结束后是否删除关键帧CSS。\n       additionalClass: 'className', //设置动画时可以同时附加其他的css类。\n       sound:'soundName',              //播放声音的名称。\n       volume: '',                     //声音音量。\n   }"
+        },
+        "SlideShow": {
+            "name": "SlideShow",
+            "shortname": "SlideShow",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "JXAnimate.Animate.Demo",
+            "submodule": "SlideShow",
+            "namespace": "",
+            "file": "slideshow.js",
+            "line": 96,
+            "description": "幻灯片播放类",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "container",
+                    "description": "包含img元素的容器的id",
+                    "type": "String"
+                },
+                {
+                    "name": "params",
+                    "description": "幻灯片参数，imgW,imgH,图片的大小，num卡片的数量。",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "[description]",
+                "type": "[type]"
+            }
         }
     },
     "classitems": [
-        {
-            "file": "card.effects.js",
-            "line": 14,
-            "description": "",
-            "class": "JXAnimation.Audio"
-        },
-        {
-            "file": "card.effects.js",
-            "line": 20,
-            "description": "[stageAnim1 description]",
-            "params": [
-                {
-                    "name": "elems",
-                    "description": "[description]",
-                    "type": "[type]"
-                },
-                {
-                    "name": "playParam",
-                    "description": "[description]",
-                    "type": "[type]"
-                },
-                {
-                    "name": "animSetting",
-                    "description": "[description]",
-                    "type": "[type]"
-                }
-            ],
-            "return": {
-                "description": "",
-                "type": "[type]"
-            },
-            "class": "JXAnimation.Audio"
-        },
-        {
-            "file": "card.effects.js",
-            "line": 43,
-            "description": "[pageFlipRight description]",
-            "params": [
-                {
-                    "name": "elems",
-                    "description": "[description]",
-                    "type": "[type]"
-                },
-                {
-                    "name": "playParam",
-                    "description": "[description]",
-                    "type": "[type]"
-                },
-                {
-                    "name": "animSetting",
-                    "description": "[description]",
-                    "type": "[type]"
-                }
-            ],
-            "return": {
-                "description": "",
-                "type": "[type]"
-            },
-            "class": "JXAnimation.Audio"
-        },
-        {
-            "file": "etamina.audio.js",
-            "line": 13,
-            "description": "",
-            "class": "JXAnimation.Audio"
-        },
-        {
-            "file": "etamina.effects.js",
-            "line": 14,
-            "description": "",
-            "class": "JXAnimation.Audio"
-        },
-        {
-            "file": "etamina.js",
-            "line": 13,
-            "description": "",
-            "class": "JXAnimation.Audio"
-        },
-        {
-            "file": "etamina.js",
-            "line": 42,
-            "description": "Returns array of HTML elements by string, HTML elements or string array.",
-            "class": "JXAnimation.Audio"
-        },
-        {
-            "file": "etamina.js",
-            "line": 83,
-            "description": "Set browser css & JS prefix",
-            "class": "JXAnimation.Audio"
-        },
-        {
-            "file": "etamina.js",
-            "line": 121,
-            "description": "Get the document height",
-            "class": "JXAnimation.Audio"
-        },
-        {
-            "file": "etamina.js",
-            "line": 135,
-            "description": "Insert CSS keyframe rule",
-            "class": "JXAnimation.Audio"
-        },
-        {
-            "file": "etamina.js",
-            "line": 161,
-            "description": "Delete CSS keyframe rule",
-            "class": "JXAnimation.Audio"
-        },
-        {
-            "file": "etamina.js",
-            "line": 188,
-            "description": "Clear animation settings",
-            "class": "JXAnimation.Audio"
-        },
-        {
-            "file": "etamina.js",
-            "line": 216,
-            "description": "initialize animation playing param",
-            "class": "JXAnimation.Audio"
-        },
-        {
-            "file": "etamina.js",
-            "line": 239,
-            "description": "生成用于在element上应用动画效果class css",
-            "class": "JXAnimation.Audio"
-        },
-        {
-            "file": "etamina.js",
-            "line": 325,
-            "description": "Initialize",
-            "class": "JXAnimation.Audio"
-        },
         {
             "file": "jquery-1.8.2.js",
             "line": 3987,
@@ -313,52 +221,52 @@
                     "type": "Array|Element"
                 }
             ],
-            "class": "JXAnimation.Audio"
+            "class": "JXAnimate.Audio"
         },
         {
             "file": "jquery-ui.js",
             "line": 4891,
-            "class": "JXAnimation.Audio"
+            "class": "JXAnimate.Audio"
         },
         {
             "file": "jquery-ui.js",
             "line": 4892,
-            "class": "JXAnimation.Audio"
+            "class": "JXAnimate.Audio"
         },
         {
             "file": "jquery-ui.js",
             "line": 4893,
-            "class": "JXAnimation.Audio"
+            "class": "JXAnimate.Audio"
         },
         {
             "file": "jquery-ui.js",
             "line": 5085,
-            "class": "JXAnimation.Audio"
+            "class": "JXAnimate.Audio"
         },
         {
             "file": "jquery-ui.js",
             "line": 5086,
-            "class": "JXAnimation.Audio"
+            "class": "JXAnimate.Audio"
         },
         {
             "file": "jquery-ui.js",
             "line": 5087,
-            "class": "JXAnimation.Audio"
+            "class": "JXAnimate.Audio"
         },
         {
             "file": "jquery-ui.js",
             "line": 5436,
-            "class": "JXAnimation.Audio"
+            "class": "JXAnimate.Audio"
         },
         {
             "file": "jquery-ui.js",
             "line": 5437,
-            "class": "JXAnimation.Audio"
+            "class": "JXAnimate.Audio"
         },
         {
             "file": "jquery-ui.js",
             "line": 5438,
-            "class": "JXAnimation.Audio"
+            "class": "JXAnimate.Audio"
         },
         {
             "file": "jxanimate.audio.js",
@@ -377,7 +285,7 @@
                 "description": "[所支持音频格式的扩展名，不包括\".\"]",
                 "type": "String"
             },
-            "class": "JXAnimation.Audio",
+            "class": "JXAnimate.Audio",
             "module": "JXAnimate.Audio"
         },
         {
@@ -397,7 +305,7 @@
                 "description": "",
                 "type": "Void"
             },
-            "class": "JXAnimation.Audio",
+            "class": "JXAnimate.Audio",
             "module": "JXAnimate.Audio"
         },
         {
@@ -427,7 +335,7 @@
                 "description": "",
                 "type": "Void"
             },
-            "class": "JXAnimation.Audio",
+            "class": "JXAnimate.Audio",
             "module": "JXAnimate.Audio"
         },
         {
@@ -457,7 +365,7 @@
                 "description": "",
                 "type": "Void"
             },
-            "class": "JXAnimation.Audio",
+            "class": "JXAnimate.Audio",
             "module": "JXAnimate.Audio"
         },
         {
@@ -482,13 +390,126 @@
                 "description": "",
                 "type": "Void"
             },
-            "class": "JXAnimation.Audio",
+            "class": "JXAnimate.Audio",
             "module": "JXAnimate.Audio"
         },
         {
             "file": "jxanimate.effects.js",
-            "line": 15,
-            "description": "",
+            "line": 20,
+            "description": "向左翻页的效果，内置Demo动画，代码演示了通过Frame数组形式定义动画。",
+            "itemtype": "method",
+            "name": "pageFlipLeft",
+            "params": [
+                {
+                    "name": "elems",
+                    "description": "HTML元素id的集合",
+                    "type": "Array"
+                },
+                {
+                    "name": "playParam",
+                    "description": "播放参数，时长、延时、重复等",
+                    "type": "Object"
+                },
+                {
+                    "name": "animSetting",
+                    "description": "动画参数，多米诺效果、回调、声音等",
+                    "type": "AnimSetting"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Void"
+            },
+            "class": "JX.Animate",
+            "module": "JXAnimate.Audio"
+        },
+        {
+            "file": "jxanimate.effects.js",
+            "line": 41,
+            "description": "向右翻页的效果，内置Demo动画，代码演示了通过Frame数组形式定义动画。",
+            "itemtype": "method",
+            "name": "pageFlipLeft",
+            "params": [
+                {
+                    "name": "elems",
+                    "description": "HTML元素id的集合",
+                    "type": "Array"
+                },
+                {
+                    "name": "playParam",
+                    "description": "播放参数，时长、延时、重复等",
+                    "type": "Object"
+                },
+                {
+                    "name": "animSetting",
+                    "description": "动画参数，多米诺效果、回调、声音等",
+                    "type": "AnimSetting"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Void"
+            },
+            "class": "JX.Animate",
+            "module": "JXAnimate.Audio"
+        },
+        {
+            "file": "jxanimate.effects.js",
+            "line": 63,
+            "description": "摇旗子的效果，内置Demo动画，代码演示了通过Frame数组形式定义动画。",
+            "itemtype": "method",
+            "name": "raceFlag",
+            "params": [
+                {
+                    "name": "elems",
+                    "description": "HTML元素id的集合",
+                    "type": "Array"
+                },
+                {
+                    "name": "playParam",
+                    "description": "播放参数，时长、延时、重复等",
+                    "type": "Object"
+                },
+                {
+                    "name": "animSetting",
+                    "description": "动画参数，多米诺效果、回调、声音等",
+                    "type": "AnimSetting"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Void"
+            },
+            "class": "JX.Animate",
+            "module": "JXAnimate.Audio"
+        },
+        {
+            "file": "jxanimate.effects.js",
+            "line": 84,
+            "description": "摇旗子的效果，内置Demo动画，代码演示了通过CSS样式字符串的形式定义动画。",
+            "itemtype": "method",
+            "name": "raceFlag1",
+            "params": [
+                {
+                    "name": "elems",
+                    "description": "HTML元素id的集合",
+                    "type": "Array"
+                },
+                {
+                    "name": "playParam",
+                    "description": "播放参数，时长、延时、重复等",
+                    "type": "Object"
+                },
+                {
+                    "name": "animSetting",
+                    "description": "动画参数，多米诺效果、回调、声音等",
+                    "type": "AnimSetting"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Void"
+            },
             "class": "JX.Animate",
             "module": "JXAnimate.Audio"
         },
@@ -521,23 +542,25 @@
             "file": "jxanimate.js",
             "line": 647,
             "description": "返回唯一的关键帧的名称",
+            "itemtype": "method",
+            "name": "buildUniqueKeyframeName",
             "params": [
                 {
                     "name": "animType",
-                    "description": "[动画类型的名称]",
-                    "type": "[type]"
+                    "description": "动画类型的名称",
+                    "type": "String"
                 }
             ],
             "return": {
-                "description": "[唯一的关键帧名称]",
-                "type": "[type]"
+                "description": "唯一的关键帧名称",
+                "type": "Void"
             },
             "class": "JX.Animate",
             "module": "JXAnimate"
         },
         {
             "file": "jxanimate.js",
-            "line": 659,
+            "line": 660,
             "description": "开始播放元素对应的CSS动画",
             "itemtype": "method",
             "name": "go",
@@ -572,7 +595,7 @@
         },
         {
             "file": "jxanimate.js",
-            "line": 826,
+            "line": 827,
             "description": "根据自定义的关键帧生成动画，并播放。",
             "itemtype": "method",
             "name": "goWithFixFrames",
@@ -607,7 +630,7 @@
         },
         {
             "file": "jxanimate.js",
-            "line": 849,
+            "line": 850,
             "description": "播放CSS文件中预定义的关键帧动画",
             "itemtype": "method",
             "name": "applyCss",
@@ -637,7 +660,7 @@
         },
         {
             "file": "jxanimate.js",
-            "line": 884,
+            "line": 885,
             "description": "闪烁效果，内置Demo动画，代码演示了通过CSS样式字符串的形式定义动画。",
             "itemtype": "method",
             "name": "flash",
@@ -667,7 +690,7 @@
         },
         {
             "file": "jxanimate.js",
-            "line": 916,
+            "line": 917,
             "description": "水平3D翻转，内置Demo动画，代码演示了通过Frame数组形式定义动画。",
             "itemtype": "method",
             "name": "flipInY",
@@ -697,7 +720,7 @@
         },
         {
             "file": "jxanimate.js",
-            "line": 941,
+            "line": 942,
             "description": "竖直3D翻转，内置Demo动画，代码演示了通过Frame数组形式定义动画。",
             "itemtype": "method",
             "name": "flipInX",
@@ -727,7 +750,7 @@
         },
         {
             "file": "jxanimate.js",
-            "line": 964,
+            "line": 965,
             "description": "添加自定义动画效果",
             "itemtype": "method",
             "name": "addEffects",
@@ -747,7 +770,7 @@
         },
         {
             "file": "jxanimate.js",
-            "line": 1006,
+            "line": 1007,
             "description": "浏览器的CSS3 样式的前缀",
             "itemtype": "property",
             "name": "prefix",
@@ -757,7 +780,7 @@
         },
         {
             "file": "jxanimate.js",
-            "line": 1011,
+            "line": 1012,
             "description": "浏览器的CSS3 JS方法的前缀",
             "itemtype": "property",
             "name": "prefixJS",
@@ -767,7 +790,7 @@
         },
         {
             "file": "jxanimate.js",
-            "line": 1045,
+            "line": 1046,
             "description": "设置domino中间的间隔时间。 数字或字符串。100或‘100ms’",
             "itemtype": "property",
             "name": "domino",
@@ -777,7 +800,7 @@
         },
         {
             "file": "jxanimate.js",
-            "line": 1049,
+            "line": 1050,
             "description": "动画类型",
             "itemtype": "property",
             "name": "animType",
@@ -789,7 +812,7 @@
         },
         {
             "file": "jxanimate.js",
-            "line": 1054,
+            "line": 1055,
             "description": "序列号，用于设置domino顺序",
             "itemtype": "property",
             "name": "index",
@@ -801,7 +824,7 @@
         },
         {
             "file": "jxanimate.js",
-            "line": 1059,
+            "line": 1060,
             "description": "保存用于处理合并事件的元素id",
             "itemtype": "property",
             "name": "dominoGroupEventElement",
@@ -811,7 +834,7 @@
         },
         {
             "file": "jxanimate.js",
-            "line": 1063,
+            "line": 1064,
             "description": "每个元素动画结束后的回调。",
             "itemtype": "property",
             "name": "callback",
@@ -821,7 +844,7 @@
         },
         {
             "file": "jxanimate.js",
-            "line": 1067,
+            "line": 1068,
             "description": "回调参数",
             "itemtype": "property",
             "name": "callbackParam",
@@ -831,7 +854,7 @@
         },
         {
             "file": "jxanimate.js",
-            "line": 1071,
+            "line": 1072,
             "description": "标识动画结束后保留关键帧CSS",
             "itemtype": "property",
             "name": "doNotDeleteKeyframe",
@@ -841,7 +864,7 @@
         },
         {
             "file": "jxanimate.js",
-            "line": 1075,
+            "line": 1076,
             "description": "设置动画时可以同时附加其他的css类，动画结束后删除",
             "itemtype": "property",
             "name": "additionalClass",
@@ -851,7 +874,7 @@
         },
         {
             "file": "jxanimate.js",
-            "line": 1079,
+            "line": 1080,
             "description": "播放声音的名称。",
             "itemtype": "property",
             "name": "sound",
@@ -861,7 +884,7 @@
         },
         {
             "file": "jxanimate.js",
-            "line": 1083,
+            "line": 1084,
             "description": "声音音量。",
             "itemtype": "property",
             "name": "volume",
@@ -871,7 +894,7 @@
         },
         {
             "file": "jxanimate.js",
-            "line": 1087,
+            "line": 1088,
             "description": "CSS文件中关键帧动画的名称，尽在applyCSS方法中有效。",
             "itemtype": "property",
             "name": "name",
@@ -883,102 +906,72 @@
             "file": "slideshow.effects.js",
             "line": 14,
             "description": "",
-            "class": "",
+            "class": "SlideShow",
             "module": "JXAnimate"
         },
         {
             "file": "slideshow.effects.js",
-            "line": 24,
-            "description": "[stageAnim1 description]",
+            "line": 25,
+            "description": "卡片飞向舞台中心的效果。",
+            "itemtype": "method",
+            "name": "flyOutToCenter",
             "params": [
                 {
                     "name": "elems",
-                    "description": "[description]",
-                    "type": "[type]"
+                    "description": "HTML元素id的集合",
+                    "type": "Array"
                 },
                 {
                     "name": "playParam",
-                    "description": "[description]",
-                    "type": "[type]"
+                    "description": "播放参数，时长、延时、重复等",
+                    "type": "Object"
                 },
                 {
                     "name": "animSetting",
-                    "description": "[description]",
-                    "type": "[type]"
+                    "description": "动画参数，多米诺效果、回调、声音等",
+                    "type": "AnimSetting"
                 }
             ],
             "return": {
                 "description": "",
-                "type": "[type]"
+                "type": "Void"
             },
-            "class": "",
+            "class": "SlideShow",
             "module": "JXAnimate"
         },
         {
             "file": "slideshow.effects.js",
-            "line": 66,
-            "description": "[flyOutToCenter description]",
+            "line": 88,
+            "description": "卡片飞向舞台中心的效果。",
+            "itemtype": "method",
+            "name": "flyOutToCenter",
             "params": [
                 {
                     "name": "elems",
-                    "description": "[description]",
-                    "type": "[type]"
+                    "description": "HTML元素id的集合",
+                    "type": "Array"
                 },
                 {
                     "name": "playParam",
-                    "description": "[description]",
-                    "type": "[type]"
+                    "description": "播放参数，时长、延时、重复等",
+                    "type": "Object"
                 },
                 {
                     "name": "animSetting",
-                    "description": "[description]",
-                    "type": "[type]"
+                    "description": "动画参数，多米诺效果、回调、声音等",
+                    "type": "AnimSetting"
                 }
             ],
             "return": {
                 "description": "",
-                "type": "[type]"
+                "type": "Void"
             },
-            "class": "",
-            "module": "JXAnimate"
-        },
-        {
-            "file": "slideshow.effects.js",
-            "line": 128,
-            "description": "[flyOutToOutside description]",
-            "params": [
-                {
-                    "name": "elems",
-                    "description": "[description]",
-                    "type": "[type]"
-                },
-                {
-                    "name": "playParam",
-                    "description": "[description]",
-                    "type": "[type]"
-                },
-                {
-                    "name": "animSetting",
-                    "description": "[description]",
-                    "type": "[type]"
-                }
-            ],
-            "return": {
-                "description": "",
-                "type": "[type]"
-            },
-            "class": "",
+            "class": "SlideShow",
             "module": "JXAnimate"
         },
         {
             "file": "slideshow.js",
-            "line": 13,
-            "class": "",
-            "module": "JXAnimate"
-        },
-        {
-            "file": "slideshow.js",
-            "line": 273,
+            "line": 283,
             "description": "定义一系列获得卡片顺序的函数",
             "params": [
                 {
@@ -991,71 +984,111 @@
                 "description": "[description]",
                 "type": "[type]"
             },
-            "class": "",
-            "module": "JXAnimate"
+            "class": "SlideShow",
+            "module": "JXAnimate.Animate.Demo",
+            "submodule": "SlideShow"
+        },
+        {
+            "file": "slideshow.js",
+            "line": 425,
+            "description": "播放下一张幻灯片",
+            "itemtype": "method",
+            "name": "next",
+            "return": {
+                "description": "[description]",
+                "type": "[type]"
+            },
+            "class": "SlideShow",
+            "module": "JXAnimate.Animate.Demo",
+            "submodule": "SlideShow"
+        },
+        {
+            "file": "slideshow.js",
+            "line": 443,
+            "description": "播放前一张幻灯片",
+            "return": {
+                "description": "[description]",
+                "type": "[type]"
+            },
+            "class": "SlideShow",
+            "module": "JXAnimate.Animate.Demo",
+            "submodule": "SlideShow"
+        },
+        {
+            "file": "slideshow.js",
+            "line": 456,
+            "description": "获得幻灯片的容器对象",
+            "itemtype": "method",
+            "name": "getContainer",
+            "return": {
+                "description": "容器对象",
+                "type": "DOM"
+            },
+            "class": "SlideShow",
+            "module": "JXAnimate.Animate.Demo",
+            "submodule": "SlideShow"
+        },
+        {
+            "file": "slideshow.js",
+            "line": 464,
+            "description": "获得幻灯片的舞台对象",
+            "itemtype": "method",
+            "name": "getStage",
+            "return": {
+                "description": "容器对象",
+                "type": "DOM"
+            },
+            "class": "SlideShow",
+            "module": "JXAnimate.Animate.Demo",
+            "submodule": "SlideShow"
+        },
+        {
+            "file": "slideshow.js",
+            "line": 472,
+            "description": "获得幻灯片的舞台宽度",
+            "itemtype": "method",
+            "name": "getStage",
+            "return": {
+                "description": "舞台宽度",
+                "type": "Int"
+            },
+            "class": "SlideShow",
+            "module": "JXAnimate.Animate.Demo",
+            "submodule": "SlideShow"
+        },
+        {
+            "file": "slideshow.js",
+            "line": 480,
+            "description": "获得幻灯片的舞台高度",
+            "itemtype": "method",
+            "name": "getStage",
+            "return": {
+                "description": "舞台高度",
+                "type": "Int"
+            },
+            "class": "SlideShow",
+            "module": "JXAnimate.Animate.Demo",
+            "submodule": "SlideShow"
+        },
+        {
+            "file": "slideshow.js",
+            "line": 488,
+            "description": "设置幻灯片播放多米诺效果的延时",
+            "itemtype": "method",
+            "name": "getStage",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "多米诺效果的延时时间",
+                    "type": "Int"
+                }
+            ],
+            "class": "SlideShow",
+            "module": "JXAnimate.Animate.Demo",
+            "submodule": "SlideShow"
         }
     ],
     "warnings": [
-        {
-            "message": "Missing item type",
-            "line": " card.effects.js:14"
-        },
-        {
-            "message": "Missing item type\n[stageAnim1 description]",
-            "line": " card.effects.js:20"
-        },
-        {
-            "message": "Missing item type\n[pageFlipRight description]",
-            "line": " card.effects.js:43"
-        },
-        {
-            "message": "Missing item type",
-            "line": " etamina.audio.js:13"
-        },
-        {
-            "message": "Missing item type",
-            "line": " etamina.effects.js:14"
-        },
-        {
-            "message": "Missing item type",
-            "line": " etamina.js:13"
-        },
-        {
-            "message": "Missing item type\nReturns array of HTML elements by string, HTML elements or string array.",
-            "line": " etamina.js:42"
-        },
-        {
-            "message": "Missing item type\nSet browser css & JS prefix",
-            "line": " etamina.js:83"
-        },
-        {
-            "message": "Missing item type\nGet the document height",
-            "line": " etamina.js:121"
-        },
-        {
-            "message": "Missing item type\nInsert CSS keyframe rule",
-            "line": " etamina.js:135"
-        },
-        {
-            "message": "Missing item type\nDelete CSS keyframe rule",
-            "line": " etamina.js:161"
-        },
-        {
-            "message": "Missing item type\nClear animation settings",
-            "line": " etamina.js:188"
-        },
-        {
-            "message": "Missing item type\ninitialize animation playing param",
-            "line": " etamina.js:216"
-        },
-        {
-            "message": "Missing item type\n生成用于在element上应用动画效果class css",
-            "line": " etamina.js:239"
-        },
-        {
-            "message": "Missing item type\nInitialize",
-            "line": " etamina.js:325"
-        },
         {
             "message": "Missing item type\nUtility function for retrieving the text value of an array of DOM nodes",
             "line": " jquery-1.8.2.js:3987"
@@ -1098,35 +1131,15 @@
         },
         {
             "message": "Missing item type",
-            "line": " jxanimate.effects.js:15"
-        },
-        {
-            "message": "Missing item type\n返回唯一的关键帧的名称",
-            "line": " jxanimate.js:647"
-        },
-        {
-            "message": "Missing item type",
             "line": " slideshow.effects.js:14"
         },
         {
-            "message": "Missing item type\n[stageAnim1 description]",
-            "line": " slideshow.effects.js:24"
-        },
-        {
-            "message": "Missing item type\n[flyOutToCenter description]",
-            "line": " slideshow.effects.js:66"
-        },
-        {
-            "message": "Missing item type\n[flyOutToOutside description]",
-            "line": " slideshow.effects.js:128"
-        },
-        {
-            "message": "Missing item type",
-            "line": " slideshow.js:13"
-        },
-        {
             "message": "Missing item type\n定义一系列获得卡片顺序的函数",
-            "line": " slideshow.js:273"
+            "line": " slideshow.js:283"
+        },
+        {
+            "message": "Missing item type\n播放前一张幻灯片",
+            "line": " slideshow.js:443"
         }
     ]
 }

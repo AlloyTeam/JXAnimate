@@ -45,7 +45,9 @@
             
                 <li><a href="../classes/JX.Animate.html">JX.Animate</a></li>
             
-                <li><a href="../classes/JXAnimation.Audio.html">JXAnimation.Audio</a></li>
+                <li><a href="../classes/JXAnimate.Audio.html">JXAnimate.Audio</a></li>
+            
+                <li><a href="../classes/SlideShow.html">SlideShow</a></li>
             
             </ul>
 
@@ -53,7 +55,11 @@
             
                 <li><a href="../modules/JXAnimate.html">JXAnimate</a></li>
             
+                <li><a href="../modules/JXAnimate.Animate.Demo.html">JXAnimate.Animate.Demo</a></li>
+            
                 <li><a href="../modules/JXAnimate.Audio.html">JXAnimate.Audio</a></li>
+            
+                <li><a href="../modules/SlideShow.html">SlideShow</a></li>
             
             </ul>
         </div>
@@ -117,54 +123,14 @@ Jx().$package(&quot;SlideShow&quot;, function(J){
 var $D = J.dom;
 
 JXAnimate.addEffects({
+
     /**
-     * [stageAnim1 description]
-     * @param  {[type]} elems       [description]
-     * @param  {[type]} playParam   [description]
-     * @param  {[type]} animSetting [description]
-     * @return {[type]}
-     */
-    flyOutToCenter2 : function(elems,playParam,animSetting){
-        var animSetting = animSetting || {};
-
-        animSetting.animType = &#x27;flyOutToCenter&#x27;;
-
-        var buildKeyframe = function(elem,setting){
-            var keyframeName = this.buildUniqueKeyframeName(animSetting.animType),
-                x1,y1,x2,y2,w,h,stage,stageW,stageH;
-
-                x1 = $D.getPosX(elem);
-                y1 = $D.getPosY(elem);
-                w = $D.getWidth(elem);
-                h = $D.getHeight(elem);
-
-                stage = SlideShow.getStage();
-                stageW = SlideShow.getStageWidth();
-                stageH = SlideShow.getStageHeight();
-
-                x2 = (stageW - w)/2;
-                y2 = (stageH - h)/2;
-                x2+= &#x27;px&#x27;;
-                y2+= &#x27;px&#x27;;
-       
-                keyframeCss = &#x27;@&#x27;+this.prefix+&#x27;keyframes &#x27;+  keyframeName +&#x27;{\n&#x27;+
-                    &#x27;0% {-webkit-transform: scale(1);-webkit-transform-origin:50% 50%;}100% {-webkit-transform: scale(2) ;-webkit-transform-origin:50% 50%;}\n&#x27;+
-            &#x27;}&#x27;;
-
-            return {
-                name:keyframeName,
-                css:keyframeCss
-            };
-        };
-
-        this.go(elems,playParam,animSetting,buildKeyframe);
-    },
-    /**
-     * [flyOutToCenter description]
-     * @param  {[type]} elems       [description]
-     * @param  {[type]} playParam   [description]
-     * @param  {[type]} animSetting [description]
-     * @return {[type]}
+     * 卡片飞向舞台中心的效果。
+     * @method flyOutToCenter
+     * @param  {array} elems       HTML元素id的集合
+     * @param  {object} playParam   播放参数，时长、延时、重复等
+     * @param  {animSetting} animSetting 动画参数，多米诺效果、回调、声音等
+     * @return {void}             
      */
     flyOutToCenter : function(elems,playParam,animSetting){
         var animSetting = animSetting || {};
@@ -222,11 +188,12 @@ JXAnimate.addEffects({
 
     },
     /**
-     * [flyOutToOutside description]
-     * @param  {[type]} elems       [description]
-     * @param  {[type]} playParam   [description]
-     * @param  {[type]} animSetting [description]
-     * @return {[type]}
+     * 卡片飞向舞台中心的效果。
+     * @method flyOutToCenter
+     * @param  {array} elems       HTML元素id的集合
+     * @param  {object} playParam   播放参数，时长、延时、重复等
+     * @param  {animSetting} animSetting 动画参数，多米诺效果、回调、声音等
+     * @return {void}             
      */
     flyOutToOutside : function(elems,playParam,animSetting){
         var animSetting = animSetting || {};
@@ -287,48 +254,6 @@ JXAnimate.addEffects({
         
         this.go(elems,playParam,animSetting,buildKeyframe);
 
-    },
-    raceFlag : function(elems,playParam,animSetting){
-        var animSetting = animSetting || {};
-
-        animSetting.animType = &#x27;raceFlag&#x27;;
-
-        var    frames = [
-                {p:&#x27;0%&#x27;,rotateX:&#x27;0deg&#x27;,rotate:&#x27;-720deg&#x27;,transformOrigin:&#x27;100% 0%&#x27;},
-                {p:&#x27;100%&#x27;,rotateX:&#x27;-360deg&#x27;,rotate:&#x27;0&#x27;,transformOrigin:&#x27;100% 0%&#x27;}
-            ];
-
-        this.goWithFixFrames(elems,playParam,animSetting,frames);
-
-    },
-    raceFlag1 : function(elems,playParam,animSetting){
-        var animSetting = animSetting || {};
-
-        animSetting.animType = &#x27;raceFlag2&#x27;;
-
-        var    frames = [
-                {p:&#x27;0%&#x27;,rotateX:&#x27;0deg&#x27;,rotate:&#x27;-720deg&#x27;,transformOrigin:&#x27;100% 0%&#x27;},
-                {p:&#x27;100%&#x27;,rotateX:&#x27;-360deg&#x27;,rotate:&#x27;0&#x27;,transformOrigin:&#x27;100% 0%&#x27;}
-            ];
-
-        var animSetting = animSetting||{};
-
-        animSetting.animType = &#x27;flash&#x27;;
-
-        var buildKeyframe = function(){
-            var keyframeName = this.buildUniqueKeyframeName(animSetting.animType);
-       
-                keyframeCss = &#x27;@&#x27;+this.prefix+&#x27;keyframes &#x27;+  keyframeName +&#x27;{\n&#x27;+
-                	&#x27;0% {-webkit-transform: rotateX(0deg) rotate(-720deg);-webkit-transform-origin:100% 0%;}100% {-webkit-transform: rotateX(-360deg) rotate(0deg) ;-webkit-transform-origin:100% 0%;}\n&#x27;+
-            &#x27;}&#x27;;
-
-            return {
-                name:keyframeName,
-                css:keyframeCss
-            };
-        };
-
-        this.go(elems,playParam,animSetting,buildKeyframe);
     }
 });
 

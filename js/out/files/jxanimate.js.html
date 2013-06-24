@@ -45,7 +45,9 @@
             
                 <li><a href="../classes/JX.Animate.html">JX.Animate</a></li>
             
-                <li><a href="../classes/JXAnimation.Audio.html">JXAnimation.Audio</a></li>
+                <li><a href="../classes/JXAnimate.Audio.html">JXAnimate.Audio</a></li>
+            
+                <li><a href="../classes/SlideShow.html">SlideShow</a></li>
             
             </ul>
 
@@ -53,7 +55,11 @@
             
                 <li><a href="../modules/JXAnimate.html">JXAnimate</a></li>
             
+                <li><a href="../modules/JXAnimate.Animate.Demo.html">JXAnimate.Animate.Demo</a></li>
+            
                 <li><a href="../modules/JXAnimate.Audio.html">JXAnimate.Audio</a></li>
+            
+                <li><a href="../modules/SlideShow.html">SlideShow</a></li>
             
             </ul>
         </div>
@@ -742,8 +748,9 @@ Jx().$package(&quot;JXAnimate&quot;, function(J){
 
     /**
      * 返回唯一的关键帧的名称
-     * @param  {[type]} animType [动画类型的名称]
-     * @return {[type]}          [唯一的关键帧名称]
+     * @method buildUniqueKeyframeName
+     * @param  {string} animType 动画类型的名称
+     * @return {void}          唯一的关键帧名称
      */
     etamina.effects.buildUniqueKeyframeName = function(animType){
 
