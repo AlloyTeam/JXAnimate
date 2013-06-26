@@ -470,7 +470,7 @@ Jx().$package("SlideShow", function(J){
     }
     /**
      * 获得幻灯片的舞台宽度
-     * @method getStage
+     * @method getStageWidth
      * @return {int} 舞台宽度
      */
     var getStageWidth = function(){
@@ -478,7 +478,7 @@ Jx().$package("SlideShow", function(J){
     }
     /**
      * 获得幻灯片的舞台高度
-     * @method getStage
+     * @method getStageHeight
      * @return {int} 舞台高度
      */
     var getStageHeight = function(){
@@ -486,7 +486,7 @@ Jx().$package("SlideShow", function(J){
     }
     /**
      * 设置幻灯片播放多米诺效果的延时
-     * @method getStage
+     * @method setDonimo
      * @param {int} value 多米诺效果的延时时间
      */
     var setDonimo = function(value){
@@ -496,7 +496,7 @@ Jx().$package("SlideShow", function(J){
     this.init = init;
     this.next = next;
     this.prev = prev;
-    this.getContrainer = getContrainer;
+    this.getContainer = getContainer;
     this.getStage = getStage;
     this.getStageWidth = getStageWidth;
     this.getStageHeight = getStageHeight;
