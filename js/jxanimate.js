@@ -1,4 +1,3 @@
-
 /* ===========================================================================
  * etamina == animate
  *
@@ -204,7 +203,9 @@ Jx().$package("JXAnimate", function(J){
                  */
                 clearAnimation: function (elem,evt) {
                     if(this.debug){
-                        console.info("_clearAnimation", elem, evt.srcElement.id, evt.animationName, evt.elapsedTime);
+                        //TODO
+                        //evt.srcElement 属性在FF中不支持。
+                        //console.info("_clearAnimation", elem, evt.srcElement.id, evt.animationName, evt.elapsedTime);
                     }
                     etamina.animElementList[elem.id] = false;
 
