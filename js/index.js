@@ -8,7 +8,7 @@
 
 
             SlideShow.init('slide_contrainer',{imgW:640,imgH:400,
-                num:2});
+                num:4});
                 //cardW:240,cardH:150});
                 //cardW:120,cardH:75});
                 //cardW:480,cardH:300});
@@ -35,7 +35,7 @@
             switch_domino.addEventListener('click',
                 function(e){
                     if(switch_domino.checked){
-                        SlideShow.setDonimo(80);
+                        SlideShow.setDonimo(10);
                     }
                     else{
                         SlideShow.setDonimo(false);
@@ -45,9 +45,9 @@
 
             function playslide(){
                 SlideShow.next();
-                setTimeout(playslide,3000);
+                setTimeout(playslide,4000);
             };
-            setTimeout(playslide,3000);
+            setTimeout(playslide,4000);
 
 
         }
