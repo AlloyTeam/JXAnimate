@@ -4,7 +4,7 @@
             var audio = ['song1','explode1','chimes','notify','tada','logoff','Whistling','WHOOSH'];
 
             JXAnimate.Audio.init({path:'./sounds/'});
-            JXAnimate.Audio.preload(audio);
+            JXAnimate.Audio.preload(audio,1);
 
 
             SlideShow.init('slide_contrainer',{imgW:640,imgH:400,
