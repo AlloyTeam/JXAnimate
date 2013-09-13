@@ -6,11 +6,13 @@
     <title>JX.Animate by AlloyTeam</title>
     <link rel="stylesheet" href="./style/css/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <link href="./style/css/sliderControl.css" rel="stylesheet" type="text/css">
 
     <link href="./style/css/animate.css" rel="stylesheet" type="text/css">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="javascripts/respond.js"></script>
+
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -43,7 +45,7 @@
             top:0;
             width:100%;
             cursor:pointer;
-            height: 600px;
+            height: 100%;
             z-index:201}
 
 
@@ -72,7 +74,7 @@
             top:0;
             width:100%;
             cursor:pointer;
-            height: 600px;
+            height: 100%;
             z-index:201
         }
         .pageRight span{
@@ -104,11 +106,14 @@
     <div class="wrapper">
       <section>
         <h2>Slide Transition Demo</h2>
-        <div class="checkbox">
-                <input tabindex="3" class="domino" type="checkbox" id="switch_domino" checked='true'>
-                <label class="sprite30x30 domino" for="switch_domino">多米诺效果</label>
+        <div class="checkbox domino">
+                <input tabindex="3" type="checkbox" id="switch_domino" checked='true'>
+                <label class="sprite30x30" for="switch_domino">多米诺效果</label>
         </div>
-
+        <div class="checkbox autoplay">
+                <input tabindex="4" type="checkbox" id="switch_autoplay" checked='true'>
+                <label class="sprite30x30" for="switch_autoplay">自动播放</label>
+        </div>
         <div id="main">
             <div id="mouseOverleft" style="width:240px;position:absolute;left:0;height:400px;">
                 <div class="pageLeft" cmd="prev">
@@ -132,6 +137,13 @@
                 <img src="style/images/m7.jpg">
                 <img src="style/images/m8.jpg">
             </div>
+            <div>
+                设置卡片的维度：
+                    <span id="cardNumber" class="sliderControl" 
+                    slideroptions="values= 4 | 5 | 8 | 10 | 20;value=2;animateclick=false;setter=SetCardNumber">
+                    </span>
+                
+            </div>
         </div>
 
         <br>
@@ -148,10 +160,10 @@
 
         <h2>Resources</h2>
         <p>
-            <a href="jxanimate_demo.html">More Animation Effects</a>
+            <a href="jxanimate_demo.html" target="blank">More Animation Effects</a>
         </p>
         <p>
-            <a href="./js/out/index.html">Documents</a>
+            <a href="./js/out/index.html" target="blank">Documents</a>
         </p>
 
       </section>
@@ -172,6 +184,9 @@
         <script src="./js/slideshow.effects.js"></script>
 
         <script src="./js/index.js"></script>
+
+        <script src="./js/PointerDraw.js" type="text/javascript"></script>
+        <script src="./js/sliderControl.js" type="text/javascript"></script>
         <!--Tencent Analytics-->
         <script type="text/javascript" src="http://tajs.qq.com/stats?sId=24711241" charset="UTF-8"></script>
         <!--Google Analytics-->

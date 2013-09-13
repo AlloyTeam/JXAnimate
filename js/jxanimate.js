@@ -354,7 +354,7 @@ Jx().$package("JXAnimate", function(J){
                     if(elem && elem.id && elem.id!=''){
                         elem.className = this.originalCssClasses[elem.id];
                         if(etamina.debug){
-                            console.log('restor #'+elem.id+' to '+elem.className+'\n');
+                            console.log('restore #'+elem.id+' to '+elem.className+'\n');
                         }
                     }
                  },
@@ -672,6 +672,9 @@ Jx().$package("JXAnimate", function(J){
 
     //优化点、针对多个元素应用动画时keyframe的css可能相同。
 
+    //2013/09/13 发现一个问题，这个方法执行的时间越来越长
+
+
         playParam = etamina.initPlayParam(playParam,animSetting.animType);
         if(playParam.iteration<1){
             return;
@@ -815,10 +818,8 @@ Jx().$package("JXAnimate", function(J){
                         JXAnimate.Audio.playSound(animSetting.sound,animSetting.volume);
                     }
                 }
-                log(elem.classname);
-                if(this.debug){
-                    console.log(elem.className);
-                }
+                log(elem.className);
+
             }       
         }
 
@@ -992,9 +993,11 @@ Jx().$package("JXAnimate", function(J){
 
     var debugOn=function () {
         _debug = true;
+        etamina.debug = true;
     }
     var debugOff=function () {
         _debug = false;
+        etamina.debug = false;
     }
     var log = function (argument) {
         if(_debug == false){
@@ -1002,6 +1005,7 @@ Jx().$package("JXAnimate", function(J){
         }
         console.log(argument);
     }
+    debugOff();
 
     J.extend(this,innerAnim);
     /**
@@ -1014,7 +1018,8 @@ Jx().$package("JXAnimate", function(J){
      * @property {string} prefixJS 
      */
     this.prefixJS = etamina.prefixJS;
-
+    this.debugOn = debugOn;
+    this.debugOff = debugOff;
 
 
 /*

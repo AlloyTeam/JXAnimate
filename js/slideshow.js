@@ -43,7 +43,7 @@ Jx().$package("SlideShow", function(J){
         _currentEffect;
 
     var reset = function  () {
-        //初始化参数，img(800x600)，卡片大小（10，10）
+        //初始化参数，img(800x600)，卡片维度 5x5
         _params = {
             imgW:800,
             imgH:600,
@@ -79,6 +79,10 @@ Jx().$package("SlideShow", function(J){
             {
                 order:'col_row',
                 css:'flipOutX'
+            },
+            {
+                order:'random',
+                css:'flipOutY'
             },
             {
                 order:'random',
@@ -156,8 +160,8 @@ Jx().$package("SlideShow", function(J){
             node = children[i];
             if(node.tagName.toLowerCase()==='img'){
                 _imgList.push(node);
+                $D.setClass(node,'slide_Img');
             }
-            $D.setClass(node,'slide_Img');
         };
     }
 
@@ -208,9 +212,6 @@ Jx().$package("SlideShow", function(J){
                 $D.setStyle(card,'left',x+'px');  
                 //background position
                 pos = '-'+x+'px -'+y+'px'
-                //$D.setStyle(card,'background-position-y','-'+y+'px');
-                //$D.setStyle(card,'background-position-x','-'+x+'px');
-                //$D.setStyle(card,'background-position',pos);
                 card.style.backgroundPosition = pos; //兼容FireFox
                                        
             }
@@ -223,9 +224,15 @@ Jx().$package("SlideShow", function(J){
         w = _cardCol * _params.cardW;
         h = _cardRow * _params.cardH;
 
-        _stage = document.createElement('div');
-        _stage.id = 'stage';
+        _stage = document.getElementById('stage');
 
+        if(_stage && _stage.parentNode===_container){
+            _stage.innerHTML = '';
+        }
+        else{
+            _stage = document.createElement('div');
+            _stage.id = 'stage';
+        }
         $D.setStyle(_stage,'width',w+'px');
         $D.setStyle(_stage,'height',h+'px');
 
@@ -258,9 +265,7 @@ Jx().$package("SlideShow", function(J){
     }
     var setBackground = function(elem,src){
         var url = 'url('+src+')';
-        console.log(url);
-        //$D.setStyle(_stage,'background-image',url);
-        //elem.style['background-image'] = url;
+        //console.log(url);
         elem.style.backgroundImage = url;
     }
 
@@ -268,7 +273,6 @@ Jx().$package("SlideShow", function(J){
         var card = argument.elem;
         var src = _imgList[_currImage].src;
         $D.addClass (card,'hidden');
-        //$D.setStyle(card,'background-image','url('+src+')')
 
     }
 
@@ -332,7 +336,10 @@ Jx().$package("SlideShow", function(J){
             },
             'random': function (params) {
                 var elems = [],
+                    t = new Date().getTime(),
+                    timecounter = [];
                     i=0;
+
                 for (var c = _cardRow-1; c >=0; c--) {
                     for(var r=_cardCol-1; r >=0 ; r--){
                         elems.push({
@@ -341,15 +348,17 @@ Jx().$package("SlideShow", function(J){
                         });
                     }
                 }
-
+                timecounter.push(new Date().getTime() - t);
                 elems = elems.sort(
                     function(a,b){
                         return a.index - b.index;
                 });
+                timecounter.push(new Date().getTime() - t);
+
                 for (var i = elems.length - 1; i >= 0; i--) {
                     elems[i] = elems[i].card;
                 };
-
+                timecounter.push(new Date().getTime() - t);
                 /*
                  *此处可以覆盖全局的动画设定参数。
                  *
@@ -361,6 +370,8 @@ Jx().$package("SlideShow", function(J){
                 */
                 playAnimate(elems,params);
 
+                timecounter.push(new Date().getTime() - t);
+                console.log(window.JSON.stringify(timecounter));
             }
         };
 
@@ -368,6 +379,8 @@ Jx().$package("SlideShow", function(J){
 
     var playAnimate = function (elems,params) {
         var isGroup = false, //调试分组的开关。
+            t = new Date().getTime(),
+            timecounter = ['playAnimate'],
             animSetting,tempSetting;
 
         params = params || {};
@@ -389,7 +402,7 @@ Jx().$package("SlideShow", function(J){
         else{
             animSetting.dominoGroupEventElements=null;
         }
-
+                timecounter.push(new Date().getTime() - t);
 
         if('css' in params){
             animSetting.name = params.css;
@@ -401,6 +414,8 @@ Jx().$package("SlideShow", function(J){
             JXAnimate[effectName].call(JXAnimate,elems,_playParam,animSetting);
 
         }
+                timecounter.push(new Date().getTime() - t);
+                console.log(window.JSON.stringify(timecounter));
     }
     var gotoWithEffect = function(index, effect){
 
@@ -409,6 +424,7 @@ Jx().$package("SlideShow", function(J){
 
         var src = _imgList[_currImage].src;
         //在动画开始前，设置卡片背景为当前图片，并可见。
+
         setCardBackground(src);
         //翻页，设置舞台
         setCurrentIndex(index);
@@ -430,7 +446,7 @@ Jx().$package("SlideShow", function(J){
         
         _currentEffect = (_currentEffect+1)%_slideEffects.length;
 
-//_currentEffect=0; //test
+//_currentEffect=1; //test
         var orderName, 
             effect = _slideEffects[_currentEffect];
 
