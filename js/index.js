@@ -35,7 +35,7 @@
             switch_domino.addEventListener('click',
                 function(e){
                     if(switch_domino.checked){
-                        SlideShow.setDonimo(10);
+                        SlideShow.setDonimo(5);
                     }
                     else{
                         SlideShow.setDonimo(false);
