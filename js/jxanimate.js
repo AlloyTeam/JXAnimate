@@ -673,6 +673,37 @@ Jx().$package("JXAnimate", function(J){
     //优化点、针对多个元素应用动画时keyframe的css可能相同。
 
     //2013/09/13 发现一个问题，这个方法执行的时间越来越长
+    /*
+        优化思路：
+            1. 插入css时，现有的css越多，插入时间越长。
+            创建一个style节点，每次修改innerHTML属性，并在动画结束后清空改节点。
+
+            2. 每个go方法，对应一个style节点。
+             管理一个go方法的生命周期。
+
+            3. 创建一个style pool，循环利用。或者go pool。
+
+            4. GoLifecycle = {
+                styleNode,
+                name,
+                elems:{
+                    originalCssClass,
+                    anmiationCssClass, 
+                    keyframeRule,
+                    doNotDeleteKeyframe, //不需要删除的动画名称，一般是静态CSS文件中的动画。
+                    isAnimating,
+                    animationEndCallback,//保存每个元素在动画播放完毕之后的回调函数                   
+                }
+                animatingCounter,//等于0时，释放style
+            }
+
+    */
+
+    var     t = new Date().getTime(),
+            timecounter = ['etamina.effects.go'],
+            t1,t2,
+            timecounter1,loopSum;
+
 
 
         playParam = etamina.initPlayParam(playParam,animSetting.animType);
@@ -695,10 +726,13 @@ Jx().$package("JXAnimate", function(J){
             elements = etamina.getHTMLelements(elems);
 
 
-
+        timecounter.push(new Date().getTime()-t);
         // Loop through elements
         if (elements && elements.length > 0) {
             for (i = 0; i < elements.length; i += 1) {
+
+                t1 = new Date().getTime()
+                timecounter1 = [];
 
                 elem = elements[i];
                 animSetting.index = i;
@@ -721,21 +755,38 @@ Jx().$package("JXAnimate", function(J){
                 }
                 etamina.animElementList[elem.id] = true;
 
+                t2=new Date().getTime();
+                timecounter1.push(t2-t1);
+                t1=t2;
 
 
                 //获取动画的具体keyframe的名称和代码。
                 keyframe = getKeyframe.call(this,elem,animSetting); 
+
+                t2=new Date().getTime();
+                timecounter1.push(t2-t1);
+                t1=t2;
+                
                 if(animSetting.doNotDeleteKeyframe){
                     etamina.doNotDeleteKeyframes[keyframe.name] = true;
                 }
+
+                t2=new Date().getTime();
+                timecounter1.push(t2-t1);
+                t1=t2;
 
                 //add css text into DOM style
                 if(keyframe.css && keyframe.css!=''){
                     if(etamina.debug){
                         console.log(keyframe.css);
                     }
+                    //TODO:这个方法中会随着运行次数增加，耗时也增加。
                     etamina.insertCSS(keyframe.css);
                 }
+
+                t2=new Date().getTime();
+                timecounter1.push(t2-t1);
+                t1=t2;
 
                 //prepare class for element to play the animation.
                 //多米诺domino效果在此处应用。
@@ -749,6 +800,9 @@ Jx().$package("JXAnimate", function(J){
                     etamina.insertCSS(elemClass.css);
                 }
 
+                t2=new Date().getTime();
+                timecounter1.push(t2-t1);
+                t1=t2;
 
                 // Add listener to clear animation after it's done
                 //如果针对了domino效果设置了事件优化
@@ -786,6 +840,9 @@ Jx().$package("JXAnimate", function(J){
 
                 }
                 //TODO: 是否在动画后保留结束时的状态。
+                t2=new Date().getTime();
+                timecounter1.push(t2-t1);
+                t1=t2;
 
                 //保存elem原有的class，用于在动画后恢复。
                 etamina.saveCssClass(elem);
@@ -795,6 +852,9 @@ Jx().$package("JXAnimate", function(J){
 
                 //apply css animation
                 
+                t2=new Date().getTime();
+                timecounter1.push(t2-t1);
+                t1=t2;
 
                 if(J.isString(animSetting.additionalClass)){
                     animClassName = elemClass.name + ' ' + animSetting.additionalClass;                   
@@ -819,10 +879,32 @@ Jx().$package("JXAnimate", function(J){
                     }
                 }
                 log(elem.className);
+                t2=new Date().getTime();
+                timecounter1.push(t2-t1);
+                t1=t2;
 
-            }       
+
+                if(loopSum){
+                    for(var p = timecounter1.length-1;p>-0;p--){
+                        loopSum[p]+=timecounter1[p];
+                    }
+                }
+                else{
+                    loopSum=[];
+                    var len = timecounter1.length;
+
+                    for (var p = 0;p<len;p++) {
+                        loopSum.push(timecounter1[p]);
+                    };
+                }
+
+
+
+
+            }  
+                timecounter.push(loopSum);
         }
-
+                console.log(window.JSON.stringify(timecounter));
     };
 
     /**

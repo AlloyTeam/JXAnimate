@@ -446,7 +446,7 @@ Jx().$package("SlideShow", function(J){
         
         _currentEffect = (_currentEffect+1)%_slideEffects.length;
 
-//_currentEffect=1; //test
+_currentEffect=1; //test
         var orderName, 
             effect = _slideEffects[_currentEffect];
 
