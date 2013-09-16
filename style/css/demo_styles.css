@@ -1,0 +1,107 @@
+*{
+	margin:0;
+	padding:0;
+}
+
+html{
+	background:url('../images/bg_tile.jpg') repeat;
+}
+
+body{
+	background:url('../images/bg_vert.jpg') repeat-x;
+	font:13px/1.3 'Segoe UI',Arial, sans-serif;
+	color:#999;
+}
+
+#top{
+	background:url('../images/top.jpg') repeat-x;
+	height:31px;
+}
+
+#page{
+	background:url('../images/header.jpg') no-repeat center top;
+	width:650px;
+}
+
+h1{
+	background:url('../images/logo.png') no-repeat;
+	text-indent:-999999px;
+	overflow:hidden;
+	height:52px;
+	margin: 75px 0;
+}
+
+#container{
+	width:640px;
+	height:400px;
+	margin:0 auto;
+	border:5px solid #fff;
+	overflow:hidden;
+    background: #cccccc;
+    
+	-moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+	-webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+#container ul{
+	list-style:none;
+}
+
+#page{
+	width: 660px;
+	margin:0 auto;
+	border-top:1px solid transparent;
+}
+
+.credit{
+	text-align:center;
+	padding: 20px 0 100px;
+	font-size:10px;
+}
+
+a, a:visited {
+	text-decoration:none;
+	outline:none;
+	color:#97cae6;
+}
+
+a:hover{
+	text-decoration:underline;
+}
+
+#footer{
+	background-color:#212121;
+	position:fixed;
+	width:100%;
+	height:70px;
+	bottom:0;
+	left:0;
+	z-index: 100000;
+}
+
+#footer h2{
+	font-size:20px;
+	font-weight:normal;
+	left:50%;
+	margin-left:-400px;
+	padding:22px 0;
+	position:absolute;
+	width:400px;
+	color:#eee;
+}
+
+#footer a.tzine,a.tzine:visited{
+	background:url("../img/tzine.png") no-repeat right top;
+	border:none;
+	text-decoration:none;
+	color:#FCFCFC;
+	font-size:12px;
+	height:70px;
+	left:50%;
+	line-height:31px;
+	margin:23px 0 0 110px;
+	position:absolute;
+	top:0;
+	width:290px;
+}
