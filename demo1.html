@@ -9,6 +9,8 @@
     <link rel="stylesheet" type="text/css" href="./style/css/demo_styles.css">
     <link href="./style/css/animate.css" rel="stylesheet" type="text/css">
 
+    <link type="text/css" rel="stylesheet" href="./style/css/shCoreDefault.css"/>
+
     <style type="text/css">
         .transparent{
             opacity: 0;
@@ -107,14 +109,20 @@
 </head>
 <body>
 
-<div id="top"></div>
+<div id="top">
+    
+</div>
 <aside>
     <h1>Shutter Folio Photography</h1>
     <ul id="action_list">
+        <li><a href="index.html" >Home</a></li>
+        <li><hr></li>
         <li><a href="#" effect='flash'>Flash</a></li>
         <li><a href="#" effect='FlipInY_Donimo'>Flip 3D one by one</a></li>
         <li><a href="#" effect='tada_sound'>Tada with Sound</a></li>
         <li><a href="#" effect='workflow'>Work Flow Demo</a></li>
+        <li><a href="#" effect='lightSpeedIn'>Lightspeed</a></li>
+        <li><a href="jxanimate_demo.html" target="_blank">More</a></li>
     </ul>    
 </aside>
 
@@ -122,6 +130,7 @@
 
 
 	<div id="container">
+        <div id="status" class="standby">播放中...</div>
         <div id="happy1"></div>
         <div id="happy2"></div>
         <div id="happy3"></div>
@@ -136,25 +145,70 @@
         <div id="year4"></div>
     </div>
     
-    <div class="code" id="code_block"></div>
-	<p class="credit">Photos used in this demo: <a href="http://www.flickr.com/photos/zanthia/5429569236/">Hohenschwangau</a>, <a href="http://www.flickr.com/photos/zanthia/5393654169/">Erg Chebbi</a>, <a href="http://www.flickr.com/photos/axelhartmann/5405452502/">1500-in front of</a>, <a href="http://www.flickr.com/photos/gnuckx/5386807102/">Circolo Nautico</a></p>
+    <div class="code" id="code_block">
+        <pre class="brush: js;" id="code_block"></pre>
+    </div>
+	<p class="credit"><span>如果你喜欢这个Demo，请分享给你的QQ好友</span><span id="shareqq"></span></p>
 
     <!-- You are free to remove this footer -->
     
     <div id="footer">
-        <h2>Shutter Effect with Canvas and jQuery</h2>
-        <a class="tzine" href="http://tutorialzine.com/2011/03/photography-portfolio-shutter-effect/">Read &amp; Download on</a>
+        <h2>HTML5 CSS3 Animation Engine By <a href="http://www.alloyteam.com">AlloyTeam</a> </h2>
+        <div class="copyright">
+            Copyright &copy; <script>document.write(new Date().getFullYear());</script> <a href="http://www.AlloyTeam.com/" target="_blank">Tencent AlloyTeam</a>. All Rights Reserved.
+        </div>
+
     </div>
 
 </div>
+        <script type="text/javascript" src="js/shCore.js"></script>
+        <script type="text/javascript" src="js/shBrushJScript.js"></script>
 
         <script src="./js/jx.all.js"></script>
-
 
         <script src="./js/jxanimate.js"></script>
         <script src="./js/jxanimate.effects.js"></script>
         <script src="./js/jxanimate.audio.js"></script>
         <script src="./js/demo1.js"></script>
+        <!--Tencent Analytics-->
+        <script type="text/javascript" src="http://tajs.qq.com/stats?sId=24711241" charset="UTF-8"></script>
+        <!--Google Analytics-->
+        <script type="text/javascript">
+
+          var _gaq = _gaq || [];
+          _gaq.push(['_setAccount', 'UA-23019343-9']);
+          _gaq.push(['_trackPageview']);
+
+          (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+          })();
+
+        </script>
+        <script type="text/javascript">
+          (function(){
+            var p = {
+                url:location.href, /*获取URL，可加上来自分享到QQ标识，方便统计*/
+                desc:'发现一个不错的HTML5动画引擎，来看看Demo吧。', /*分享理由(风格应模拟用户对话),支持多分享语随机展现（使用|分隔）*/
+                title:'JX.Animate动画引擎Demo', /*分享标题(可选)*/
+                summary:'JX.Animate是一个开源的轻量级的CSS3动画库。动画可以使用标准的CSS3关键帧动画（KeyFrame）制作，也可以使用JavaScript制作，而且还可以支持在JavaScript中动态生成动画关键帧。', /*分享摘要(可选)*/
+                pics:'http://alloyteam.github.io/jxanimate/style/images/happy_new_year.png', /*分享图片(可选)*/
+                flash: '', /*视频地址(可选)*/
+                site:'', /*分享来源(可选) 如：QQ分享*/
+                style:'103',
+                width:50,
+                height:16
+              };
+              var s = [];
+              for(var i in p){
+                s.push(i + '=' + encodeURIComponent(p[i]||''));
+              }
+              document.getElementById('shareqq').innerHTML=['<a class="qcShareQQDiv" href="http://connect.qq.com/widget/shareqq/index.html?',s.join('&'),'" target="_blank">分享到QQ</a>'].join('');
+          })();
+        </script>
+        <script src="http://connect.qq.com/widget/loader/loader.js" widget="shareqq" charset="utf-8"></script>
+    </div>
 
 
 </body>

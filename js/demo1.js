@@ -9,7 +9,10 @@ function eventWindowLoaded() {
     	lettersYear=["year1", "year2", "year3", "year4"],
     	playParam = {},
         audio = ['song1','explode1','chimes','notify','tada','logoff','Whistling','WHOOSH'];
-    	animSettings = {};
+    	animSettings = {},
+    	isAnimationPlay=false;
+
+    var	$codeblock,$status;
 
 
     function hiddenLetters (argument) {
@@ -24,7 +27,7 @@ function eventWindowLoaded() {
     	'flash':function(){
     		JXAnimate.flash(elems,playParam);
     	},
-    	'FlipInY_Donimo':function(){
+    	'FlipInY_Donimo':function(args){
     		hiddenLetters();
     		JXAnimate.flipInY(
     			elems,
@@ -47,16 +50,18 @@ function eventWindowLoaded() {
     				volume:'1'
     			});
     	},
-    	'workflow':function (argument) {
+    	'workflow':function (args) {
     		var callback3=function (argument) {
     				argument.elem.classList.remove('transparent');
     			},
     			anim3 = function (argument) {
-					JXAnimate.flipInY(
+					JXAnimate.applyCss(
 		    			lettersYear,
-		    			{duration:'1500ms'},
+		    			{duration:'800ms'},
 		    			{
+    						name:'fadeInUp', //CSS KeyFrame Name in Animate.css
 		    				domino:150,
+		    				sound:'chimes',
 		    				callback:callback3
 		    			}
 		    		); 
@@ -68,11 +73,12 @@ function eventWindowLoaded() {
     				}; 				
     			},
     			anim2 = function (argument) {
-					JXAnimate.flipInY(
+					JXAnimate.flipInX(
 		    			lettersNew,
-		    			{duration:'1500ms'},
+		    			{duration:'1200ms'},
 		    			{
 		    				domino:150,
+		    				sound:'notify',
 		    				callback:callback2
 		    			}
 		    		); 
@@ -86,9 +92,10 @@ function eventWindowLoaded() {
     			anim1 = function (argument) {
 					JXAnimate.flipInY(
 		    			lettersHappy,
-		    			{duration:'1500ms'},
+		    			{duration:'1200ms'},
 		    			{
 		    				domino:150,
+		    				sound:'logoff',
 		    				callback:callback1
 		    			}
 		    		); 
@@ -96,12 +103,41 @@ function eventWindowLoaded() {
     		hiddenLetters();
 			anim1();    			
 
+    	},
+    	'lightSpeedIn':function (argument) {
+    		hiddenLetters();
+    		JXAnimate.applyCss(
+    			elems,
+    			{duration:'500ms'},
+    			{
+		    		domino:250,
+    				name:'lightSpeedIn', //CSS KeyFrame Name in Animate.css
+    				sound:'WHOOSH',
+    				volume:'0.8',
+    				callback:function(args){
+    					if(args.elem.id!='year4'){JXAnimate.Audio.playSound('WHOOSH');}
+    					args.elem.classList.remove('transparent');
+    				}
+    			}
+    		);
+
     	}
     }
 
+    function playBegin(){
+    	isAnimationPlay=true;
+    	$status.classList.remove('standby');
 
+    }
+    function playFinished(){
+		isAnimationPlay=false;
+    	$status.classList.add('standby');
+    }
 
     function init (argument) {
+    	$codeblock = J.dom.id('code_block');
+    	$status = J.dom.id('status');
+
     	animSettings['domino']='150';
     	playParam['duration']='1000ms';
 
@@ -114,15 +150,17 @@ function eventWindowLoaded() {
 	        	runFunc;
 
 	        runFunc = effectFunctions[effect];
-	        if(runFunc && J.isFunction(runFunc)){
+	        if(!isAnimationPlay && runFunc && J.isFunction(runFunc)){    
+	        	playBegin();    	
 	        	runFunc();
-	        	J.dom.id('code_block').innerHTML=runFunc;
-	        	//console.log(runFunc);
+	        	$codeblock.innerHTML='<pre class="brush: js;" id="animate_code">'+runFunc+'</pre>';
+	        	SyntaxHighlighter.highlight(J.dom.id('animate_code'));
+	        	
+	        	setTimeout(playFinished,3000);
 	        }
     	});
     }
 
 
     init();
-
 }
