@@ -864,7 +864,9 @@ Jx().$package("JXAnimate", function(J){
                 }
                 //J.dom.addClass(elem,animClassName);
                 elem.className += ' ' + animClassName;
+                log(elem.className);
 
+                //播放声音
                 if(animSetting.sound && JXAnimate.Audio){
 
                     var delayTime = etamina.format.fromTime(playParam.delay);
@@ -878,7 +880,6 @@ Jx().$package("JXAnimate", function(J){
                         JXAnimate.Audio.playSound(animSetting.sound,animSetting.volume);
                     }
                 }
-                log(elem.className);
                 t2=new Date().getTime();
                 timecounter1.push(t2-t1);
                 t1=t2;
