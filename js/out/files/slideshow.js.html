@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>slideshow.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/animSetting.html">animSetting</a></li>
+            
+                <li><a href="../classes/JX.Animate.html">JX.Animate</a></li>
+            
+                <li><a href="../classes/JXAnimate.Audio.html">JXAnimate.Audio</a></li>
+            
+                <li><a href="../classes/SlideShow.html">SlideShow</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/JXAnimate.html">JXAnimate</a></li>
+            
+                <li><a href="../modules/JXAnimate.Animate.Demo.html">JXAnimate.Animate.Demo</a></li>
+            
+                <li><a href="../modules/JXAnimate.Audio.html">JXAnimate.Audio</a></li>
+            
+                <li><a href="../modules/SlideShow.html">SlideShow</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: slideshow.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+
+/**
+ * JX.Animate Demo库
+ * 幻灯片轮播图片
+ * @module JXAnimate.Animate.Demo
+ * @subModule SlideShow
+ * @requires JXAnimate.Animate
+ * @description
+ * 幻灯片轮播图片
+ *
+ * @author minren 
+ * ===========================================================================
+ * 
+ */
+
+/*
+ * @幻灯片轮播图片
+ *
+ */
+
+Jx().$package(&quot;SlideShow&quot;, function(J){
+
+    var $D = J.dom,
+        $Anim = JXAnimate,
+        _container,
+        _params,
+        _stage,
+        _stageWidth,
+        _stageHeight,
+        _imgList,
+        _imgCount,
+        _cardRow,
+        _cardCol,
+        _cards,
+        _cardNumber,
+        _cardGroupIndex,
+        _currImage,
+        _nextImage,
+        _prevImage,
+        _playParam,
+        _animSettings,
+        _orderMethods,
+        _slideEffects,
+        _currentEffect;
+
+    var reset = function  () {
+        //初始化参数，img(800x600)，卡片大小（10，10）
+        _params = {
+            imgW:800,
+            imgH:600,
+            num:5
+            //cardW:40,
+            //cardH:40
+        };    
+        _playParam={
+            &quot;duration&quot; :&#x27;600ms&#x27;
+        };
+        _animSettings={
+            //callback:cardCallback,
+            additionalClass:&#x27;visible&#x27;,
+            domino:100
+        };
+        _slideEffects = [
+            {
+                order:&#x27;random&#x27;,
+                css:&#x27;hinge&#x27;
+            },
+            {
+                order:&#x27;random&#x27;,
+                effect:&#x27;flyOutToCenter&#x27;
+            },
+            {
+                order:&#x27;row_col&#x27;,
+                effect:&#x27;flyOutToOutside&#x27;
+            },
+            {
+                order:&#x27;row_col&#x27;,
+                css:&#x27;flipOutY&#x27;
+            },
+            {
+                order:&#x27;col_row&#x27;,
+                css:&#x27;flipOutX&#x27;
+            },
+            {
+                order:&#x27;random&#x27;,
+                css:&#x27;rotateOut&#x27;
+            },
+            {
+                order:&#x27;random&#x27;,
+                css:&#x27;flipOutX&#x27;
+            } 
+        ];
+        _currentEffect=0;
+    }
+
+    /**
+     * 幻灯片播放类
+     * @class SlideShow
+     * @constructor
+     * @param  {string} container 包含img元素的容器的id
+     * @param  {object} params    幻灯片参数，imgW,imgH,图片的大小，num卡片的数量。
+     * @return {[type]}           [description]
+     */
+    var init = function(container, params){
+        reset();
+        _container = document.getElementById(container);
+        if(!_container){
+            return;
+        }
+        _params = J.extend(_params,params);
+
+        _container.style.width=_params.imgW+&#x27;px&#x27;;
+
+        initOrderMethods();
+        //遍历container中的img,放入数组，设置样式
+        initImg();
+        _imgCount = _imgList.length;
+        if(_imgCount==0){
+            return;
+        }
+
+        //生成卡片
+        generateCards();
+
+        _animSettings.domino = 200;// Math.floor(2000/_cardNumber);
+        _cardGroupIndex=[];
+        //根据列数指定分组
+        for (var i = 0; i &lt; _cardRow; i++) {
+            _cardGroupIndex.push((i+1)*_cardCol - 1);
+        };
+
+        //根据给定的数字进行分组。
+        var capacity = 2,tmp = 0;
+        for (var i = 0; i &lt; _cardNumber; i++) {
+            tmp++;
+            if(tmp==capacity || i == _cardNumber-1){
+                _cardGroupIndex.push(i);
+                tmp=0;
+            }
+        };      
+
+
+        //创建舞台stage元素div
+        generateStage();
+        //设置背景
+        setCurrentIndex(0);
+        var src = _imgList[_currImage].src;
+        setCardBackground(src);
+        setStageBackground(src);
+    };
+
+    var initImg=function (argument) {
+        _imgList=[];
+        var children = _container.children,
+            node;
+        for (var i=0; i &lt; children.length; i ++) {
+            node = children[i];
+            if(node.tagName.toLowerCase()===&#x27;img&#x27;){
+                _imgList.push(node);
+            }
+            $D.setClass(node,&#x27;slide_Img&#x27;);
+        };
+    }
+
+    var calculateNumber = function(){
+        var w,h;
+
+        if(_params.num||_params.numX||_params.numY){
+            _cardCol = _params.num||_params.numX;
+            _cardRow = _params.num||_params.numY;
+            _params.cardW = Math.ceil(_params.imgW/_cardCol);
+            _params.cardH = Math.ceil(_params.imgH/_cardRow);
+            return;
+        }
+        else //if(_params.cardW || _params.cardH)
+        {
+            w = _params.cardW;
+            h = _params.cardH;
+            _cardCol = Math.ceil(_params.imgW/w);
+            _cardRow = Math.ceil(_params.imgH/h);
+            return;
+        }
+
+
+    }
+    var generateCards =function() {
+        var card,
+        x,y,w,h,pos,
+        style;
+        calculateNumber();
+        w = _params.cardW;
+        h = _params.cardH;
+
+        _cards = [];
+        for (var r = 0; r &lt; _cardRow; r++) {
+            _cards[r]=[];
+            for(var c = 0; c &lt; _cardCol; c++){
+                card =document.createElement(&#x27;div&#x27;);
+                card.id = &#x27;r&#x27;+r+&#x27;c&#x27;+c;
+                $D.setClass(card,&#x27;card_piece&#x27;);
+                _cards[r][c]= card;
+                //set size
+                $D.setStyle(card,&#x27;width&#x27;,w+&#x27;px&#x27;);
+                $D.setStyle(card,&#x27;height&#x27;,h+&#x27;px&#x27;);
+                //set position;
+                x = c*_params.cardW;
+                y = r*_params.cardH;
+                $D.setStyle(card,&#x27;top&#x27;,y+&#x27;px&#x27;);
+                $D.setStyle(card,&#x27;left&#x27;,x+&#x27;px&#x27;);  
+                //background position
+                pos = &#x27;-&#x27;+x+&#x27;px -&#x27;+y+&#x27;px&#x27;
+                //$D.setStyle(card,&#x27;background-position-y&#x27;,&#x27;-&#x27;+y+&#x27;px&#x27;);
+                //$D.setStyle(card,&#x27;background-position-x&#x27;,&#x27;-&#x27;+x+&#x27;px&#x27;);
+                //$D.setStyle(card,&#x27;background-position&#x27;,pos);
+                card.style.backgroundPosition = pos; //兼容FireFox
+                                       
+            }
+        }
+        _cardNumber = _cardRow * _cardCol;
+    };
+
+    var generateStage=function  (argument) {
+        var w,h;
+        w = _cardCol * _params.cardW;
+        h = _cardRow * _params.cardH;
+
+        _stage = document.createElement(&#x27;div&#x27;);
+        _stage.id = &#x27;stage&#x27;;
+
+        $D.setStyle(_stage,&#x27;width&#x27;,w+&#x27;px&#x27;);
+        $D.setStyle(_stage,&#x27;height&#x27;,h+&#x27;px&#x27;);
+
+        for (var r = 0; r &lt; _cardRow; r++) {
+            for(var c=0; c &lt; _cardCol; c++){
+                _stage.appendChild(_cards[r][c]);
+            }
+        }
+
+        _container.appendChild(_stage);
+        _stageWidth = $D.getWidth(_stage);
+        _stageHeight = $D.getHeight(_stage);
+    }
+
+    var setCardBackground=function (src) {
+        var card,
+        x,
+        y,
+        style;
+        for (var r = 0; r &lt; _cardRow; r++) {
+            for(var c=0; c &lt; _cardCol; c++){
+                card = _cards[r][c];
+                setBackground(card,src);
+            }
+        }
+    };
+
+    var setStageBackground=function (src) {
+        setBackground(_stage,src);
+    }
+    var setBackground = function(elem,src){
+        var url = &#x27;url(&#x27;+src+&#x27;)&#x27;;
+        console.log(url);
+        //$D.setStyle(_stage,&#x27;background-image&#x27;,url);
+        //elem.style[&#x27;background-image&#x27;] = url;
+        elem.style.backgroundImage = url;
+    }
+
+    var cardCallback = function (argument) {
+        var card = argument.elem;
+        var src = _imgList[_currImage].src;
+        $D.addClass (card,&#x27;hidden&#x27;);
+        //$D.setStyle(card,&#x27;background-image&#x27;,&#x27;url(&#x27;+src+&#x27;)&#x27;)
+
+    }
+
+    var setCurrentIndex = function(index){
+        index = index&lt;0?0:index;
+        _currImage=index % _imgCount;
+        _nextImage=(index+1) % _imgCount;
+        _prevImage=(index+_imgCount-1) % _imgCount;
+    }
+
+    /**
+     * 定义一系列获得卡片顺序的函数
+     * @param  {[type]} argument [description]
+     * @return {[type]}          [description]
+     */
+    var initOrderMethods = function (argument) {
+        _orderMethods={
+            &#x27;row_col&#x27;: function (params) {
+                var elems = [];
+                for (var r = 0; r &lt; _cardRow;r++) {
+                    for(var c= 0; c &lt; _cardCol;c++){
+                        elems.push(_cards[r][c]);
+                    }
+                }
+
+                playAnimate(elems,params);
+
+            },
+            &#x27;row_col_rev&#x27;: function (params) {
+                var elems = [];
+                for (var r = _cardRow-1; r &gt;=0; r--) {
+                    for(var c=_cardCol-1; c &gt;=0 ; c--){
+                        elems.push(_cards[r][c]);
+                    }
+                }
+
+                playAnimate(elems,params);
+            },
+
+            &#x27;col_row&#x27;: function (params) {
+                var elems = [];
+                for (var c = 0; c &lt; _cardRow;c++) {
+                    for(var r= 0; r &lt; _cardCol;r++){
+                        elems.push(_cards[r][c]);
+                    }
+                }
+
+                playAnimate(elems,params);
+
+            },
+            &#x27;col_row_rev&#x27;: function (params) {
+                var elems = [];
+                for (var c = _cardRow-1; c &gt;=0; c--) {
+                    for(var r=_cardCol-1; r &gt;=0 ; r--){
+                        elems.push(_cards[r][c]);
+                    }
+                }
+
+                playAnimate(elems,params);
+
+            },
+            &#x27;random&#x27;: function (params) {
+                var elems = [],
+                    i=0;
+                for (var c = _cardRow-1; c &gt;=0; c--) {
+                    for(var r=_cardCol-1; r &gt;=0 ; r--){
+                        elems.push({
+                            card:_cards[r][c],
+                            index:Math.random()
+                        });
+                    }
+                }
+
+                elems = elems.sort(
+                    function(a,b){
+                        return a.index - b.index;
+                });
+                for (var i = elems.length - 1; i &gt;= 0; i--) {
+                    elems[i] = elems[i].card;
+                };
+
+                /*
+                 *此处可以覆盖全局的动画设定参数。
+                 *
+                params.animSetting = J.extend(params.animSetting,
+                    {
+                        domino:150
+                    }
+                );
+                */
+                playAnimate(elems,params);
+
+            }
+        };
+
+    }
+
+    var playAnimate = function (elems,params) {
+        var isGroup = false, //调试分组的开关。
+            animSetting,tempSetting;
+
+        params = params || {};
+        animSetting = params.animSetting ||{};
+        tempSetting = J.clone(_animSettings);
+        animSetting = J.extend(tempSetting,animSetting);
+
+        animSetting.test = true;
+
+        if(isGroup){
+            //设置donimo元素分组
+            animSetting.dominoGroupEventElements=[];
+            var idx;
+            for (var i in _cardGroupIndex) {
+                idx = _cardGroupIndex[i];
+                animSetting.dominoGroupEventElements.push(elems[idx].id);
+            };
+        }
+        else{
+            animSetting.dominoGroupEventElements=null;
+        }
+
+
+        if(&#x27;css&#x27; in params){
+            animSetting.name = params.css;
+            JXAnimate.applyCss(elems,_playParam,animSetting);
+        }
+        else if(&#x27;effect&#x27; in params){
+            animSetting.name = &#x27;&#x27;;
+            var effectName = params.effect;
+            JXAnimate[effectName].call(JXAnimate,elems,_playParam,animSetting);
+
+        }
+    }
+    var gotoWithEffect = function(index, effect){
+
+        var orderName;
+        effect = effect || _slideEffects[_currentEffect];
+
+        var src = _imgList[_currImage].src;
+        //在动画开始前，设置卡片背景为当前图片，并可见。
+        setCardBackground(src);
+        //翻页，设置舞台
+        setCurrentIndex(index);
+        src = _imgList[_currImage].src;
+        setStageBackground(src);
+
+        orderName = effect.order;
+
+        _orderMethods[orderName](effect);
+       
+    }
+
+    /**
+     * 播放下一张幻灯片
+     * @method next
+     * @return {[type]}          [description]
+     */
+    var next = function  (argument) {
+        
+        _currentEffect = (_currentEffect+1)%_slideEffects.length;
+
+//_currentEffect=0; //test
+        var orderName, 
+            effect = _slideEffects[_currentEffect];
+
+        gotoWithEffect(_nextImage,effect);
+
+
+    }
+
+    /**
+     * 播放前一张幻灯片
+     * @return {[type]}          [description]
+     */
+    var prev =function (argument){
+        _currentEffect = (_currentEffect+_slideEffects.length-1)%_slideEffects.length;
+
+        var orderName, 
+            effect = _slideEffects[_currentEffect];
+
+        gotoWithEffect(_prevImage,effect);
+    }
+
+    /**
+     * 获得幻灯片的容器对象
+     * @method getContainer
+     * @return {DOM} 容器对象
+     */
+    var getContainer=function(){
+        return _container;
+    }
+    /**
+     * 获得幻灯片的舞台对象
+     * @method getStage
+     * @return {DOM} 容器对象
+     */
+    var getStage=function(){
+        return _stage;
+    }
+    /**
+     * 获得幻灯片的舞台宽度
+     * @method getStage
+     * @return {int} 舞台宽度
+     */
+    var getStageWidth = function(){
+        return _stageWidth;
+    }
+    /**
+     * 获得幻灯片的舞台高度
+     * @method getStage
+     * @return {int} 舞台高度
+     */
+    var getStageHeight = function(){
+        return _stageHeight;
+    }
+    /**
+     * 设置幻灯片播放多米诺效果的延时
+     * @method getStage
+     * @param {int} value 多米诺效果的延时时间
+     */
+    var setDonimo = function(value){
+        _animSettings.domino = value;
+    }
+
+    this.init = init;
+    this.next = next;
+    this.prev = prev;
+    this.getContrainer = getContrainer;
+    this.getStage = getStage;
+    this.getStageWidth = getStageWidth;
+    this.getStageHeight = getStageHeight;
+    this.setDonimo = setDonimo;
+});
+//----------------------------------------------------------------------------
+        //在结束时设置卡片的背景。需改造etamina √
+        //在animSettings中增加回调。√
+        //调整console.log。√
+        //
+        //增加一些效果：
+        //随机顺序 √
+        //所有CSS的效果列表
+        //向中间飞入，向四周飞出。√
+        //闪烁问题的优化：
+        //JxAnimation中定义了分组donimo的方法，
+        //可以将邻近的动画元素合并到一个onAnimationEnd事件中处理，但是效果不好。
+        //依旧有闪烁。调用方法参考playAnimation
+        //
+        //添加声音。 √
+        //美化翻页按钮的样式。√
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

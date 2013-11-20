@@ -5,7 +5,7 @@ Etamina Demo Page
 <html lang="en">
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-        <title>etamina Demo</title>
+        <title>JX.Animate Effects Page</title>
         <link href="../favicon.ico" rel="icon" type="image/x-icon">
         <link href="./style/css/sliderControl.css" rel="stylesheet" type="text/css">
         <link href="./style/css/hands-on.css" rel="stylesheet" type="text/css" >
@@ -15,16 +15,16 @@ Etamina Demo Page
     -->
         <link rel="stylesheet" href="./style/css/jquery-ui.css">
 
-        <script src="./js/jquery-1.8.2.js"></script>
+        <script src="./js/jquery.min.js"></script>
         <script src="./js/jquery-ui.js"></script>
 
     <style type="text/css">
         body {
-          min-width: 720px;      /* 2x LC width + RC width */
+          min-width: 1220px;      /* 2x LC width + RC width */
         }
         #container {
-          padding-left: 600px;   /* LC width */
-          padding-right: 20px;  /* RC width */
+          padding-left: 550px;   /* LC width */
+          padding-right: 120px;  /* RC width */
         }
         #container .column {
           position: relative;
@@ -34,15 +34,15 @@ Etamina Demo Page
           width: 100%;
         }
         #left {
-          width: 600px;          /* LC width */
-          right: 600px;          /* LC width */
+          width: 550px;          /* LC width */
+          right: 550px;          /* LC width */
           margin-left: -100%;
         }
         #right {
-          width: 20px;          /* RC width */
-          margin-right: -20px;  /* RC width */
+          width: 120px;          /* RC width */
+          margin-right: -120px;  /* RC width */
         }
-        #footer {
+        .footer {
           clear: both;
         }
 
@@ -94,21 +94,22 @@ Etamina Demo Page
         a:hover{
             text-shadow:0 0 2px yellow;
         }
+        .footer{
+          text-align: center;
+        }
+        .copyright{
+          .margin-left: auto;
+          .margin-right: auto;
+        }
     </style>
 
     </head>
     <body onload="Init();">
 
         <div id="header">
-            <span class="nav">
-                <a href="slideshow.html">HomePage</a>
-                <a href="jxanimate_demo.html">Demo</a>
-                <a href="about.html">About</a>
-            </span>
 
-        <span><h1>JXAnimate Test Page</h1></span>            
+        <h1><a href="index.html">JX.Animate Effects Page</a></h1>            
             
-
         </div>
 
         <div id="container">
@@ -146,7 +147,7 @@ Etamina Demo Page
                                 animation-duration:
                             </td>
                             <td>
-                                <span id="duration" class="sliderControl" slideroptions="min:0;max:10;step:0.1;value=2;units=s;animateclick=false;setter=SetDuration">
+                                <span id="duration" class="sliderControl" slideroptions="min:0;max:10;step:0.1;value=1;units=s;animateclick=false;setter=SetDuration">
                                 </span>
                             </td>
                         </tr>
@@ -307,11 +308,16 @@ Etamina Demo Page
 
         </div>
 
-        <div id="footer"></div>
+        <div class="footer">
+            <div class="copyright">
+                Copyright &copy; <script>document.write(new Date().getFullYear());</script> <a href="http://www.AlloyTeam.com/" target="_blank">Tencent AlloyTeam</a>. All Rights Reserved.
+            </div>
 
-        <script src="./js/jx/jx.core.js"></script>
-        <script src="./js/jx/jx.base.js"></script>
-        <script src="./js/jx/jx.array.js"></script>
+        </div>
+
+        <script src="./js/jx.all.js"></script>
+
+
         <script src="./js/jxanimate.js"></script>
         <script src="./js/jxanimate.effects.js"></script>
         <script src="./js/jxanimate.audio.js"></script>
@@ -470,6 +476,22 @@ Etamina Demo Page
                 example.innerHTML = html;
 
             }
+        </script>
+        <!--Tencent Analytics-->
+        <script type="text/javascript" src="http://tajs.qq.com/stats?sId=24711241" charset="UTF-8"></script>
+        <!--Google Analytics-->
+        <script type="text/javascript">
+
+          var _gaq = _gaq || [];
+          _gaq.push(['_setAccount', 'UA-23019343-9']);
+          _gaq.push(['_trackPageview']);
+
+          (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+          })();
+
         </script>
     </body>
 </html>

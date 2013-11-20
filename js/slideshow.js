@@ -1,16 +1,18 @@
 
-/* ===========================================================================
+/**
+ * JX.Animate Demo库
+ * 幻灯片轮播图片
+ * @module JXAnimate.Demo
+ * @subModule SlideShow
+ * @requires JXAnimate.Animate
+ * @description
  * 幻灯片轮播图片
  *
- * @description
- * A CSS animation Engine and Library
- *
  * @author minren 
- * ===========================================================================
  * 
  */
 
-/**
+/*
  * @幻灯片轮播图片
  *
  */
@@ -41,7 +43,7 @@ Jx().$package("SlideShow", function(J){
         _currentEffect;
 
     var reset = function  () {
-        //初始化参数，img(800x600)，卡片大小（10，10）
+        //初始化参数，img(800x600)，卡片维度 5x5
         _params = {
             imgW:800,
             imgH:600,
@@ -80,6 +82,10 @@ Jx().$package("SlideShow", function(J){
             },
             {
                 order:'random',
+                css:'flipOutY'
+            },
+            {
+                order:'random',
                 css:'rotateOut'
             },
             {
@@ -90,7 +96,14 @@ Jx().$package("SlideShow", function(J){
         _currentEffect=0;
     }
 
-
+    /**
+     * 幻灯片播放类
+     * @class SlideShow
+     * @constructor
+     * @param  {string} container 包含img元素的容器的id
+     * @param  {object} params    幻灯片参数，imgW,imgH,图片的大小，num卡片的数量。
+     * @return {[type]}           [description]
+     */
     var init = function(container, params){
         reset();
         _container = document.getElementById(container);
@@ -98,6 +111,9 @@ Jx().$package("SlideShow", function(J){
             return;
         }
         _params = J.extend(_params,params);
+
+        _container.style.width=_params.imgW+'px';
+
         initOrderMethods();
         //遍历container中的img,放入数组，设置样式
         initImg();
@@ -139,13 +155,13 @@ Jx().$package("SlideShow", function(J){
     var initImg=function (argument) {
         _imgList=[];
         var children = _container.children,
-        node;
+            node;
         for (var i=0; i < children.length; i ++) {
             node = children[i];
             if(node.tagName.toLowerCase()==='img'){
                 _imgList.push(node);
+                $D.setClass(node,'slide_Img');
             }
-            $D.setClass(node,'slide_Img');
         };
     }
 
@@ -196,9 +212,6 @@ Jx().$package("SlideShow", function(J){
                 $D.setStyle(card,'left',x+'px');  
                 //background position
                 pos = '-'+x+'px -'+y+'px'
-                //$D.setStyle(card,'background-position-y','-'+y+'px');
-                //$D.setStyle(card,'background-position-x','-'+x+'px');
-                //$D.setStyle(card,'background-position',pos);
                 card.style.backgroundPosition = pos; //兼容FireFox
                                        
             }
@@ -211,9 +224,15 @@ Jx().$package("SlideShow", function(J){
         w = _cardCol * _params.cardW;
         h = _cardRow * _params.cardH;
 
-        _stage = document.createElement('div');
-        _stage.id = 'stage';
+        _stage = document.getElementById('stage');
 
+        if(_stage && _stage.parentNode===_container){
+            _stage.innerHTML = '';
+        }
+        else{
+            _stage = document.createElement('div');
+            _stage.id = 'stage';
+        }
         $D.setStyle(_stage,'width',w+'px');
         $D.setStyle(_stage,'height',h+'px');
 
@@ -236,15 +255,7 @@ Jx().$package("SlideShow", function(J){
         for (var r = 0; r < _cardRow; r++) {
             for(var c=0; c < _cardCol; c++){
                 card = _cards[r][c];
-                //background position;
-                //x = c*_params.cardW;
-                //y = r*_params.cardH;
                 setBackground(card,src);
-                //$D.setStyle(card,'background-image','url("'+src+'")')
-                //$D.removeClass(card,'hidden');
-                
-                //$D.setStyle(card,'top','-'+y+'px');
-                //$D.setStyle(card,'left','-'+x+'px');          
             }
         }
     };
@@ -254,9 +265,7 @@ Jx().$package("SlideShow", function(J){
     }
     var setBackground = function(elem,src){
         var url = 'url('+src+')';
-        console.log(url);
-        //$D.setStyle(_stage,'background-image',url);
-        //elem.style['background-image'] = url;
+        //console.log(url);
         elem.style.backgroundImage = url;
     }
 
@@ -264,7 +273,6 @@ Jx().$package("SlideShow", function(J){
         var card = argument.elem;
         var src = _imgList[_currImage].src;
         $D.addClass (card,'hidden');
-        //$D.setStyle(card,'background-image','url('+src+')')
 
     }
 
@@ -328,7 +336,10 @@ Jx().$package("SlideShow", function(J){
             },
             'random': function (params) {
                 var elems = [],
+                    t = new Date().getTime(),
+                    timecounter = [];
                     i=0;
+
                 for (var c = _cardRow-1; c >=0; c--) {
                     for(var r=_cardCol-1; r >=0 ; r--){
                         elems.push({
@@ -337,15 +348,17 @@ Jx().$package("SlideShow", function(J){
                         });
                     }
                 }
-
+                timecounter.push(new Date().getTime() - t);
                 elems = elems.sort(
                     function(a,b){
                         return a.index - b.index;
                 });
+                timecounter.push(new Date().getTime() - t);
+
                 for (var i = elems.length - 1; i >= 0; i--) {
                     elems[i] = elems[i].card;
                 };
-
+                timecounter.push(new Date().getTime() - t);
                 /*
                  *此处可以覆盖全局的动画设定参数。
                  *
@@ -357,6 +370,8 @@ Jx().$package("SlideShow", function(J){
                 */
                 playAnimate(elems,params);
 
+                timecounter.push(new Date().getTime() - t);
+                console.log(window.JSON.stringify(timecounter));
             }
         };
 
@@ -364,6 +379,8 @@ Jx().$package("SlideShow", function(J){
 
     var playAnimate = function (elems,params) {
         var isGroup = false, //调试分组的开关。
+            t = new Date().getTime(),
+            timecounter = ['playAnimate'],
             animSetting,tempSetting;
 
         params = params || {};
@@ -385,7 +402,7 @@ Jx().$package("SlideShow", function(J){
         else{
             animSetting.dominoGroupEventElements=null;
         }
-
+                timecounter.push(new Date().getTime() - t);
 
         if('css' in params){
             animSetting.name = params.css;
@@ -397,6 +414,8 @@ Jx().$package("SlideShow", function(J){
             JXAnimate[effectName].call(JXAnimate,elems,_playParam,animSetting);
 
         }
+                timecounter.push(new Date().getTime() - t);
+                console.log(window.JSON.stringify(timecounter));
     }
     var gotoWithEffect = function(index, effect){
 
@@ -405,6 +424,7 @@ Jx().$package("SlideShow", function(J){
 
         var src = _imgList[_currImage].src;
         //在动画开始前，设置卡片背景为当前图片，并可见。
+
         setCardBackground(src);
         //翻页，设置舞台
         setCurrentIndex(index);
@@ -417,11 +437,16 @@ Jx().$package("SlideShow", function(J){
        
     }
 
+    /**
+     * 播放下一张幻灯片
+     * @method next
+     * @return {[type]}          [description]
+     */
     var next = function  (argument) {
         
         _currentEffect = (_currentEffect+1)%_slideEffects.length;
 
-//_currentEffect=0; //test
+//_currentEffect=1; //test
         var orderName, 
             effect = _slideEffects[_currentEffect];
 
@@ -430,6 +455,10 @@ Jx().$package("SlideShow", function(J){
 
     }
 
+    /**
+     * 播放前一张幻灯片
+     * @return {[type]}          [description]
+     */
     var prev =function (argument){
         _currentEffect = (_currentEffect+_slideEffects.length-1)%_slideEffects.length;
 
@@ -439,18 +468,43 @@ Jx().$package("SlideShow", function(J){
         gotoWithEffect(_prevImage,effect);
     }
 
-    var getContrainer=function(){
+    /**
+     * 获得幻灯片的容器对象
+     * @method getContainer
+     * @return {DOM} 容器对象
+     */
+    var getContainer=function(){
         return _container;
     }
+    /**
+     * 获得幻灯片的舞台对象
+     * @method getStage
+     * @return {DOM} 容器对象
+     */
     var getStage=function(){
         return _stage;
     }
+    /**
+     * 获得幻灯片的舞台宽度
+     * @method getStageWidth
+     * @return {int} 舞台宽度
+     */
     var getStageWidth = function(){
         return _stageWidth;
     }
+    /**
+     * 获得幻灯片的舞台高度
+     * @method getStageHeight
+     * @return {int} 舞台高度
+     */
     var getStageHeight = function(){
         return _stageHeight;
     }
+    /**
+     * 设置幻灯片播放多米诺效果的延时
+     * @method setDonimo
+     * @param {int} value 多米诺效果的延时时间
+     */
     var setDonimo = function(value){
         _animSettings.domino = value;
     }
@@ -458,7 +512,7 @@ Jx().$package("SlideShow", function(J){
     this.init = init;
     this.next = next;
     this.prev = prev;
-    this.getContrainer = getContrainer;
+    this.getContainer = getContainer;
     this.getStage = getStage;
     this.getStageWidth = getStageWidth;
     this.getStageHeight = getStageHeight;
@@ -479,4 +533,4 @@ Jx().$package("SlideShow", function(J){
         //依旧有闪烁。调用方法参考playAnimation
         //
         //添加声音。 √
-        //美化翻页按钮的样式。
+        //美化翻页按钮的样式。√

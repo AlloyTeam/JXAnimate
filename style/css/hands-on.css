@@ -2,9 +2,7 @@
 {
 	font-family: 'Segoe UI' , sans-serif;
 	color: black;
-	font-size: 16px;
-	min-width: 500px;
-	max-width: 1260px;
+	font-size: 14px;
 }
 #DemoDetails
 {
@@ -87,7 +85,7 @@ a.moButton:hover
 }
 #example div{
 	float: left;
-	margin: 20px;
+	margin: 15px;
 }
 #sample
 {
@@ -122,7 +120,8 @@ a.moButton:hover
 }
 #controls
 {
-
+	font-size: 12px;
+	padding-left: 15px;
 }
 #controls label
 {
@@ -170,7 +169,9 @@ a.moButton:hover
 {
 
 	overflow-y: scroll;
-	max-height: 400px;
+	max-height: 500px;
+	margin-left: 15px;
+	margin-right: 25px;
 }
 
 /*buttons */

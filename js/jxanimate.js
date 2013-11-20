@@ -10,8 +10,8 @@
  */
 
 /**
- * @description
- *
+ * @description JX.Animate主文件
+ * @module JXAnimate
  */
 
 Jx().$package("JXAnimate", function(J){
@@ -49,7 +49,7 @@ Jx().$package("JXAnimate", function(J){
                 //保存domino效果中每一个合并元素组。
                 donimoElementGroups:{},
 
-                /**
+                /*
                  * Returns array of HTML elements by string, HTML elements or string array.
                  */
                 getHTMLelements: function (params) {
@@ -90,7 +90,7 @@ Jx().$package("JXAnimate", function(J){
 
                     return elems;
                 },
-                /**
+                /*
                  * Set browser css & JS prefix
                  */
                 initPrefix: function () {
@@ -128,7 +128,7 @@ Jx().$package("JXAnimate", function(J){
                     return;
                 },
 
-                /**
+                /*
                  * Get the document height
                  */
                 docHeight: function () {
@@ -142,7 +142,7 @@ Jx().$package("JXAnimate", function(J){
                 },
 
 
-                /**
+                /*
                  * Insert CSS keyframe rule
                  */
                 insertCSS: function (rule) {
@@ -168,7 +168,7 @@ Jx().$package("JXAnimate", function(J){
                     return;
                 },
 
-                /**
+                /*
                  * Delete CSS keyframe rule
                  */
                 deleteCSS: function (ruleName) {
@@ -197,14 +197,13 @@ Jx().$package("JXAnimate", function(J){
                     return;
                 },
 
-                /**
+                /*
                  * 动画结束时的统一回调参数。
                  * Clear animation settings
                  */
                 clearAnimation: function (elem,evt) {
                     if(this.debug){
-                        //TODO
-                        //evt.srcElement 属性在FF中不支持。
+                        //TODO: //evt.srcElement 属性在FF中不支持。
                         //console.info("_clearAnimation", elem, evt.srcElement.id, evt.animationName, evt.elapsedTime);
                     }
                     etamina.animElementList[elem.id] = false;
@@ -214,7 +213,7 @@ Jx().$package("JXAnimate", function(J){
                     
                     //结束时删除 动画class。 动画class也要记录。
                     var classname = etamina.popAnimateClassName(elem.id);
-                    etamina.deleteCSS(classname);
+                    //etamina.deleteCSS(classname);
 
 
                     // 删除关键帧的css。
@@ -222,7 +221,7 @@ Jx().$package("JXAnimate", function(J){
 
                     }
                     else{
-                        etamina.deleteCSS(evt.animationName);
+                        //etamina.deleteCSS(evt.animationName);
                     }
 
                     var callbackObj = etamina.animCallbackList[elem.id];
@@ -260,7 +259,7 @@ Jx().$package("JXAnimate", function(J){
                     etamina.clearAnimation(this,evt);
                 },
 
-                /**
+                /*
                  * initialize animation playing param
                  */
                 initPlayParam: function(params,animType){
@@ -283,7 +282,7 @@ Jx().$package("JXAnimate", function(J){
                 },
 
 
-                /**
+                /*
                  *生成用于在element上应用动画效果class css
                  *在此处应用多米诺效果
                  */
@@ -355,7 +354,7 @@ Jx().$package("JXAnimate", function(J){
                     if(elem && elem.id && elem.id!=''){
                         elem.className = this.originalCssClasses[elem.id];
                         if(etamina.debug){
-                            console.log('restor #'+elem.id+' to '+elem.className+'\n');
+                            console.log('restore #'+elem.id+' to '+elem.className+'\n');
                         }
                     }
                  },
@@ -374,7 +373,11 @@ Jx().$package("JXAnimate", function(J){
                     }
                  },
                 /**
-                 * Initialize
+                 * HTML5 CSS3关键帧动画引擎。每个动画效果都包装为一个方法，在方法中可以指定动画的播放时长、重复次数等选项。
+                 * 也可以通过指定Ruler的名称，播放CSS文件中预定义的动画效果。
+                 * @class JX.Animate
+                 * @constructor
+                 * @param {object} params 初始化参数{elems:HTML对象数组}
                  */
                 init: function (params) {
                     console.info("Initializing " + this.name + " (" + this.description + ") " + this.version);
@@ -602,9 +605,10 @@ Jx().$package("JXAnimate", function(J){
 
     /**
      * 生成关键帧动画的CSS样式字符串。
-     * @param  {[type]} name   [关键帧动画的名称]
-     * @param  {[type]} frames [关键帧数组]
-     * @return {[type]}
+     * @method buildframes
+     * @param  {string} name   [关键帧动画的名称]
+     * @param  {array} frames [关键帧数组]
+     * @return {void}
      */
     etamina.effects.buildframes = function(name,frames)
     {
@@ -642,37 +646,25 @@ Jx().$package("JXAnimate", function(J){
 
     /**
      * 返回唯一的关键帧的名称
-     * @param  {[type]} animType [动画类型的名称]
-     * @return {[type]}          [唯一的关键帧名称]
+     * @method buildUniqueKeyframeName
+     * @param  {string} animType 动画类型的名称
+     * @return {void}          唯一的关键帧名称
      */
     etamina.effects.buildUniqueKeyframeName = function(animType){
 
         return 'etamina-'+animType+'-'+(new Date()).getTime() + "-" + Math.floor(Math.random() * 1000);
     };
 
-    /*
-    animSetting{
-        domino: 100 , // 设置domino中间的间隔时间。 数字或字符串。100或‘100ms’
-        animType: 'rotateOut', //动画类型，内部用。
-        index: 1,               //序列号，内部用。
-        dominoGroupEventElements: [], //保存用于处理合并事件的元素id
-        callback: method,       //每个元素动画结束后的回调。
-        callbackParam: object,  //回调的参数。
-        doNotDeleteKeyframe: true,  //标识动画结束后是否删除关键帧CSS。
-        additionalClass: 'className', //设置动画时可以同时附加其他的css类。
-        sound:'soundName',              //播放声音的名称。
-        volume: '',                     //声音音量。
-    }
-     */
 
 
     /**
      * 开始播放元素对应的CSS动画
-     * @param  {[type]} elems       [HTML元素id的集合]
-     * @param  {[type]} playParam   [播放参数，时长、延时、重复等]
-     * @param  {[type]} animSetting [动画参数，多米诺效果、回调、声音等]
-     * @param  {[type]} getKeyframe [获取动画的具体keyframe的名称和代码的函数]
-     * @return {[type]}             [description]
+     * @method go
+     * @param  {array} elems       HTML元素id的集合
+     * @param  {object} playParam   播放参数，时长、延时、重复等
+     * @param  {animSetting} animSetting 动画参数，多米诺效果、回调、声音等
+     * @param  {function} getKeyframe 获取动画的具体keyframe的名称和代码的函数
+     * @return {void}             
      */
     etamina.effects.go = function(elems,playParam,animSetting,getKeyframe){
 
@@ -680,13 +672,47 @@ Jx().$package("JXAnimate", function(J){
 
     //优化点、针对多个元素应用动画时keyframe的css可能相同。
 
+    //2013/09/13 发现一个问题，这个方法执行的时间越来越长
+    /*
+        优化思路：
+            1. 插入css时，现有的css越多，插入时间越长。
+            创建一个style节点，每次修改innerHTML属性，并在动画结束后清空改节点。
+
+            2. 每个go方法，对应一个style节点。
+             管理一个go方法的生命周期。
+
+            3. 创建一个style pool，循环利用。或者go pool。
+
+            4. GoLifecycle = {
+                styleNode,
+                name,
+                elems:{
+                    originalCssClass,
+                    anmiationCssClass, 
+                    keyframeRule,
+                    doNotDeleteKeyframe, //不需要删除的动画名称，一般是静态CSS文件中的动画。
+                    isAnimating,
+                    animationEndCallback,//保存每个元素在动画播放完毕之后的回调函数                   
+                }
+                animatingCounter,//等于0时，释放style
+            }
+
+    */
+
+    var     t = new Date().getTime(),
+            timecounter = ['etamina.effects.go'],
+            t1,t2,
+            timecounter1,loopSum;
+
+
+
         playParam = etamina.initPlayParam(playParam,animSetting.animType);
         if(playParam.iteration<1){
             return;
         }
 
         var animSetting = animSetting||{},
-            /**
+            /*
              * domino效果中事件太多，浏览器响应不过来，
              * 可以将邻近的domino元素的动画结束事件合并到一个元素中。
              * 此变量中保存用于处理合并事件的元素id。
@@ -700,10 +726,13 @@ Jx().$package("JXAnimate", function(J){
             elements = etamina.getHTMLelements(elems);
 
 
-
+        timecounter.push(new Date().getTime()-t);
         // Loop through elements
         if (elements && elements.length > 0) {
             for (i = 0; i < elements.length; i += 1) {
+
+                t1 = new Date().getTime()
+                timecounter1 = [];
 
                 elem = elements[i];
                 animSetting.index = i;
@@ -726,21 +755,38 @@ Jx().$package("JXAnimate", function(J){
                 }
                 etamina.animElementList[elem.id] = true;
 
+                t2=new Date().getTime();
+                timecounter1.push(t2-t1);
+                t1=t2;
 
 
                 //获取动画的具体keyframe的名称和代码。
                 keyframe = getKeyframe.call(this,elem,animSetting); 
+
+                t2=new Date().getTime();
+                timecounter1.push(t2-t1);
+                t1=t2;
+                
                 if(animSetting.doNotDeleteKeyframe){
                     etamina.doNotDeleteKeyframes[keyframe.name] = true;
                 }
+
+                t2=new Date().getTime();
+                timecounter1.push(t2-t1);
+                t1=t2;
 
                 //add css text into DOM style
                 if(keyframe.css && keyframe.css!=''){
                     if(etamina.debug){
                         console.log(keyframe.css);
                     }
+                    //TODO:这个方法中会随着运行次数增加，耗时也增加。
                     etamina.insertCSS(keyframe.css);
                 }
+
+                t2=new Date().getTime();
+                timecounter1.push(t2-t1);
+                t1=t2;
 
                 //prepare class for element to play the animation.
                 //多米诺domino效果在此处应用。
@@ -754,6 +800,9 @@ Jx().$package("JXAnimate", function(J){
                     etamina.insertCSS(elemClass.css);
                 }
 
+                t2=new Date().getTime();
+                timecounter1.push(t2-t1);
+                t1=t2;
 
                 // Add listener to clear animation after it's done
                 //如果针对了domino效果设置了事件优化
@@ -791,6 +840,9 @@ Jx().$package("JXAnimate", function(J){
 
                 }
                 //TODO: 是否在动画后保留结束时的状态。
+                t2=new Date().getTime();
+                timecounter1.push(t2-t1);
+                t1=t2;
 
                 //保存elem原有的class，用于在动画后恢复。
                 etamina.saveCssClass(elem);
@@ -800,6 +852,9 @@ Jx().$package("JXAnimate", function(J){
 
                 //apply css animation
                 
+                t2=new Date().getTime();
+                timecounter1.push(t2-t1);
+                t1=t2;
 
                 if(J.isString(animSetting.additionalClass)){
                     animClassName = elemClass.name + ' ' + animSetting.additionalClass;                   
@@ -809,7 +864,9 @@ Jx().$package("JXAnimate", function(J){
                 }
                 //J.dom.addClass(elem,animClassName);
                 elem.className += ' ' + animClassName;
+                log(elem.className);
 
+                //播放声音
                 if(animSetting.sound && JXAnimate.Audio){
 
                     var delayTime = etamina.format.fromTime(playParam.delay);
@@ -823,15 +880,43 @@ Jx().$package("JXAnimate", function(J){
                         JXAnimate.Audio.playSound(animSetting.sound,animSetting.volume);
                     }
                 }
-                log(elem.classname);
-                if(this.debug){
-                    console.log(elem.className);
-                }
-            }       
-        }
+                t2=new Date().getTime();
+                timecounter1.push(t2-t1);
+                t1=t2;
 
+
+                if(loopSum){
+                    for(var p = timecounter1.length-1;p>-0;p--){
+                        loopSum[p]+=timecounter1[p];
+                    }
+                }
+                else{
+                    loopSum=[];
+                    var len = timecounter1.length;
+
+                    for (var p = 0;p<len;p++) {
+                        loopSum.push(timecounter1[p]);
+                    };
+                }
+
+
+
+
+            }  
+                timecounter.push(loopSum);
+        }
+                console.log(window.JSON.stringify(timecounter));
     };
 
+    /**
+     * 根据自定义的关键帧生成动画，并播放。
+     * @method goWithFixFrames
+     * @param  {array} elems       HTML元素id的集合
+     * @param  {object} playParam   播放参数，时长、延时、重复等
+     * @param  {animSetting} animSetting 动画参数，多米诺效果、回调、声音等
+     * @param  {array} frames      关键帧数组
+     * @return {void}             
+     */
     etamina.effects.goWithFixFrames = function(elems,playParam,animSetting,frames){
 
         var buildKeyframe = function(elem,animSetting){
@@ -846,6 +931,14 @@ Jx().$package("JXAnimate", function(J){
         etamina.effects.go(elems,playParam,animSetting,buildKeyframe);
     };
 
+    /**
+     * 播放CSS文件中预定义的关键帧动画
+     * @method applyCss
+     * @param  {array} elems       HTML元素id的集合
+     * @param  {object} playParam   播放参数，时长、延时、重复等
+     * @param  {animSetting} animSetting 动画参数，多米诺效果、回调、声音等
+     * @return {void}             
+     */
     etamina.effects.applyCss = function(elems,playParam,animSetting){
         var animSetting = animSetting||{};
         var keyframeName;
@@ -873,6 +966,14 @@ Jx().$package("JXAnimate", function(J){
         etamina.effects.go(elems,playParam,animSetting,buildKeyframe);
     }
 
+    /**
+     * 闪烁效果，内置Demo动画，代码演示了通过CSS样式字符串的形式定义动画。
+     * @method flash
+     * @param  {array} elems       HTML元素id的集合
+     * @param  {object} playParam   播放参数，时长、延时、重复等
+     * @param  {animSetting} animSetting 动画参数，多米诺效果、回调、声音等
+     * @return {void}             
+     */
     etamina.effects.flash = function(elems,playParam,animSetting){
 
         var animSetting = animSetting||{};
@@ -897,6 +998,14 @@ Jx().$package("JXAnimate", function(J){
 
     };
 
+    /**
+     * 水平3D翻转，内置Demo动画，代码演示了通过Frame数组形式定义动画。
+     * @method flipInY
+     * @param  {array} elems       HTML元素id的集合
+     * @param  {object} playParam   播放参数，时长、延时、重复等
+     * @param  {animSetting} animSetting 动画参数，多米诺效果、回调、声音等
+     * @return {void}             
+     */
     etamina.effects.flipInY = function(elems,playParam,animSetting){
         var animSetting = animSetting || {}
             playParam = playParam||{};
@@ -914,6 +1023,14 @@ Jx().$package("JXAnimate", function(J){
 
 
     };
+    /**
+     * 竖直3D翻转，内置Demo动画，代码演示了通过Frame数组形式定义动画。
+     * @method flipInX
+     * @param  {array} elems       HTML元素id的集合
+     * @param  {object} playParam   播放参数，时长、延时、重复等
+     * @param  {animSetting} animSetting 动画参数，多米诺效果、回调、声音等
+     * @return {void}             
+     */
     etamina.effects.flipInX = function(elems,playParam,animSetting){
         var animSetting = animSetting || {};
         animSetting.animType = 'flipInX';
@@ -929,6 +1046,12 @@ Jx().$package("JXAnimate", function(J){
     };
 
 
+    /**
+     * 添加自定义动画效果
+     * @method addEffects
+     * @param  {array} effectArray 动画效果函数数组，请参考flash,flipInX，flipInY函数编写自定义动画。
+     * @return {void}             
+     */
     this.addEffects = function  (effectArray) {
         
         if(J.isObject(effectArray)){
@@ -953,9 +1076,11 @@ Jx().$package("JXAnimate", function(J){
 
     var debugOn=function () {
         _debug = true;
+        etamina.debug = true;
     }
-    var debugOff=function (argument) {
+    var debugOff=function () {
         _debug = false;
+        etamina.debug = false;
     }
     var log = function (argument) {
         if(_debug == false){
@@ -963,11 +1088,21 @@ Jx().$package("JXAnimate", function(J){
         }
         console.log(argument);
     }
+    debugOff();
 
     J.extend(this,innerAnim);
+    /**
+     * 浏览器的CSS3 样式的前缀
+     * @property {string} prefix 
+     */
     this.prefix = etamina.prefix;
+    /**
+     * 浏览器的CSS3 JS方法的前缀
+     * @property {string} prefixJS 
+     */
     this.prefixJS = etamina.prefixJS;
-
+    this.debugOn = debugOn;
+    this.debugOff = debugOff;
 
 
 /*
@@ -979,4 +1114,77 @@ Jx().$package("JXAnimate", function(J){
 */
 });
 //----------------------------------------------------------------------------
+
+    /**
+     * 动画设置参数
+    animSetting{
+        domino: 100 , // 设置domino中间的间隔时间。 数字或字符串。100或‘100ms’
+        animType: 'rotateOut', //动画类型，内部用。
+        index: 1,               //序列号，内部用。
+        dominoGroupEventElements: [], //保存用于处理合并事件的元素id
+        callback: method,       //每个元素动画结束后的回调。
+        callbackParam: object,  //回调的参数。
+        doNotDeleteKeyframe: true,  //标识动画结束后是否删除关键帧CSS。
+        additionalClass: 'className', //设置动画时可以同时附加其他的css类。
+        sound:'soundName',              //播放声音的名称。
+        volume: '',                     //声音音量。
+    }
+     * @class animSetting
+     */
+    /**
+     * 设置domino中间的间隔时间。 数字或字符串。100或‘100ms’
+     * @property {int} domino 
+     */
+    /**
+     * 动画类型
+     * @property {string} animType 
+     * @private
+     */
+    /**
+     * 序列号，用于设置domino顺序
+     * @property {int} index 
+     * @private
+     */
+    /**
+     * 保存用于处理合并事件的元素id
+     * @property {array} dominoGroupEventElement 
+     */
+    /**
+     * 每个元素动画结束后的回调。
+     * @property {function} callback 
+     */
+    /**
+     * 回调参数
+     * @property {object} callbackParam 
+     */
+    /**
+     * 标识动画结束后保留关键帧CSS
+     * @property {bool} doNotDeleteKeyframe
+     */
+    /**
+     * 设置动画时可以同时附加其他的css类，动画结束后删除
+     * @property {string} additionalClass 
+     */
+    /**
+     * 播放声音的名称。
+     * @property {string} sound 
+     */
+    /**
+     * 声音音量。
+     * @property {float} volume 
+     */
+    /**
+     * CSS文件中关键帧动画的名称，尽在applyCSS方法中有效。
+     * @property {string} name 
+     */
+
+
+
+
+
+
+
+
+
+
 

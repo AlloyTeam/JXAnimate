@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>jxanimate.effects.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/animSetting.html">animSetting</a></li>
+            
+                <li><a href="../classes/JX.Animate.html">JX.Animate</a></li>
+            
+                <li><a href="../classes/JXAnimate.Audio.html">JXAnimate.Audio</a></li>
+            
+                <li><a href="../classes/SlideShow.html">SlideShow</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/JXAnimate.html">JXAnimate</a></li>
+            
+                <li><a href="../modules/JXAnimate.Animate.Demo.html">JXAnimate.Animate.Demo</a></li>
+            
+                <li><a href="../modules/JXAnimate.Audio.html">JXAnimate.Audio</a></li>
+            
+                <li><a href="../modules/SlideShow.html">SlideShow</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: jxanimate.effects.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+
+/* ===========================================================================
+ * JX.Animate Effects Libray
+ * @module JXAnimate.effects
+ * 
+ * @description
+ * A CSS animation Engine and Library
+ * Using addEffects method to add new effect functions into Animation Library.
+ *
+ * @author minren 
+ * ===========================================================================
+ * 
+ */
+
+/**
+ * @class JX.Animate
+ */
+
+JXAnimate.addEffects({
+    /**
+     * 向左翻页的效果，内置Demo动画，代码演示了通过Frame数组形式定义动画。
+     * @method pageFlipLeft
+     * @param  {array} elems       HTML元素id的集合
+     * @param  {object} playParam   播放参数，时长、延时、重复等
+     * @param  {animSetting} animSetting 动画参数，多米诺效果、回调、声音等
+     * @return {void}             
+     */
+    pageFlipLeft : function(elems,playParam,animSetting){
+        var animSetting = animSetting || {};
+
+        animSetting.animType = &#x27;pageFlipLeft&#x27;;
+
+        var    frames = [
+                {p:&#x27;0%&#x27;,rotateY:&#x27;0deg&#x27;,transformOrigin:&#x27;0% 50%&#x27;},
+                {p:&#x27;100%&#x27;,rotateY:&#x27;-360deg&#x27;,transformOrigin:&#x27;0% 50%&#x27;}
+            ];
+
+        this.goWithFixFrames(elems,playParam,animSetting,frames);
+
+    },
+    /**
+     * 向右翻页的效果，内置Demo动画，代码演示了通过Frame数组形式定义动画。
+     * @method pageFlipLeft
+     * @param  {array} elems       HTML元素id的集合
+     * @param  {object} playParam   播放参数，时长、延时、重复等
+     * @param  {animSetting} animSetting 动画参数，多米诺效果、回调、声音等
+     * @return {void}             
+     */
+    pageFlipRight : function(elems,playParam,animSetting){
+        var animSetting = animSetting || {};
+
+        animSetting.animType = &#x27;pageFlipRight&#x27;;
+
+        var    frames = [
+                {p:&#x27;0%&#x27;,rotateY:&#x27;0deg&#x27;,transformOrigin:&#x27;100% 50%&#x27;},
+                {p:&#x27;100%&#x27;,rotateY:&#x27;360deg&#x27;,transformOrigin:&#x27;100% 50%&#x27;}
+            ];
+
+        this.goWithFixFrames(elems,playParam,animSetting,frames);
+
+    },
+
+    /**
+     * 摇旗子的效果，内置Demo动画，代码演示了通过Frame数组形式定义动画。
+     * @method raceFlag
+     * @param  {array} elems       HTML元素id的集合
+     * @param  {object} playParam   播放参数，时长、延时、重复等
+     * @param  {animSetting} animSetting 动画参数，多米诺效果、回调、声音等
+     * @return {void}             
+     */
+    raceFlag : function(elems,playParam,animSetting){
+        var animSetting = animSetting || {};
+
+        animSetting.animType = &#x27;raceFlag&#x27;;
+
+        var    frames = [
+                {p:&#x27;0%&#x27;,rotateX:&#x27;0deg&#x27;,rotate:&#x27;-720deg&#x27;,transformOrigin:&#x27;100% 0%&#x27;},
+                {p:&#x27;100%&#x27;,rotateX:&#x27;-360deg&#x27;,rotate:&#x27;0&#x27;,transformOrigin:&#x27;100% 0%&#x27;}
+            ];
+
+        this.goWithFixFrames(elems,playParam,animSetting,frames);
+
+    },
+    /**
+     * 摇旗子的效果，内置Demo动画，代码演示了通过CSS样式字符串的形式定义动画。
+     * @method raceFlag1
+     * @param  {array} elems       HTML元素id的集合
+     * @param  {object} playParam   播放参数，时长、延时、重复等
+     * @param  {animSetting} animSetting 动画参数，多米诺效果、回调、声音等
+     * @return {void}             
+     */
+    raceFlag1 : function(elems,playParam,animSetting){
+        var animSetting = animSetting || {};
+
+        animSetting.animType = &#x27;raceFlag2&#x27;;
+
+
+        var buildKeyframe = function(){
+            var keyframeName = this.buildUniqueKeyframeName(animSetting.animType);
+       
+                keyframeCss = &#x27;@&#x27;+this.prefix+&#x27;keyframes &#x27;+  keyframeName +&#x27;{\n&#x27;+
+                	&#x27;0% {-webkit-transform: rotateX(0deg) rotate(-720deg);-webkit-transform-origin:100% 0%;}100% {-webkit-transform: rotateX(-360deg) rotate(0deg) ;-webkit-transform-origin:100% 0%;}\n&#x27;+
+            &#x27;}&#x27;;
+
+            return {
+                name:keyframeName,
+                css:keyframeCss
+            };
+        };
+
+        this.go(elems,playParam,animSetting,buildKeyframe);
+    }
+});
+//----------------------------------------------------------------------------
+
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>
