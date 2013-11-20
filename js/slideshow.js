@@ -20,6 +20,7 @@
 Jx().$package("SlideShow", function(J){
 
     var $D = J.dom,
+        $E = J.event,
         $Anim = JXAnimate,
         _container,
         _params,
@@ -163,6 +164,21 @@ Jx().$package("SlideShow", function(J){
                 $D.setClass(node,'slide_Img');
             }
         };
+    }
+
+    var addImgByUrl=function(src){
+        var img;
+        img = document.createElement('img');
+        img.setAttribute('isLoading');
+        img.onload=function(args){
+            img.removeAttribute('isLoading');
+            _imgList.push(img);
+            _imgCount = _imgList.length;
+            setCurrentIndex(_currImage);
+        };
+        $D.setClass(img,'slide_Img');
+        _container.appendChild(img);
+        img.src=src;
     }
 
     var calculateNumber = function(){
@@ -517,6 +533,7 @@ Jx().$package("SlideShow", function(J){
     this.getStageWidth = getStageWidth;
     this.getStageHeight = getStageHeight;
     this.setDonimo = setDonimo;
+    this.addImgByUrl = addImgByUrl;
 });
 //----------------------------------------------------------------------------
         //在结束时设置卡片的背景。需改造etamina √
