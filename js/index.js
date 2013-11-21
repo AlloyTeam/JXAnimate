@@ -1,4 +1,4 @@
-        window.addEventListener('load', eventWindowLoaded, false);  
+﻿        window.addEventListener('load', eventWindowLoaded, false);  
         function eventWindowLoaded() {
 
             _Slider.init();
@@ -20,7 +20,16 @@
                 //cardW:480,cardH:300});
             SlideShow.setDonimo(default_domino);
 
+            //添加更多图片
+            SlideShow.addImgByUrl('style/images/m2.jpg');
+            SlideShow.addImgByUrl('style/images/m3.jpg');
+            SlideShow.addImgByUrl('style/images/m4.jpg');
+            SlideShow.addImgByUrl('style/images/m5.jpg');
+            SlideShow.addImgByUrl('style/images/m6.jpg');
+            SlideShow.addImgByUrl('style/images/m7.jpg');
+            SlideShow.addImgByUrl('style/images/m8.jpg');
 
+            //翻页按钮
             document.addEventListener("click",
                 function(e) { 
                     var elem = e.target, cssName;
@@ -37,7 +46,7 @@
                 }
             );
 
-
+            //切换domino开关
             switch_domino.addEventListener('click',
                 function(e){
                     if(switch_domino.checked){
@@ -49,7 +58,7 @@
                 }
             );
 
-
+            //播放幻灯片，自动播放控制
             function playslide(){
                 if(switch_autoplay.checked){
                     SlideShow.next();
