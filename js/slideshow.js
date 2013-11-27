@@ -45,7 +45,9 @@ Jx().$package("SlideShow", function(J){
         _supportCanvas,
         _stageCanvas,
         _stageContext,
-        _isPictureMoving;
+        _isPictureMoving,
+        _MovingPause=false,
+        _zoomMove;
 
     var addSlideShowCSS=function(){
 
@@ -108,6 +110,31 @@ Jx().$package("SlideShow", function(J){
             } 
         ];
         _currentEffect=0;
+        _zoomMove={
+            'name':'zoom',
+            'speed':2,
+            'originX':0.5,
+            'originY':0.5,
+            'x':0,
+            'y':0,
+            'w':0,
+            'h':0,
+        }
+        _zoomMove.draw=function(context,img)
+        {
+            var startX=0,
+                startY=0,
+                originX=_zoomMove.originX,
+                originY=_zoomMove.originY,
+                speed = _zoomMove.speed;
+
+            _zoomMove.w+=speed;
+            _zoomMove.h+=speed;
+            _zoomMove.x= startX - (_zoomMove.w - img.width)*originX;
+            _zoomMove.y= startY - (_zoomMove.h - img.height)*originY;
+
+            context.drawImage(img,_zoomMove.x,_zoomMove.y,_zoomMove.w,_zoomMove.h);
+        }
     }
 
     /**
@@ -165,6 +192,9 @@ Jx().$package("SlideShow", function(J){
         var src = _imgList[_currImage].src;
         setCardBackground(src);
         setStageBackground(_imgList[_currImage]);
+
+        startPictureMoveing();
+        gameLoop();
     };
 
     var initImg=function (argument) {
@@ -306,11 +336,11 @@ Jx().$package("SlideShow", function(J){
 
     var setStageBackground=function (img) {
         if (_supportCanvas) {
-            if (_isPictureMoving) {}
-            else{
-                _stageContext.drawImage(img,0,0,_stageWidth,_stageHeight);
+            _stageContext.drawImage(img,0,0,_stageWidth,_stageHeight);
+            if (_isPictureMoving) {
+                //开始播放动画
+
             }
-            //开始播放动画
         }
         else{
             setBackground(_stage,img.src);
@@ -327,6 +357,7 @@ Jx().$package("SlideShow", function(J){
         _currImage=index % _imgCount;
         _nextImage=(index+1) % _imgCount;
         _prevImage=(index+_imgCount-1) % _imgCount;
+
     }
 
     /**
@@ -464,6 +495,8 @@ Jx().$package("SlideShow", function(J){
                 console.log(window.JSON.stringify(timecounter));
     }
     var gotoWithEffect = function(index, effect){
+        
+        _MovingPause=true; //切换时暂停，还要用canvas图片设置卡片。
 
         var orderName;
         effect = effect || _slideEffects[_currentEffect];
@@ -480,6 +513,15 @@ Jx().$package("SlideShow", function(J){
         orderName = effect.order;
 
         _orderMethods[orderName](effect);
+
+        if(_isPictureMoving && _MovingPause){
+            _zoomMove.w = _imgList[_currImage].width;
+            _zoomMove.h = _imgList[_currImage].height;
+            setTimeout(function(){
+                _MovingPause=false;
+            },1000);
+        }
+
        
     }
 
@@ -555,6 +597,29 @@ Jx().$package("SlideShow", function(J){
         _animSettings.domino = value;
     }
 
+    var startPictureMoveing = function(){
+        _isPictureMoving=true;
+        _MovingPause=false;
+    }
+    var gameLoop = function () {
+        window.setTimeout(gameLoop, 20);
+        drawScreen();
+    }
+
+    var drawScreen = function(){
+        if (!_supportCanvas || !_isPictureMoving || _MovingPause) {
+            return;
+        };
+        var movement=_zoomMove;
+
+        movement.draw(_stageContext,_imgList[_currImage]);
+
+
+    }
+
+
+
+
     this.init = init;
     this.next = next;
     this.prev = prev;
@@ -581,3 +646,5 @@ Jx().$package("SlideShow", function(J){
         //
         //添加声音。 √
         //美化翻页按钮的样式。√
+
+
