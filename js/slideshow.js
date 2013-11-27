@@ -41,9 +41,23 @@ Jx().$package("SlideShow", function(J){
         _animSettings,
         _orderMethods,
         _slideEffects,
-        _currentEffect;
+        _currentEffect,
+        _supportCanvas,
+        _stageCanvas,
+        _stageContext,
+        _isPictureMoving;
+
+    var addSlideShowCSS=function(){
+
+    };
+    //动画需要用Canvas显示，如果不支持Canvas则用div显示静态图片
+    function canvasSupport (){
+        return !!document.createElement('canvas').getContext;
+    }
+
 
     var reset = function  () {
+        _supportCanvas=canvasSupport();
         //初始化参数，img(800x600)，卡片维度 5x5
         _params = {
             imgW:800,
@@ -56,7 +70,6 @@ Jx().$package("SlideShow", function(J){
             "duration" :'600ms'
         };
         _animSettings={
-            //callback:cardCallback,
             additionalClass:'visible',
             domino:100
         };
@@ -106,6 +119,7 @@ Jx().$package("SlideShow", function(J){
      * @return {[type]}           [description]
      */
     var init = function(container, params){
+
         reset();
         _container = document.getElementById(container);
         if(!_container){
@@ -150,7 +164,7 @@ Jx().$package("SlideShow", function(J){
         setCurrentIndex(0);
         var src = _imgList[_currImage].src;
         setCardBackground(src);
-        setStageBackground(src);
+        setStageBackground(_imgList[_currImage]);
     };
 
     var initImg=function (argument) {
@@ -161,11 +175,12 @@ Jx().$package("SlideShow", function(J){
             node = children[i];
             if(node.tagName.toLowerCase()==='img'){
                 _imgList.push(node);
-                $D.setClass(node,'slide_Img');
+                //$D.setClass(node,'slide_Img');
+                node.style['display']='none';
             }
         };
     }
-
+    
     var addImgByUrl=function(src){
         var img;
         img = document.createElement('img');
@@ -240,6 +255,7 @@ Jx().$package("SlideShow", function(J){
         w = _cardCol * _params.cardW;
         h = _cardRow * _params.cardH;
 
+
         _stage = document.getElementById('stage');
 
         if(_stage && _stage.parentNode===_container){
@@ -247,10 +263,20 @@ Jx().$package("SlideShow", function(J){
         }
         else{
             _stage = document.createElement('div');
-            _stage.id = 'stage';
         }
+
+        _stage.id = 'stage';
+        
         $D.setStyle(_stage,'width',w+'px');
         $D.setStyle(_stage,'height',h+'px');
+
+        if (_supportCanvas) {
+            _stageCanvas = document.createElement('canvas');
+            _stageContext=_stageCanvas.getContext('2d');
+            _stageCanvas.width=w;
+            _stageCanvas.height=h;
+            _stage.appendChild(_stageCanvas);
+        }
 
         for (var r = 0; r < _cardRow; r++) {
             for(var c=0; c < _cardCol; c++){
@@ -261,6 +287,8 @@ Jx().$package("SlideShow", function(J){
         _container.appendChild(_stage);
         _stageWidth = $D.getWidth(_stage);
         _stageHeight = $D.getHeight(_stage);
+
+
     }
 
     var setCardBackground=function (src) {
@@ -276,20 +304,22 @@ Jx().$package("SlideShow", function(J){
         }
     };
 
-    var setStageBackground=function (src) {
-        setBackground(_stage,src);
+    var setStageBackground=function (img) {
+        if (_supportCanvas) {
+            if (_isPictureMoving) {}
+            else{
+                _stageContext.drawImage(img,0,0,_stageWidth,_stageHeight);
+            }
+            //开始播放动画
+        }
+        else{
+            setBackground(_stage,img.src);
+        }
     }
     var setBackground = function(elem,src){
         var url = 'url('+src+')';
         //console.log(url);
         elem.style.backgroundImage = url;
-    }
-
-    var cardCallback = function (argument) {
-        var card = argument.elem;
-        var src = _imgList[_currImage].src;
-        $D.addClass (card,'hidden');
-
     }
 
     var setCurrentIndex = function(index){
@@ -444,8 +474,8 @@ Jx().$package("SlideShow", function(J){
         setCardBackground(src);
         //翻页，设置舞台
         setCurrentIndex(index);
-        src = _imgList[_currImage].src;
-        setStageBackground(src);
+        //src = _imgList[_currImage].src;
+        setStageBackground(_imgList[_currImage]);
 
         orderName = effect.order;
 
