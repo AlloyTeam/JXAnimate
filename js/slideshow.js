@@ -60,7 +60,7 @@ Jx().$package("SlideShow", function(J){
     }
 
 
-    var reset = function  () {
+    var initParameters = function  () {
         _isReadyToPlay =false;
         _supportCanvas=canvasSupport();
         //初始化参数，img(800x600)，卡片维度 5x5
@@ -116,6 +116,7 @@ Jx().$package("SlideShow", function(J){
     }
 
 
+
     /**
      * 幻灯片播放类
      * @class SlideShow
@@ -126,7 +127,7 @@ Jx().$package("SlideShow", function(J){
      */
     var init = function(container, params){
 
-        reset();
+        initParameters();
         _container = document.getElementById(container);
         if(!_container){
             return;
@@ -138,8 +139,6 @@ Jx().$package("SlideShow", function(J){
 
         initOrderMethods();
         //遍历container中的img,放入数组，设置样式
-        initImg();
-        _imgCount = _imgList.length;
 
         //生成卡片
         generateCards();
@@ -164,8 +163,11 @@ Jx().$package("SlideShow", function(J){
 
         //创建舞台stage元素div
         generateStage();
+        initImg();
 
     };
+
+
 
     //图片加载后开始准备播放
     var readyToPlay=function(){
@@ -194,6 +196,16 @@ Jx().$package("SlideShow", function(J){
                 node.style['display']='none';
             }
         };    
+    }
+
+    var setCards=function (params) {
+
+         _params = J.extend(_params,params);
+       
+        //生成卡片
+        generateCards();
+        generateStage();
+
     }
 
     //标签中的img图片，统一用addImgByUrl处理
@@ -503,6 +515,15 @@ Jx().$package("SlideShow", function(J){
                 timecounter.push(new Date().getTime() - t);
                 console.log(window.JSON.stringify(timecounter));
     }
+
+    var getStageBackgroud= function (argument) {
+        var url;
+        if (_supportCanvas&&false) {
+            url = _stageCanvas.toDataURL();
+            return url;
+        }
+        return _imgList[_currImage].src;
+    }
     var gotoWithEffect = function(index, effect){
         
         _MovingPause=true; //切换时暂停，还要用canvas图片设置卡片。
@@ -510,29 +531,34 @@ Jx().$package("SlideShow", function(J){
         var orderName;
         effect = effect || _slideEffects[_currentEffect];
 
-        var src = _imgList[_currImage].src;
+        var src =  getStageBackgroud();
+
         //在动画开始前，设置卡片背景为当前图片，并可见。
-
         setCardBackground(src);
-        //翻页，设置舞台
+        //翻页
         setCurrentIndex(index);
-        //src = _imgList[_currImage].src;
-        setStageBackground(_imgList[_currImage]);
 
+
+        //选择效果并执行动画
         orderName = effect.order;
-
         _orderMethods[orderName](effect);
 
+        //设置图片移动
         if(_isPictureMoving && _MovingPause){
 
             _zoomMove = new ZoomMovement();
-            _zoomMove.w = _imgList[_currImage].width;
-            _zoomMove.h = _imgList[_currImage].height;
+            _zoomMove.w = _imgList[_currImage].width * 2;
+            _zoomMove.h = _imgList[_currImage].height * 2;
+            _zoomMove.setDestinationByScale(0.5);
 
-            setTimeout(function(){
+            //setTimeout(function(){
                 _MovingPause=false;
                 _zoomMove.beginTime = new Date().getTime();
-            },1000);
+            //},1000);
+        }
+        else{
+            //设置舞台
+            setStageBackground(_imgList[_currImage]);
         }
 
        
@@ -629,26 +655,26 @@ Jx().$package("SlideShow", function(J){
         this.startX = 0;
         this.startY = 0;
         this.duration = 4000;
-        this.steps = 50;
+        this.steps = 4000/50;
         var end = {};
         this.beginTime = new Date().getTime();
 
         this.draw=function(context,img)
         {
-            if((new Date().getTime())-this.beginTime>this.duration){
-                return;
-            } 
-            var startX=this.startX,
-                startY=this.startY,
-                originX=this.originX,
-                originY=this.originY,
-                speedW = this.speed,
-                speedH = this.speed * this.h / this.w;
+            if((new Date().getTime())-this.beginTime<this.duration){
+                var startX=this.startX,
+                    startY=this.startY,
+                    originX=this.originX,
+                    originY=this.originY,
+                    speedW = this.speed,
+                    speedH = this.speed * this.h / this.w;
 
-            this.w+=speedW;
-            this.h+=speedH;
-            this.x= startX - (this.w - img.width)*originX;
-            this.y= startY - (this.h - img.height)*originY;
+                this.w+=speedW;
+                this.h+=speedH;
+                this.x= startX - (this.w - img.width)*originX;
+                this.y= startY - (this.h - img.height)*originY;
+            } 
+
 
             //console.log([this.x,this.y,this.w,this.h]);
             context.drawImage(img,this.x,this.y,this.w,this.h);
@@ -674,7 +700,7 @@ Jx().$package("SlideShow", function(J){
             this.originY = (this.y-y)/(this.h-height);
         }
         this.setDestinationByScale = function(scale){
-            this.speed = (scale-1)*this.w/steps;
+            this.speed = (scale-1)*this.w/this.steps;
         }
     }
 
@@ -684,7 +710,7 @@ Jx().$package("SlideShow", function(J){
         _MovingPause=false;
     }
     var gameLoop = function () {
-        window.setTimeout(gameLoop, 30);
+        window.setTimeout(gameLoop, 50);
         drawScreen();
     }
 
@@ -693,6 +719,9 @@ Jx().$package("SlideShow", function(J){
             return;
         };
         var movement=_zoomMove;
+
+        _stageContext.fillStyle = 'cccccc';
+        _stageContext.fillRect(0,0,_stageCanvas.width, _stageCanvas.height)
 
         movement.draw(_stageContext,_imgList[_currImage]);
 
@@ -709,6 +738,7 @@ Jx().$package("SlideShow", function(J){
     this.getStageHeight = getStageHeight;
     this.setDonimo = setDonimo;
     this.addImgByUrl = addImgByUrl;
+    this.setCards = setCards;
 });
 //----------------------------------------------------------------------------
         //在结束时设置卡片的背景。需改造etamina √
