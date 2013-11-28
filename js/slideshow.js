@@ -22,6 +22,8 @@ Jx().$package("SlideShow", function(J){
     var $D = J.dom,
         $E = J.event,
         $Anim = JXAnimate,
+        _isReadyToPlay =false,
+        _readyToPlayNumber=1,
         _container,
         _params,
         _stage,
@@ -59,6 +61,7 @@ Jx().$package("SlideShow", function(J){
 
 
     var reset = function  () {
+        _isReadyToPlay =false;
         _supportCanvas=canvasSupport();
         //初始化参数，img(800x600)，卡片维度 5x5
         _params = {
@@ -110,32 +113,8 @@ Jx().$package("SlideShow", function(J){
             } 
         ];
         _currentEffect=0;
-        _zoomMove={
-            'name':'zoom',
-            'speed':2,
-            'originX':0.5,
-            'originY':0.5,
-            'x':0,
-            'y':0,
-            'w':0,
-            'h':0,
-        }
-        _zoomMove.draw=function(context,img)
-        {
-            var startX=0,
-                startY=0,
-                originX=_zoomMove.originX,
-                originY=_zoomMove.originY,
-                speed = _zoomMove.speed;
-
-            _zoomMove.w+=speed;
-            _zoomMove.h+=speed;
-            _zoomMove.x= startX - (_zoomMove.w - img.width)*originX;
-            _zoomMove.y= startY - (_zoomMove.h - img.height)*originY;
-
-            context.drawImage(img,_zoomMove.x,_zoomMove.y,_zoomMove.w,_zoomMove.h);
-        }
     }
+
 
     /**
      * 幻灯片播放类
@@ -155,14 +134,12 @@ Jx().$package("SlideShow", function(J){
         _params = J.extend(_params,params);
 
         _container.style.width=_params.imgW+'px';
+        _container.style.height=_params.imgH+'px';
 
         initOrderMethods();
         //遍历container中的img,放入数组，设置样式
         initImg();
         _imgCount = _imgList.length;
-        if(_imgCount==0){
-            return;
-        }
 
         //生成卡片
         generateCards();
@@ -187,30 +164,59 @@ Jx().$package("SlideShow", function(J){
 
         //创建舞台stage元素div
         generateStage();
+
+    };
+
+    //图片加载后开始准备播放
+    var readyToPlay=function(){
+        _isReadyToPlay=true;
+        var children = _container.children,
+            node;
+
         //设置背景
         setCurrentIndex(0);
         var src = _imgList[_currImage].src;
         setCardBackground(src);
         setStageBackground(_imgList[_currImage]);
 
+        _zoomMove= new ZoomMovement();
+        _zoomMove.w = _stageWidth;
+        _zoomMove.h = _stageHeight;
+        
         startPictureMoveing();
         gameLoop();
-    };
 
+
+        //统一隐藏img标签
+        for (var i=0; i < children.length; i ++) {
+            node = children[i];
+            if(node.tagName.toLowerCase()==='img'){
+                node.style['display']='none';
+            }
+        };    
+    }
+
+    //标签中的img图片，统一用addImgByUrl处理
     var initImg=function (argument) {
         _imgList=[];
+        var srcList = [];
         var children = _container.children,
             node;
         for (var i=0; i < children.length; i ++) {
             node = children[i];
             if(node.tagName.toLowerCase()==='img'){
-                _imgList.push(node);
-                //$D.setClass(node,'slide_Img');
-                node.style['display']='none';
+                //_imgList.push(node);
+                //node.style['display']='none';
+                srcList.push(node.src);
             }
         };
+        for (var i = srcList.length - 1; i >= 0; i--) {
+            addImgByUrl(srcList[i]);
+        };
     }
-    
+
+
+    //添加图片的统一入口。
     var addImgByUrl=function(src){
         var img;
         img = document.createElement('img');
@@ -220,8 +226,11 @@ Jx().$package("SlideShow", function(J){
             _imgList.push(img);
             _imgCount = _imgList.length;
             setCurrentIndex(_currImage);
+            if(!_isReadyToPlay && _imgCount>_readyToPlayNumber){
+                readyToPlay();
+            }
         };
-        $D.setClass(img,'slide_Img');
+        img.style['display']='none';
         _container.appendChild(img);
         img.src=src;
     }
@@ -515,10 +524,14 @@ Jx().$package("SlideShow", function(J){
         _orderMethods[orderName](effect);
 
         if(_isPictureMoving && _MovingPause){
+
+            _zoomMove = new ZoomMovement();
             _zoomMove.w = _imgList[_currImage].width;
             _zoomMove.h = _imgList[_currImage].height;
+
             setTimeout(function(){
                 _MovingPause=false;
+                _zoomMove.beginTime = new Date().getTime();
             },1000);
         }
 
@@ -531,6 +544,8 @@ Jx().$package("SlideShow", function(J){
      * @return {[type]}          [description]
      */
     var next = function  (argument) {
+
+        if (!_isReadyToPlay) {return};
         
         _currentEffect = (_currentEffect+1)%_slideEffects.length;
 
@@ -548,6 +563,8 @@ Jx().$package("SlideShow", function(J){
      * @return {[type]}          [description]
      */
     var prev =function (argument){
+        if (!_isReadyToPlay) {return};
+
         _currentEffect = (_currentEffect+_slideEffects.length-1)%_slideEffects.length;
 
         var orderName, 
@@ -597,12 +614,77 @@ Jx().$package("SlideShow", function(J){
         _animSettings.domino = value;
     }
 
+
+    function ZoomMovement()
+    {   
+
+        this.name = 'zoom';
+        this.speed = 2;
+        this.originX = 0.5;
+        this.originY = 0.5;
+        this.x = 0;
+        this.y = 0;
+        this.w = 0;
+        this.h = 0;
+        this.startX = 0;
+        this.startY = 0;
+        this.duration = 4000;
+        this.steps = 50;
+        var end = {};
+        this.beginTime = new Date().getTime();
+
+        this.draw=function(context,img)
+        {
+            if((new Date().getTime())-this.beginTime>this.duration){
+                return;
+            } 
+            var startX=this.startX,
+                startY=this.startY,
+                originX=this.originX,
+                originY=this.originY,
+                speedW = this.speed,
+                speedH = this.speed * this.h / this.w;
+
+            this.w+=speedW;
+            this.h+=speedH;
+            this.x= startX - (this.w - img.width)*originX;
+            this.y= startY - (this.h - img.height)*originY;
+
+            //console.log([this.x,this.y,this.w,this.h]);
+            context.drawImage(img,this.x,this.y,this.w,this.h);
+        }
+
+        this.setStarting = function(x,y,width,height){
+            this.startX = x;
+            this.startY = y;
+            this.w = width;
+            this.h = height;
+        }
+
+        this.setDestination = function(x,y,width,height)
+        {
+            this.speed = (width-this.w)/steps;
+            end = {
+                'x':x,
+                'y':y,
+                'w':width,
+                'h':height,
+            }
+            this.originX = (this.x-x)/(this.w-width);
+            this.originY = (this.y-y)/(this.h-height);
+        }
+        this.setDestinationByScale = function(scale){
+            this.speed = (scale-1)*this.w/steps;
+        }
+    }
+
+
     var startPictureMoveing = function(){
         _isPictureMoving=true;
         _MovingPause=false;
     }
     var gameLoop = function () {
-        window.setTimeout(gameLoop, 20);
+        window.setTimeout(gameLoop, 30);
         drawScreen();
     }
 
@@ -616,8 +698,6 @@ Jx().$package("SlideShow", function(J){
 
 
     }
-
-
 
 
     this.init = init;
@@ -640,10 +720,14 @@ Jx().$package("SlideShow", function(J){
         //所有CSS的效果列表
         //向中间飞入，向四周飞出。√
         //闪烁问题的优化：
+        /*            
         //JxAnimation中定义了分组donimo的方法，
+        //=====
         //可以将邻近的动画元素合并到一个onAnimationEnd事件中处理，但是效果不好。
         //依旧有闪烁。调用方法参考playAnimation
+        //11-28 解决了闪烁的问题，方法是动画结束后不删除css。
         //
+        */
         //添加声音。 √
         //美化翻页按钮的样式。√
 
