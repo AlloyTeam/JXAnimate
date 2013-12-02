@@ -34,6 +34,7 @@ Jx().$package("SlideShow", function(J){
         _cardRow,
         _cardCol,
         _cards,
+        _cardContexts,
         _cardNumber,
         _cardGroupIndex,
         _currImage,
@@ -276,25 +277,45 @@ Jx().$package("SlideShow", function(J){
         w = _params.cardW;
         h = _params.cardH;
 
-        _cards = [];
+        _cards = [];_cardContexts={};
         for (var r = 0; r < _cardRow; r++) {
             _cards[r]=[];
             for(var c = 0; c < _cardCol; c++){
-                card =document.createElement('div');
-                card.id = 'r'+r+'c'+c;
-                $D.setClass(card,'card_piece');
-                _cards[r][c]= card;
-                //set size
-                $D.setStyle(card,'width',w+'px');
-                $D.setStyle(card,'height',h+'px');
-                //set position;
-                x = c*_params.cardW;
-                y = r*_params.cardH;
-                $D.setStyle(card,'top',y+'px');
-                $D.setStyle(card,'left',x+'px');  
-                //background position
-                pos = '-'+x+'px -'+y+'px'
-                card.style.backgroundPosition = pos; //兼容FireFox
+
+                if(_supportCanvas){
+                    card =document.createElement('canvas');
+                    card.id = 'r'+r+'c'+c;
+                    _cardContexts[card.id] = card.getContext("2d");
+
+                    $D.setClass(card,'card_piece');
+                    _cards[r][c]= card;
+                    //set size
+                    card.width=w;
+                    card.height = h;
+                    //set position;
+                    x = c*w;
+                    y = r*h;
+                    $D.setStyle(card,'top',y+'px');
+                    $D.setStyle(card,'left',x+'px');  
+
+                }
+                else{
+                    card =document.createElement('div');
+                    card.id = 'r'+r+'c'+c;
+                    $D.setClass(card,'card_piece');
+                    _cards[r][c]= card;
+                    //set size
+                    $D.setStyle(card,'width',w+'px');
+                    $D.setStyle(card,'height',h+'px');
+                    //set position;
+                    x = c*w;
+                    y = r*h;
+                    $D.setStyle(card,'top',y+'px');
+                    $D.setStyle(card,'left',x+'px');  
+                    //background position
+                    pos = '-'+x+'px -'+y+'px'
+                    card.style.backgroundPosition = pos; //兼容FireFox                    
+                }
                                        
             }
         }
@@ -343,16 +364,32 @@ Jx().$package("SlideShow", function(J){
     }
 
     var setCardBackground=function (src) {
-        var card,
+        var card,w,h,ctx,idx,
         x,
         y,
+        t = new Date().getTime(),
+        timecounter = ['setCardBackground'],
         style;
+        w = _params.cardW;
+        h = _params.cardH;
         for (var r = 0; r < _cardRow; r++) {
             for(var c=0; c < _cardCol; c++){
                 card = _cards[r][c];
-                setBackground(card,src);
+                if (_supportCanvas) {
+                    x = c*w;
+                    y = r*h;
+                    ctx = _cardContexts[card.id];
+                    ctx.drawImage(_stageCanvas,x,y,w,h,0,0,w,h);
+
+                }
+                else{
+                    setBackground(card,src);                    
+                }
             }
         }
+        timecounter.push(new Date().getTime() - t);
+        console.log(window.JSON.stringify(timecounter));
+
     };
 
     var setStageBackground=function (img) {
@@ -435,7 +472,7 @@ Jx().$package("SlideShow", function(J){
             'random': function (params) {
                 var elems = [],
                     t = new Date().getTime(),
-                    timecounter = [];
+                    timecounter = ['randam'];
                     i=0;
 
                 for (var c = _cardRow-1; c >=0; c--) {
@@ -546,10 +583,22 @@ Jx().$package("SlideShow", function(J){
         //设置图片移动
         if(_isPictureMoving && _MovingPause){
 
+            var scales = [0.5,0.75,1.25,1.5,2],
+            t = Math.floor(Math.random()*20)%5,
+            s = scales[t];
+            console.log('number = %d, scale:%f',t,s);
             _zoomMove = new ZoomMovement();
-            _zoomMove.w = _imgList[_currImage].width * 2;
-            _zoomMove.h = _imgList[_currImage].height * 2;
-            _zoomMove.setDestinationByScale(0.5);
+            if(s<1){ //缩小
+                _zoomMove.w = _imgList[_currImage].width / s;
+                _zoomMove.h = _imgList[_currImage].height / s;
+               
+            }
+            else{ //放大
+                _zoomMove.w = _imgList[_currImage].width;
+                _zoomMove.h = _imgList[_currImage].height;
+            }
+            _zoomMove.setDestinationByScale(s);
+
 
             //setTimeout(function(){
                 _MovingPause=false;
@@ -676,8 +725,8 @@ Jx().$package("SlideShow", function(J){
             } 
 
 
-            //console.log([this.x,this.y,this.w,this.h]);
-            context.drawImage(img,this.x,this.y,this.w,this.h);
+            //console.log('movement:draw at: [%d,%d], current size is [%d,%d].',this.x,this.x,this.w,this.h);
+            context.drawImage(img,0,0,_stageWidth,_stageHeight,this.x,this.y,this.w,this.h);
         }
 
         this.setStarting = function(x,y,width,height){
@@ -699,8 +748,12 @@ Jx().$package("SlideShow", function(J){
             this.originX = (this.x-x)/(this.w-width);
             this.originY = (this.y-y)/(this.h-height);
         }
-        this.setDestinationByScale = function(scale){
+        this.setDestinationByScale = function(scale,origin){
             this.speed = (scale-1)*this.w/this.steps;
+            if (origin && origin.originX && origin.originY) {
+                this.originX = origin.originX;
+                this.originY = origin.originY;
+            };
         }
     }
 
