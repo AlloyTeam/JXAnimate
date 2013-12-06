@@ -871,15 +871,12 @@ section #title .credits.right {
   position: absolute;
   visibility: hidden;
 }
-.hidden{
-  visibility: hidden;
-}
+
 .visible{
   visibility: visible;
 }
 .slide_Img{
   display: none;
-  visibility: collapse;
 }
 
 #stage

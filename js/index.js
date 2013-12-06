@@ -83,7 +83,8 @@
 
         }
         function SetCardNumber (newValue) {
-            initSlideShow(newValue);
+            //initSlideShow(newValue);
+            SlideShow.setCards({num:newValue});
         }
 
         function initSlideShow (num) {

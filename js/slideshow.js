@@ -22,6 +22,8 @@ Jx().$package("SlideShow", function(J){
     var $D = J.dom,
         $E = J.event,
         $Anim = JXAnimate,
+        _isReadyToPlay =false,
+        _readyToPlayNumber=1,
         _container,
         _params,
         _stage,
@@ -32,6 +34,7 @@ Jx().$package("SlideShow", function(J){
         _cardRow,
         _cardCol,
         _cards,
+        _cardContexts,
         _cardNumber,
         _cardGroupIndex,
         _currImage,
@@ -41,9 +44,26 @@ Jx().$package("SlideShow", function(J){
         _animSettings,
         _orderMethods,
         _slideEffects,
-        _currentEffect;
+        _currentEffect,
+        _supportCanvas,
+        _stageCanvas,
+        _stageContext,
+        _isPictureMoving,
+        _MovingPause=false,
+        _zoomMove;
 
-    var reset = function  () {
+    var addSlideShowCSS=function(){
+
+    };
+    //动画需要用Canvas显示，如果不支持Canvas则用div显示静态图片
+    function canvasSupport (){
+        return !!document.createElement('canvas').getContext;
+    }
+
+
+    var initParameters = function  () {
+        _isReadyToPlay =false;
+        _supportCanvas=canvasSupport();
         //初始化参数，img(800x600)，卡片维度 5x5
         _params = {
             imgW:800,
@@ -56,7 +76,6 @@ Jx().$package("SlideShow", function(J){
             "duration" :'600ms'
         };
         _animSettings={
-            //callback:cardCallback,
             additionalClass:'visible',
             domino:100
         };
@@ -97,6 +116,8 @@ Jx().$package("SlideShow", function(J){
         _currentEffect=0;
     }
 
+
+
     /**
      * 幻灯片播放类
      * @class SlideShow
@@ -106,7 +127,8 @@ Jx().$package("SlideShow", function(J){
      * @return {[type]}           [description]
      */
     var init = function(container, params){
-        reset();
+
+        initParameters();
         _container = document.getElementById(container);
         if(!_container){
             return;
@@ -114,14 +136,10 @@ Jx().$package("SlideShow", function(J){
         _params = J.extend(_params,params);
 
         _container.style.width=_params.imgW+'px';
+        _container.style.height=_params.imgH+'px';
 
         initOrderMethods();
         //遍历container中的img,放入数组，设置样式
-        initImg();
-        _imgCount = _imgList.length;
-        if(_imgCount==0){
-            return;
-        }
 
         //生成卡片
         generateCards();
@@ -146,26 +164,72 @@ Jx().$package("SlideShow", function(J){
 
         //创建舞台stage元素div
         generateStage();
+        initImg();
+
+    };
+
+
+
+    //图片加载后开始准备播放
+    var readyToPlay=function(){
+        _isReadyToPlay=true;
+        var children = _container.children,
+            node;
+
         //设置背景
         setCurrentIndex(0);
         var src = _imgList[_currImage].src;
         setCardBackground(src);
-        setStageBackground(src);
-    };
+        setStageBackground(_imgList[_currImage]);
 
+        _zoomMove= new ZoomMovement();
+        _zoomMove.w = _stageWidth;
+        _zoomMove.h = _stageHeight;
+        
+        startPictureMoveing();
+        gameLoop();
+
+
+        //统一隐藏img标签
+        for (var i=0; i < children.length; i ++) {
+            node = children[i];
+            if(node.tagName.toLowerCase()==='img'){
+                node.style['display']='none';
+            }
+        };    
+    }
+
+    var setCards=function (params) {
+
+         _params = J.extend(_params,params);
+       
+        //生成卡片
+        generateCards();
+        generateStage();
+
+    }
+
+    //标签中的img图片，统一用addImgByUrl处理
     var initImg=function (argument) {
         _imgList=[];
+        var srcList = [];
         var children = _container.children,
             node;
         for (var i=0; i < children.length; i ++) {
             node = children[i];
             if(node.tagName.toLowerCase()==='img'){
-                _imgList.push(node);
-                $D.setClass(node,'slide_Img');
+                //_imgList.push(node);
+                //node.style['display']='none';
+                srcList.push(node.src);
             }
+        };
+        for (var i = srcList.length - 1; i >= 0; i--) {
+            addImgByUrl(srcList[i]);
         };
     }
 
+
+    //添加图片的统一入口。
     var addImgByUrl=function(src){
         var img;
         img = document.createElement('img');
@@ -175,8 +239,11 @@ Jx().$package("SlideShow", function(J){
             _imgList.push(img);
             _imgCount = _imgList.length;
             setCurrentIndex(_currImage);
+            if(!_isReadyToPlay && _imgCount>_readyToPlayNumber){
+                readyToPlay();
+            }
         };
-        $D.setClass(img,'slide_Img');
+        img.style['display']='none';
         _container.appendChild(img);
         img.src=src;
     }
@@ -210,25 +277,45 @@ Jx().$package("SlideShow", function(J){
         w = _params.cardW;
         h = _params.cardH;
 
-        _cards = [];
+        _cards = [];_cardContexts={};
         for (var r = 0; r < _cardRow; r++) {
             _cards[r]=[];
             for(var c = 0; c < _cardCol; c++){
-                card =document.createElement('div');
-                card.id = 'r'+r+'c'+c;
-                $D.setClass(card,'card_piece');
-                _cards[r][c]= card;
-                //set size
-                $D.setStyle(card,'width',w+'px');
-                $D.setStyle(card,'height',h+'px');
-                //set position;
-                x = c*_params.cardW;
-                y = r*_params.cardH;
-                $D.setStyle(card,'top',y+'px');
-                $D.setStyle(card,'left',x+'px');  
-                //background position
-                pos = '-'+x+'px -'+y+'px'
-                card.style.backgroundPosition = pos; //兼容FireFox
+
+                if(_supportCanvas){
+                    card =document.createElement('canvas');
+                    card.id = 'r'+r+'c'+c;
+                    _cardContexts[card.id] = card.getContext("2d");
+
+                    $D.setClass(card,'card_piece');
+                    _cards[r][c]= card;
+                    //set size
+                    card.width=w;
+                    card.height = h;
+                    //set position;
+                    x = c*w;
+                    y = r*h;
+                    $D.setStyle(card,'top',y+'px');
+                    $D.setStyle(card,'left',x+'px');  
+
+                }
+                else{
+                    card =document.createElement('div');
+                    card.id = 'r'+r+'c'+c;
+                    $D.setClass(card,'card_piece');
+                    _cards[r][c]= card;
+                    //set size
+                    $D.setStyle(card,'width',w+'px');
+                    $D.setStyle(card,'height',h+'px');
+                    //set position;
+                    x = c*w;
+                    y = r*h;
+                    $D.setStyle(card,'top',y+'px');
+                    $D.setStyle(card,'left',x+'px');  
+                    //background position
+                    pos = '-'+x+'px -'+y+'px'
+                    card.style.backgroundPosition = pos; //兼容FireFox                    
+                }
                                        
             }
         }
@@ -240,6 +327,7 @@ Jx().$package("SlideShow", function(J){
         w = _cardCol * _params.cardW;
         h = _cardRow * _params.cardH;
 
+
         _stage = document.getElementById('stage');
 
         if(_stage && _stage.parentNode===_container){
@@ -247,10 +335,20 @@ Jx().$package("SlideShow", function(J){
         }
         else{
             _stage = document.createElement('div');
-            _stage.id = 'stage';
         }
+
+        _stage.id = 'stage';
+        
         $D.setStyle(_stage,'width',w+'px');
         $D.setStyle(_stage,'height',h+'px');
+
+        if (_supportCanvas) {
+            _stageCanvas = document.createElement('canvas');
+            _stageContext=_stageCanvas.getContext('2d');
+            _stageCanvas.width=w;
+            _stageCanvas.height=h;
+            _stage.appendChild(_stageCanvas);
+        }
 
         for (var r = 0; r < _cardRow; r++) {
             for(var c=0; c < _cardCol; c++){
@@ -261,23 +359,50 @@ Jx().$package("SlideShow", function(J){
         _container.appendChild(_stage);
         _stageWidth = $D.getWidth(_stage);
         _stageHeight = $D.getHeight(_stage);
+
+
     }
 
     var setCardBackground=function (src) {
-        var card,
+        var card,w,h,ctx,idx,
         x,
         y,
+        t = new Date().getTime(),
+        timecounter = ['setCardBackground'],
         style;
+        w = _params.cardW;
+        h = _params.cardH;
         for (var r = 0; r < _cardRow; r++) {
             for(var c=0; c < _cardCol; c++){
                 card = _cards[r][c];
-                setBackground(card,src);
+                if (_supportCanvas) {
+                    x = c*w;
+                    y = r*h;
+                    ctx = _cardContexts[card.id];
+                    ctx.drawImage(_stageCanvas,x,y,w,h,0,0,w,h);
+
+                }
+                else{
+                    setBackground(card,src);                    
+                }
             }
         }
+        timecounter.push(new Date().getTime() - t);
+        console.log(window.JSON.stringify(timecounter));
+
     };
 
-    var setStageBackground=function (src) {
-        setBackground(_stage,src);
+    var setStageBackground=function (img) {
+        if (_supportCanvas) {
+            _stageContext.drawImage(img,0,0,_stageWidth,_stageHeight);
+            if (_isPictureMoving) {
+                //开始播放动画
+
+            }
+        }
+        else{
+            setBackground(_stage,img.src);
+        }
     }
     var setBackground = function(elem,src){
         var url = 'url('+src+')';
@@ -285,18 +410,12 @@ Jx().$package("SlideShow", function(J){
         elem.style.backgroundImage = url;
     }
 
-    var cardCallback = function (argument) {
-        var card = argument.elem;
-        var src = _imgList[_currImage].src;
-        $D.addClass (card,'hidden');
-
-    }
-
     var setCurrentIndex = function(index){
         index = index<0?0:index;
         _currImage=index % _imgCount;
         _nextImage=(index+1) % _imgCount;
         _prevImage=(index+_imgCount-1) % _imgCount;
+
     }
 
     /**
@@ -353,7 +472,7 @@ Jx().$package("SlideShow", function(J){
             'random': function (params) {
                 var elems = [],
                     t = new Date().getTime(),
-                    timecounter = [];
+                    timecounter = ['randam'];
                     i=0;
 
                 for (var c = _cardRow-1; c >=0; c--) {
@@ -433,23 +552,64 @@ Jx().$package("SlideShow", function(J){
                 timecounter.push(new Date().getTime() - t);
                 console.log(window.JSON.stringify(timecounter));
     }
+
+    var getStageBackgroud= function (argument) {
+        var url;
+        if (_supportCanvas&&false) {
+            url = _stageCanvas.toDataURL();
+            return url;
+        }
+        return _imgList[_currImage].src;
+    }
     var gotoWithEffect = function(index, effect){
+        
+        _MovingPause=true; //切换时暂停，还要用canvas图片设置卡片。
 
         var orderName;
         effect = effect || _slideEffects[_currentEffect];
 
-        var src = _imgList[_currImage].src;
+        var src =  getStageBackgroud();
+
         //在动画开始前，设置卡片背景为当前图片，并可见。
-
         setCardBackground(src);
-        //翻页，设置舞台
+        //翻页
         setCurrentIndex(index);
-        src = _imgList[_currImage].src;
-        setStageBackground(src);
 
+
+        //选择效果并执行动画
         orderName = effect.order;
-
         _orderMethods[orderName](effect);
+
+        //设置图片移动
+        if(_isPictureMoving && _MovingPause){
+
+            var scales = [0.5,0.75,1.25,1.5,2],
+            t = Math.floor(Math.random()*20)%5,
+            s = scales[t];
+            console.log('number = %d, scale:%f',t,s);
+            _zoomMove = new ZoomMovement();
+            if(s<1){ //缩小
+                _zoomMove.w = _imgList[_currImage].width / s;
+                _zoomMove.h = _imgList[_currImage].height / s;
+               
+            }
+            else{ //放大
+                _zoomMove.w = _imgList[_currImage].width;
+                _zoomMove.h = _imgList[_currImage].height;
+            }
+            _zoomMove.setDestinationByScale(s);
+
+
+            //setTimeout(function(){
+                _MovingPause=false;
+                _zoomMove.beginTime = new Date().getTime();
+            //},1000);
+        }
+        else{
+            //设置舞台
+            setStageBackground(_imgList[_currImage]);
+        }
+
        
     }
 
@@ -459,6 +619,8 @@ Jx().$package("SlideShow", function(J){
      * @return {[type]}          [description]
      */
     var next = function  (argument) {
+
+        if (!_isReadyToPlay) {return};
         
         _currentEffect = (_currentEffect+1)%_slideEffects.length;
 
@@ -476,6 +638,8 @@ Jx().$package("SlideShow", function(J){
      * @return {[type]}          [description]
      */
     var prev =function (argument){
+        if (!_isReadyToPlay) {return};
+
         _currentEffect = (_currentEffect+_slideEffects.length-1)%_slideEffects.length;
 
         var orderName, 
@@ -525,6 +689,99 @@ Jx().$package("SlideShow", function(J){
         _animSettings.domino = value;
     }
 
+
+    function ZoomMovement()
+    {   
+
+        this.name = 'zoom';
+        this.speed = 2;
+        this.originX = 0.5;
+        this.originY = 0.5;
+        this.x = 0;
+        this.y = 0;
+        this.w = 0;
+        this.h = 0;
+        this.startX = 0;
+        this.startY = 0;
+        this.duration = 4000;
+        this.steps = 4000/50;
+        var end = {};
+        this.beginTime = new Date().getTime();
+
+        this.draw=function(context,img)
+        {
+            if((new Date().getTime())-this.beginTime<this.duration){
+                var startX=this.startX,
+                    startY=this.startY,
+                    originX=this.originX,
+                    originY=this.originY,
+                    speedW = this.speed,
+                    speedH = this.speed * this.h / this.w;
+
+                this.w+=speedW;
+                this.h+=speedH;
+                this.x= startX - (this.w - img.width)*originX;
+                this.y= startY - (this.h - img.height)*originY;
+            } 
+
+
+            //console.log('movement:draw at: [%d,%d], current size is [%d,%d].',this.x,this.x,this.w,this.h);
+            context.drawImage(img,0,0,_stageWidth,_stageHeight,this.x,this.y,this.w,this.h);
+        }
+
+        this.setStarting = function(x,y,width,height){
+            this.startX = x;
+            this.startY = y;
+            this.w = width;
+            this.h = height;
+        }
+
+        this.setDestination = function(x,y,width,height)
+        {
+            this.speed = (width-this.w)/steps;
+            end = {
+                'x':x,
+                'y':y,
+                'w':width,
+                'h':height,
+            }
+            this.originX = (this.x-x)/(this.w-width);
+            this.originY = (this.y-y)/(this.h-height);
+        }
+        this.setDestinationByScale = function(scale,origin){
+            this.speed = (scale-1)*this.w/this.steps;
+            if (origin && origin.originX && origin.originY) {
+                this.originX = origin.originX;
+                this.originY = origin.originY;
+            };
+        }
+    }
+
+
+    var startPictureMoveing = function(){
+        _isPictureMoving=true;
+        _MovingPause=false;
+    }
+    var gameLoop = function () {
+        window.setTimeout(gameLoop, 50);
+        drawScreen();
+    }
+
+    var drawScreen = function(){
+        if (!_supportCanvas || !_isPictureMoving || _MovingPause) {
+            return;
+        };
+        var movement=_zoomMove;
+
+        _stageContext.fillStyle = 'cccccc';
+        _stageContext.fillRect(0,0,_stageCanvas.width, _stageCanvas.height)
+
+        movement.draw(_stageContext,_imgList[_currImage]);
+
+
+    }
+
+
     this.init = init;
     this.next = next;
     this.prev = prev;
@@ -534,6 +791,7 @@ Jx().$package("SlideShow", function(J){
     this.getStageHeight = getStageHeight;
     this.setDonimo = setDonimo;
     this.addImgByUrl = addImgByUrl;
+    this.setCards = setCards;
 });
 //----------------------------------------------------------------------------
         //在结束时设置卡片的背景。需改造etamina √
@@ -545,9 +803,15 @@ Jx().$package("SlideShow", function(J){
         //所有CSS的效果列表
         //向中间飞入，向四周飞出。√
         //闪烁问题的优化：
+        /*            
         //JxAnimation中定义了分组donimo的方法，
+        //=====
         //可以将邻近的动画元素合并到一个onAnimationEnd事件中处理，但是效果不好。
         //依旧有闪烁。调用方法参考playAnimation
+        //11-28 解决了闪烁的问题，方法是动画结束后不删除css。
         //
+        */
         //添加声音。 √
         //美化翻页按钮的样式。√
+
+
