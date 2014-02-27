@@ -1,4 +1,3 @@
-
 /**
  * JX.Animate Demo库
  * 幻灯片轮播图片
@@ -233,7 +232,7 @@ Jx().$package("SlideShow", function(J){
     var addImgByUrl=function(src){
         var img;
         img = document.createElement('img');
-        img.setAttribute('isLoading');
+        img.setAttribute('isLoading',1);
         img.onload=function(args){
             img.removeAttribute('isLoading');
             _imgList.push(img);
